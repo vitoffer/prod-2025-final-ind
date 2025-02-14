@@ -68,9 +68,10 @@ const props = defineProps<{ exercise: Exercise }>()
         <i class="pi pi-pencil text-amber-500" style="font-size: 1.25rem"></i>
       </button>
       <button
-        class="flex aspect-square items-center justify-center rounded-md border-4 border-red-600 p-1 leading-none"
+        @click="$emit('removeExercise', exercise.id)"
+        class="flex aspect-square items-center justify-center rounded-md border-4 border-red-500 p-1 leading-none"
       >
-        <i class="pi pi-times-circle text-red-600" style="font-size: 1.25rem"></i>
+        <i class="pi pi-times-circle text-red-500" style="font-size: 1.25rem"></i>
       </button>
     </div>
   </div>

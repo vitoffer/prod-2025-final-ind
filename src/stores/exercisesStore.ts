@@ -5,5 +5,9 @@ import baseExercisesList from '@/base-data/exercises'
 export const useExercisesStore = defineStore('exercises', () => {
   const list = ref(baseExercisesList)
 
-  return { list }
+  function remove(id: string) {
+    list.value = list.value.filter((exercise) => exercise.id !== id)
+  }
+
+  return { list, remove }
 })

@@ -10,6 +10,8 @@ import router from './router'
 import PrimeVue from 'primevue/config'
 import Aura from '@primevue/themes/aura'
 
+import ConfirmationService from 'primevue/confirmationservice'
+
 const app = createApp(App)
 
 app.use(createPinia())
@@ -26,5 +28,6 @@ app.use(PrimeVue, {
     },
   },
 })
+app.use(ConfirmationService)
 
 app.mount('#app')
