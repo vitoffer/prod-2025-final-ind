@@ -37,7 +37,7 @@ export default <Exercise[]>[
   {
     id: '4',
     name: 'Крайний случай',
-    videoUrl: 'https://rutube.ru/play/embed/348d394918bfe218476abc144918f909',
+    videoUrl: 'https://www.youtube.com/embed/FqF11YdwxrQ',
     photoUrlList: [
       'https://fitnessclub24.ru/public/images/gallery/section/thumbs/0/2-3-shragi.jpg',
       'https://avatars.dzeninfra.ru/get-zen_doc/1535103/pub_64dbaa4e73f157490e767716_64dbe7e2a9216a3544dafebe/scale_1200',

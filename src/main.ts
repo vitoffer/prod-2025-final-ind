@@ -24,7 +24,6 @@ app.use(PrimeVue, {
         name: 'primevue',
         order: 'tailwind, primevue',
       },
-      darkModeSelector: '.dark-theme',
     },
   },
 })

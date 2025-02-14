@@ -1,7 +1,28 @@
 <script setup lang="ts">
 import type { Exercise } from '@/types'
+import { ref } from 'vue'
+
+interface MediaObj {
+  type: 'video' | 'photo'
+  src: string
+}
 
 const props = defineProps<{ exercise: Exercise }>()
+
+const mediasList = ref<MediaObj[]>([])
+
+if (props.exercise.videoUrl !== null) {
+  mediasList.value.push({ type: 'video', src: props.exercise.videoUrl })
+}
+if (props.exercise.photoUrlList.length !== 0) {
+  mediasList.value.push(
+    ...props.exercise.photoUrlList.map((url: string): MediaObj => {
+      return { type: 'photo', src: url }
+    }),
+  )
+}
+
+console.log(mediasList.value)
 </script>
 
 <template>
@@ -9,18 +30,10 @@ const props = defineProps<{ exercise: Exercise }>()
     class="exercise-card flex w-[450px] flex-col rounded-2xl border-4 border-green-700 pt-3 pr-4 pb-3 pl-4"
   >
     <div class="mb-2 text-center text-2xl font-semibold">{{ exercise.name }}</div>
-    <div class="wrapper mb-auto flex h-[250px] items-center">
-      <iframe
-        v-if="exercise.videoUrl !== null"
-        class="aspect-video w-[100%] rounded-xl"
-        :src="exercise.videoUrl"
-        frameBorder="0"
-        allow="clipboard-write; autoplay"
-        allowfullscreen
-      ></iframe>
+    <div class="wrapper mb-auto flex h-[250px] w-[100%] items-center justify-stretch">
       <Galleria
-        v-else-if="exercise.photoUrlList.length !== 0"
-        :value="exercise.photoUrlList"
+        v-if="mediasList.length !== 0"
+        :value="mediasList"
         :circular="true"
         :showThumbnails="false"
         :showItemNavigators="true"
@@ -29,8 +42,20 @@ const props = defineProps<{ exercise: Exercise }>()
         :showIndicatorsOnItem="true"
       >
         <template #item="slotProps">
-          <div class="flex h-[250px] items-center">
-            <img :src="slotProps.item" alt="Картинка упражнения" />
+          <div class="flex h-[250px] w-[100%] items-center">
+            <iframe
+              v-if="slotProps.item.type === 'video'"
+              class="aspect-video w-[100%] rounded-xl"
+              :src="slotProps.item.src"
+              frameBorder="0"
+              allow="clipboard-write; autoplay"
+              allowfullscreen
+            ></iframe>
+            <img
+              v-else-if="slotProps.item.type === 'photo'"
+              :src="slotProps.item.src"
+              alt="Картинка упражнения"
+            />
           </div>
         </template>
       </Galleria>
@@ -63,18 +88,22 @@ const props = defineProps<{ exercise: Exercise }>()
     <div class="buttons mt-4 flex justify-around">
       <button
         @click="$emit('editExercise', exercise.id)"
-        class="flex aspect-square items-center justify-center rounded-md border-4 border-amber-500 p-1 leading-none"
+        class="flex aspect-square cursor-pointer items-center justify-center rounded-md border-4 border-amber-400 p-1 leading-none"
       >
-        <i class="pi pi-pencil text-amber-500" style="font-size: 1.25rem"></i>
+        <i class="pi pi-pencil text-amber-400" style="font-size: 1.25rem"></i>
       </button>
       <button
         @click="$emit('removeExercise', exercise.id)"
-        class="flex aspect-square items-center justify-center rounded-md border-4 border-red-500 p-1 leading-none"
+        class="flex aspect-square cursor-pointer items-center justify-center rounded-md border-4 border-red-400 p-1 leading-none"
       >
-        <i class="pi pi-times-circle text-red-500" style="font-size: 1.25rem"></i>
+        <i class="pi pi-times-circle text-red-400" style="font-size: 1.25rem"></i>
       </button>
     </div>
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+:deep.p-galleria {
+  width: 100%;
+}
+</style>

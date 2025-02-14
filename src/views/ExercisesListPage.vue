@@ -8,7 +8,7 @@ const confirmRemove = (id: string) => {
   confirm.require({
     message: 'Вы уверены, что хотите удалить это упражнение?',
     header: 'Подтверждение',
-    icon: 'pi pi-exclamation-triangle !text-red-500',
+    icon: 'pi pi-exclamation-triangle !text-red-400',
     rejectProps: {
       label: 'Отмена',
       severity: 'secondary',

@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Carousel: typeof import('primevue/carousel')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     ExerciseCard: typeof import('./src/components/ExerciseCard.vue')['default']
     Galleria: typeof import('primevue/galleria')['default']
