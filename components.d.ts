@@ -7,11 +7,19 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Button: typeof import('primevue/button')['default']
     Carousel: typeof import('primevue/carousel')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
+    Dialog: typeof import('primevue/dialog')['default']
     ExerciseCard: typeof import('./src/components/ExerciseCard.vue')['default']
+    FloatLabel: typeof import('primevue/floatlabel')['default']
     Galleria: typeof import('primevue/galleria')['default']
+    IftaLabel: typeof import('primevue/iftalabel')['default']
+    InputText: typeof import('primevue/inputtext')['default']
+    MultiSelect: typeof import('primevue/multiselect')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SelectButton: typeof import('primevue/selectbutton')['default']
+    Textarea: typeof import('primevue/textarea')['default']
   }
 }
