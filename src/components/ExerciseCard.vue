@@ -21,8 +21,6 @@ if (props.exercise.photoUrlList.length !== 0) {
     }),
   )
 }
-
-console.log(mediasList.value)
 </script>
 
 <template>
@@ -87,7 +85,7 @@ console.log(mediasList.value)
     </div>
     <div class="buttons mt-4 flex justify-around">
       <button
-        @click="$emit('editExercise', exercise.id)"
+        @click="$emit('changeExercise', exercise.id)"
         class="flex aspect-square cursor-pointer items-center justify-center rounded-md border-4 border-amber-400 p-1 leading-none"
       >
         <i class="pi pi-pencil text-amber-400" style="font-size: 1.25rem"></i>
@@ -103,7 +101,7 @@ console.log(mediasList.value)
 </template>
 
 <style scoped lang="scss">
-:deep.p-galleria {
+:deep(.p-galleria) {
   width: 100%;
 }
 </style>
