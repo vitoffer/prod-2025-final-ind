@@ -2,7 +2,7 @@ import type { Exercise } from '@/types'
 
 export default <Exercise[]>[
   {
-    id: '1',
+    id: 1,
     name: 'Упражнение 1',
     videoUrl: null,
     photoUrlList: [],
@@ -12,7 +12,7 @@ export default <Exercise[]>[
     tags: ['на ноги'],
   },
   {
-    id: '2',
+    id: 2,
     name: 'Упражнение 2',
     videoUrl: 'https://rutube.ru/play/embed/348d394918bfe218476abc144918f909',
     photoUrlList: [],
@@ -22,7 +22,7 @@ export default <Exercise[]>[
     tags: ['на бицепс', '12222', '22222', '22223', '42222', '522222222', '6', '7', '8', '0'],
   },
   {
-    id: '3',
+    id: 3,
     name: 'Упражнение 3',
     videoUrl: null,
     photoUrlList: [
@@ -35,7 +35,7 @@ export default <Exercise[]>[
     tags: ['на спину'],
   },
   {
-    id: '4',
+    id: 4,
     name: 'Крайний случай',
     videoUrl: 'https://www.youtube.com/embed/FqF11YdwxrQ',
     photoUrlList: [

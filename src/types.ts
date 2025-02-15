@@ -1,5 +1,7 @@
+import type { ComputedRef } from 'vue'
+
 export interface Exercise {
-  id: string
+  id: number | ComputedRef<number>
   name: string
   videoUrl: string | null
   photoUrlList: string[]
