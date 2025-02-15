@@ -23,7 +23,7 @@ const confirmRemove = (id: number) => {
       severity: 'danger',
     },
     accept: () => {
-      exercisesStore.remove(id)
+      exercisesStore.removeExercise(id)
     },
   })
 }
@@ -57,6 +57,27 @@ const createExercise = () => {
 
 const addExercisePhotoUrl = () => {
   editingExercise.value.photoUrlList.push('')
+}
+
+const saveEditingExercise = () => {
+  const formattedExercise: Exercise = {
+    ...editingExercise.value,
+    videoUrl: editingExercise.value.videoUrl === '' ? null : editingExercise.value.videoUrl,
+    description:
+      editingExercise.value.description === '' ? null : editingExercise.value.description,
+  }
+
+  const existingExercise = exercisesStore.list.find(
+    (exercise) => exercise.id === editingExercise.value.id,
+  )
+
+  if (existingExercise) {
+    exercisesStore.updateExercise(existingExercise.id, formattedExercise)
+  } else {
+    exercisesStore.createExercise(formattedExercise)
+  }
+
+  editExerciseDialogVisible.value = false
 }
 
 const exercisesStore = useExercisesStore()
@@ -140,6 +161,8 @@ const tagsOptions = ref<{ name: string }[]>([
         />
         <Button @click="addExercisePhotoUrl"><i class="pi pi-plus"></i></Button>
         <InputText v-model="editingExercise.videoUrl" type="text" placeholder="Ссылка на видео" />
+        <Button @click="saveEditingExercise" severity="success">Сохранить</Button>
+        <Button @click="editExerciseDialogVisible = false" severity="danger">Отменить</Button>
       </div>
     </Dialog>
     <ExerciseCard

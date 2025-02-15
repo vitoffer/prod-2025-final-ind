@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Exercise } from '@/types'
-import { ref } from 'vue'
+import { computed } from 'vue'
 
 interface MediaObj {
   type: 'video' | 'photo'
@@ -9,18 +9,20 @@ interface MediaObj {
 
 const props = defineProps<{ exercise: Exercise }>()
 
-const mediasList = ref<MediaObj[]>([])
-
-if (props.exercise.videoUrl !== null) {
-  mediasList.value.push({ type: 'video', src: props.exercise.videoUrl })
-}
-if (props.exercise.photoUrlList.length !== 0) {
-  mediasList.value.push(
-    ...props.exercise.photoUrlList.map((url: string): MediaObj => {
-      return { type: 'photo', src: url }
-    }),
-  )
-}
+const mediasList = computed<MediaObj[]>(() => {
+  const list = []
+  if (props.exercise.videoUrl !== null) {
+    list.push({ type: 'video', src: props.exercise.videoUrl })
+  }
+  if (props.exercise.photoUrlList.length !== 0) {
+    list.push(
+      ...props.exercise.photoUrlList.map((url: string): MediaObj => {
+        return { type: 'photo', src: url }
+      }),
+    )
+  }
+  return list
+})
 </script>
 
 <template>
