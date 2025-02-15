@@ -12,7 +12,7 @@ const props = defineProps<{ exercise: Exercise }>()
 const mediasList = computed<MediaObj[]>(() => {
   const list = []
   if (props.exercise.videoUrl !== null) {
-    list.push({ type: 'video', src: props.exercise.videoUrl })
+    list.push({ type: 'video', src: props.exercise.videoUrl } as MediaObj)
   }
   if (props.exercise.photoUrlList.length !== 0) {
     list.push(

@@ -31,7 +31,9 @@ const confirmRemove = (id: number) => {
 const changeExercise = (id: number) => {
   editExerciseDialogVisible.value = true
 
-  const foundExercise = exercisesStore.list.find((exercise) => exercise.id === id)
+  const foundExercise = JSON.parse(
+    JSON.stringify(exercisesStore.list.find((exercise) => exercise.id === id)),
+  )
 
   if (foundExercise === undefined) {
     editingExercise.value = {
