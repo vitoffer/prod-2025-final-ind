@@ -1,28 +1,8 @@
 <script setup lang="ts">
 import type { Exercise } from '@/types'
-import { computed } from 'vue'
+import ExerciseCardInfo from './ExerciseCardInfo.vue'
 
-interface MediaObj {
-  type: 'video' | 'photo'
-  src: string
-}
-
-const props = defineProps<{ exercise: Exercise }>()
-
-const mediasList = computed<MediaObj[]>(() => {
-  const list = []
-  if (props.exercise.videoUrl !== null) {
-    list.push({ type: 'video', src: props.exercise.videoUrl } as MediaObj)
-  }
-  if (props.exercise.photoUrlList.length !== 0) {
-    list.push(
-      ...props.exercise.photoUrlList.map((url: string): MediaObj => {
-        return { type: 'photo', src: url }
-      }),
-    )
-  }
-  return list
-})
+defineProps<{ exercise: Exercise }>()
 </script>
 
 <template>
@@ -31,37 +11,7 @@ const mediasList = computed<MediaObj[]>(() => {
   >
     <div class="mb-2 text-center text-2xl font-semibold">{{ exercise.name }}</div>
     <div class="wrapper mb-auto flex h-[250px] w-[100%] items-center justify-stretch">
-      <Galleria
-        v-if="mediasList.length !== 0"
-        :value="mediasList"
-        :circular="true"
-        :showThumbnails="false"
-        :showItemNavigators="true"
-        :showItemNavigatorsOnHover="true"
-        :showIndicators="true"
-        :showIndicatorsOnItem="true"
-      >
-        <template #item="slotProps">
-          <div class="flex h-[250px] w-[100%] items-center">
-            <iframe
-              v-if="slotProps.item.type === 'video'"
-              class="aspect-video w-[100%] rounded-xl"
-              :src="slotProps.item.src"
-              frameBorder="0"
-              allow="clipboard-write; autoplay"
-              allowfullscreen
-            ></iframe>
-            <img
-              v-else-if="slotProps.item.type === 'photo'"
-              :src="slotProps.item.src"
-              alt="Картинка упражнения"
-            />
-          </div>
-        </template>
-      </Galleria>
-      <p v-else-if="exercise.description !== null" class="self-start text-lg">
-        {{ exercise.description }}
-      </p>
+      <ExerciseCardInfo :exercise="exercise"></ExerciseCardInfo>
     </div>
     <div class="mt-3">
       <div class="tags-container">
