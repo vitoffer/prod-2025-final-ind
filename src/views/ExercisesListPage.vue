@@ -4,7 +4,7 @@ import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseDifficulty } from '@/types'
 import { FloatLabel, type AutoCompleteCompleteEvent } from 'primevue'
 import { useConfirm } from 'primevue/useconfirm'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const confirm = useConfirm()
 
@@ -123,8 +123,6 @@ const filterExerciseList = () => {
 
 const exercisesStore = useExercisesStore()
 
-const filteredExercisesList = ref<Exercise[]>(exercisesStore.list)
-
 const nullExercise: Omit<Exercise, 'id'> = {
   name: '',
   videoUrl: '',
@@ -141,43 +139,53 @@ const editingExercise = ref<Exercise>({
   id: exercisesStore.list[exercisesStore.list.length - 1].id + 1,
 })
 
-const difficultyOptions = ref<ExerciseDifficulty[]>(['простое', 'среднее', 'сложное'])
-const sportsItemsOptions = ref<{ name: string }[]>([
-  { name: 'гантели' },
-  { name: 'штанга' },
-  { name: 'скакалка' },
-])
-const tagsOptions = ref<{ name: string }[]>([
-  { name: 'на ноги' },
-  { name: 'на бицепс' },
-  { name: 'на спину' },
-  { name: '12222' },
-  { name: '22222' },
-  { name: '22223' },
-  { name: '42222' },
-  { name: '522222222' },
-  { name: '6' },
-  { name: '7' },
-  { name: '8' },
-  { name: '0' },
-])
+const filteredExercisesList = ref<Exercise[]>(exercisesStore.list)
 
-const filtersObj = ref<{
+const difficultyOptions = ref<ExerciseDifficulty[]>(['простое', 'среднее', 'сложное'])
+const sportsItemsOptions = computed<{ name: string }[]>(() => {
+  const list: { name: string }[] = []
+
+  for (const exercise of exercisesStore.list) {
+    for (const sportsItem of exercise.sportsItems) {
+      if (!list.find((elem) => elem.name === sportsItem)) {
+        list.push({ name: sportsItem })
+      }
+    }
+  }
+
+  return list
+})
+const tagsOptions = computed<{ name: string }[]>(() => {
+  const list: { name: string }[] = []
+
+  for (const exercise of exercisesStore.list) {
+    for (const tag of exercise.tags) {
+      if (!list.find((elem) => elem.name === tag)) {
+        list.push({ name: tag })
+      }
+    }
+  }
+
+  return list
+})
+const sportsItemsSelectSuggestions = ref<string[]>([])
+const tagsSelectSuggestions = ref<string[]>([])
+
+interface FiltersObject {
   name: string
   description: string
   difficulty: string
   sportsItems: string[]
   tags: string[]
-}>({
+}
+
+const filtersObj = ref<FiltersObject>({
   name: '',
   description: '',
   difficulty: '',
   sportsItems: [],
   tags: [],
 })
-
-const sportsItemsSelectSuggestions = ref<string[]>([])
-const tagsSelectSuggestions = ref<string[]>([])
 </script>
 
 <template>
