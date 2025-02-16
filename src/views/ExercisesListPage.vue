@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import ExerciseCard from '@/components/ExerciseCard.vue'
-import { formatExercise } from '@/modules/exercises-list/form-validators'
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseDifficulty } from '@/types'
 import { computedAsync } from '@vueuse/core'
@@ -68,6 +67,19 @@ const removeExercisePhotoUrl = () => {
     0,
     editingExercise.value.photoUrlList.length - 1,
   )
+}
+
+const formatExercise = (exercise: Exercise): Exercise => {
+  return {
+    id: exercise.id,
+    name: exercise.name.trim(),
+    videoUrl: exercise.videoUrl === '' ? null : exercise.videoUrl,
+    photoUrlList: exercise.photoUrlList,
+    description: exercise.description == '' ? null : exercise.description,
+    difficulty: exercise.difficulty,
+    sportsItems: exercise.sportsItems,
+    tags: exercise.tags,
+  }
 }
 
 const saveEditingExercise = () => {
@@ -215,9 +227,11 @@ const isImageUrl = async (url: string) => {
 const edExNameInvalid = computed<boolean>(() => {
   return editingExercise.value.name.trim() === ''
 })
+
 const edExDiffInvalid = computed<boolean>(() => {
   return editingExercise.value.difficulty === null
 })
+
 const edExPhotoUrlListInvalid = computedAsync(async () => {
   const invalidList = await Promise.all(
     editingExercise.value.photoUrlList.map(async (url) => {
@@ -231,6 +245,7 @@ const edExPhotoUrlListInvalid = computedAsync(async () => {
 
   return invalidList
 }, new Array(editingExercise.value.photoUrlList.length).fill(false))
+
 const edExVideoUrlInvalid = computed<boolean>(() => {
   if (editingExercise.value.videoUrl!.trim() === '') {
     return false
