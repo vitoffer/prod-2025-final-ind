@@ -64,12 +64,15 @@ const mediasList = computed<MediaObj[]>(() => {
       </p>
     </div>
     <div class="mt-3">
-      <div class="tags-container max-w-[100%]">
+      <div class="tags-container">
         <ul class="tags-list mb-4 flex flex-nowrap gap-1 overflow-hidden">
+          <li class="tag tag-difficulty rounded-md border-2 pr-2 pl-2">
+            {{ exercise.difficulty }}
+          </li>
           <li
             v-for="tag in exercise.tags.slice(0, 3)"
             :key="tag"
-            class="tag max-w-[100%] rounded-md border-2 pr-2 pl-2"
+            class="tag rounded-md border-2 pr-2 pl-2"
           >
             {{ tag }}
           </li>
