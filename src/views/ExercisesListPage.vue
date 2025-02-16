@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import ExerciseCard from '@/components/ExerciseCard.vue'
+import { formatExercise } from '@/modules/exercises-list/form-validators'
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseDifficulty } from '@/types'
+import { computedAsync } from '@vueuse/core'
 import { FloatLabel, type AutoCompleteCompleteEvent } from 'primevue'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed, ref } from 'vue'
@@ -61,16 +63,27 @@ const addExercisePhotoUrl = () => {
   editingExercise.value.photoUrlList.push('')
 }
 
+const removeExercisePhotoUrl = () => {
+  editingExercise.value.photoUrlList = editingExercise.value.photoUrlList.slice(
+    0,
+    editingExercise.value.photoUrlList.length - 1,
+  )
+}
+
 const saveEditingExercise = () => {
-  const formattedExercise: Exercise = {
-    ...editingExercise.value,
-    videoUrl: editingExercise.value.videoUrl === '' ? null : editingExercise.value.videoUrl,
-    description:
-      editingExercise.value.description === '' ? null : editingExercise.value.description,
+  if (
+    edExNameInvalid.value ||
+    edExDiffInvalid.value ||
+    edExPhotoUrlListInvalid.value.includes(true) ||
+    edExVideoUrlInvalid.value
+  ) {
+    return
   }
 
+  const formattedExercise = formatExercise(editingExercise.value)
+
   const existingExercise = exercisesStore.list.find(
-    (exercise) => exercise.id === editingExercise.value.id,
+    (exercise) => exercise.id === formattedExercise.id,
   )
 
   if (existingExercise) {
@@ -86,10 +99,6 @@ const searchSportsItemsSelect = (event: AutoCompleteCompleteEvent) => {
   sportsItemsSelectSuggestions.value = sportsItemsOptions.value
     .filter((option) => option.name.toLowerCase().includes(event.query.toLowerCase()))
     .map((option) => option.name)
-
-  console.log(event.query)
-  console.log(sportsItemsOptions.value)
-  console.log(sportsItemsSelectSuggestions.value)
 }
 
 const searchTagsSelect = (event: AutoCompleteCompleteEvent) => {
@@ -186,6 +195,51 @@ const filtersObj = ref<FiltersObject>({
   sportsItems: [],
   tags: [],
 })
+
+const isImageUrl = async (url: string) => {
+  if (!/https:\/\/.+/.test(url)) {
+    return false
+  }
+  if (/https:\/\/.+\.[(jpg)(jpeg)(png)(webp)(gif)(svg)]/.test(url)) {
+    return true
+  }
+  try {
+    const response = await fetch(url, { method: 'HEAD' })
+    return response.ok && response.headers.get('Content-Type')?.startsWith('image/')
+  } catch (error) {
+    console.error('Ошибка при проверке URL:', error)
+    return false
+  }
+}
+
+const edExNameInvalid = computed<boolean>(() => {
+  return editingExercise.value.name.trim() === ''
+})
+const edExDiffInvalid = computed<boolean>(() => {
+  return editingExercise.value.difficulty === null
+})
+const edExPhotoUrlListInvalid = computedAsync(async () => {
+  const invalidList = await Promise.all(
+    editingExercise.value.photoUrlList.map(async (url) => {
+      console.log(url)
+      if (url.trim() === '') {
+        return true
+      }
+      return !(await isImageUrl(url))
+    }),
+  )
+
+  return invalidList
+}, new Array(editingExercise.value.photoUrlList.length).fill(false))
+const edExVideoUrlInvalid = computed<boolean>(() => {
+  if (editingExercise.value.videoUrl!.trim() === '') {
+    return false
+  }
+  if (!/https:\/\/www.youtube.com\/embed\/.+/.test(editingExercise.value.videoUrl!)) {
+    return true
+  }
+  return false
+})
 </script>
 
 <template>
@@ -252,7 +306,7 @@ const filtersObj = ref<FiltersObject>({
     <Dialog v-model:visible="editExerciseDialogVisible" modal header="Редактирование упражнения">
       <div class="flex flex-col">
         <FloatLabel variant="in" class="mb-2">
-          <InputText id="edExName" v-model="editingExercise.name" />
+          <InputText id="edExName" v-model="editingExercise.name" :invalid="edExNameInvalid" />
           <label for="edExName">Название</label>
         </FloatLabel>
         <span class="mb-1">Сложность</span>
@@ -260,6 +314,7 @@ const filtersObj = ref<FiltersObject>({
           v-model="editingExercise.difficulty"
           :options="difficultyOptions"
           class="mb-2"
+          :invalid="edExDiffInvalid"
         />
         <FloatLabel variant="in" class="mb-2">
           <Textarea v-model="editingExercise.description" id="edExDesc" rows="5" cols="30" />
@@ -287,11 +342,26 @@ const filtersObj = ref<FiltersObject>({
           v-model="editingExercise.photoUrlList[index]"
           type="text"
           placeholder="Ссылка на фото"
+          :invalid="edExPhotoUrlListInvalid[index]"
         />
-        <Button @click="addExercisePhotoUrl"><i class="pi pi-plus"></i></Button>
-        <InputText v-model="editingExercise.videoUrl" type="text" placeholder="Ссылка на видео" />
-        <Button @click="saveEditingExercise" severity="success">Сохранить</Button>
-        <Button @click="editExerciseDialogVisible = false" severity="danger">Отменить</Button>
+        <div class="flex justify-center">
+          <Button @click="addExercisePhotoUrl" severity="success">
+            <i class="pi pi-plus"></i>
+          </Button>
+          <Button @click="removeExercisePhotoUrl" severity="danger">
+            <i class="pi pi-minus"></i>
+          </Button>
+        </div>
+        <InputText
+          v-model="editingExercise.videoUrl"
+          type="text"
+          placeholder="Ссылка на видео"
+          :invalid="edExVideoUrlInvalid"
+        />
+        <div class="flex w-full justify-evenly">
+          <Button @click="saveEditingExercise" severity="success">Сохранить</Button>
+          <Button @click="editExerciseDialogVisible = false" severity="danger">Отменить</Button>
+        </div>
       </div>
     </Dialog>
     <ExerciseCard
