@@ -2,7 +2,7 @@
 import ExerciseCard from '@/components/ExerciseCard.vue'
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseDifficulty } from '@/types'
-import { FloatLabel } from 'primevue'
+import { FloatLabel, type AutoCompleteCompleteEvent } from 'primevue'
 import { useConfirm } from 'primevue/useconfirm'
 import { ref } from 'vue'
 
@@ -82,7 +82,48 @@ const saveEditingExercise = () => {
   editExerciseDialogVisible.value = false
 }
 
+const searchSportsItemsSelect = (event: AutoCompleteCompleteEvent) => {
+  sportsItemsSelectSuggestions.value = sportsItemsOptions.value
+    .filter((option) => option.name.toLowerCase().includes(event.query.toLowerCase()))
+    .map((option) => option.name)
+
+  console.log(event.query)
+  console.log(sportsItemsOptions.value)
+  console.log(sportsItemsSelectSuggestions.value)
+}
+
+const searchTagsSelect = (event: AutoCompleteCompleteEvent) => {
+  tagsSelectSuggestions.value = tagsOptions.value
+    .filter((option) => option.name.toLowerCase().includes(event.query.toLowerCase()))
+    .map((option) => option.name)
+}
+
+const filterExerciseList = () => {
+  filteredExercisesList.value = exercisesStore.list.filter((exercise) => {
+    const matchesName =
+      filtersObj.value.name === '' ||
+      exercise.name.toLowerCase().includes(filtersObj.value.name.toLowerCase())
+    const matchesDescription =
+      filtersObj.value.description === '' ||
+      exercise.description?.toLowerCase().includes(filtersObj.value.description.toLowerCase())
+    const matchesDifficulty =
+      filtersObj.value.difficulty === null || exercise.difficulty === filtersObj.value.difficulty
+    const matchesSportsItems =
+      filtersObj.value.sportsItems.length === 0 ||
+      filtersObj.value.sportsItems.some((item) => exercise.sportsItems.includes(item))
+    const matchesTags =
+      filtersObj.value.tags.length === 0 ||
+      filtersObj.value.tags.some((tag) => exercise.tags.includes(tag))
+
+    return (
+      matchesName && matchesDescription && matchesDifficulty && matchesSportsItems && matchesTags
+    )
+  })
+}
+
 const exercisesStore = useExercisesStore()
+
+const filteredExercisesList = ref<Exercise[]>(exercisesStore.list)
 
 const nullExercise: Omit<Exercise, 'id'> = {
   name: '',
@@ -120,11 +161,82 @@ const tagsOptions = ref<{ name: string }[]>([
   { name: '8' },
   { name: '0' },
 ])
+
+const filtersObj = ref<{
+  name: string
+  description: string
+  difficulty: string
+  sportsItems: string[]
+  tags: string[]
+}>({
+  name: '',
+  description: '',
+  difficulty: '',
+  sportsItems: [],
+  tags: [],
+})
+
+const sportsItemsSelectSuggestions = ref<string[]>([])
+const tagsSelectSuggestions = ref<string[]>([])
 </script>
 
 <template>
   <header class="header flex justify-around">
-    <div class="filters"></div>
+    <div>
+      <p>Фильтры</p>
+      <ul class="filters flex">
+        <li>
+          <FloatLabel variant="in" class="mb-2">
+            <InputText id="filterName" v-model="filtersObj.name" @input="filterExerciseList" />
+            <label for="filterName">Название</label>
+          </FloatLabel>
+        </li>
+        <li>
+          <FloatLabel variant="in" class="mb-2">
+            <InputText
+              id="filterName"
+              v-model="filtersObj.description"
+              @input="filterExerciseList"
+            />
+            <label for="filterName">Описание</label>
+          </FloatLabel>
+        </li>
+        <li>
+          <p>Сложность</p>
+          <SelectButton
+            v-model="filtersObj.difficulty"
+            :options="difficultyOptions"
+            @change="filterExerciseList"
+          ></SelectButton>
+        </li>
+        <li>
+          <FloatLabel variant="in" class="mb-2">
+            <AutoComplete
+              v-model="filtersObj.sportsItems"
+              multiple
+              :suggestions="sportsItemsSelectSuggestions"
+              @complete="searchSportsItemsSelect"
+              id="filterSportsItems"
+              @change="filterExerciseList"
+            ></AutoComplete>
+            <label for="filterSportsItems">Инвентарь</label>
+          </FloatLabel>
+        </li>
+        <li>
+          <FloatLabel variant="in" class="mb-2">
+            <AutoComplete
+              v-model="filtersObj.tags"
+              multiple
+              :suggestions="tagsSelectSuggestions"
+              @complete="searchTagsSelect"
+              id="filterTags"
+              @change="filterExerciseList"
+            ></AutoComplete>
+            <label for="filterTags">Теги</label>
+          </FloatLabel>
+        </li>
+      </ul>
+    </div>
     <Button @click="createExercise"><i class="pi pi-plus"></i></Button>
   </header>
   <div class="exercises-list-container flex justify-evenly">
@@ -175,7 +287,7 @@ const tagsOptions = ref<{ name: string }[]>([
       </div>
     </Dialog>
     <ExerciseCard
-      v-for="exercise in exercisesStore.list"
+      v-for="exercise in filteredExercisesList"
       :key="exercise.id"
       :exercise="exercise"
       @remove-exercise="confirmRemove"
