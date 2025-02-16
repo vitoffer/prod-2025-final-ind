@@ -112,6 +112,13 @@ const tagsOptions = ref<{ name: string }[]>([
   { name: 'на спину' },
   { name: '12222' },
   { name: '22222' },
+  { name: '22223' },
+  { name: '42222' },
+  { name: '522222222' },
+  { name: '6' },
+  { name: '7' },
+  { name: '8' },
+  { name: '0' },
 ])
 </script>
 
