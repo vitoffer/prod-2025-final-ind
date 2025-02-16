@@ -131,7 +131,7 @@ export default <Exercise[]>[
   {
     id: 12,
     name: 'Становая тяга сумо',
-    videoUrl: '',
+    videoUrl: null,
     photoUrlList: [],
     description: 'Широкая стойка, подъем штанги с пола.',
     difficulty: 'среднее',
@@ -144,7 +144,7 @@ export default <Exercise[]>[
     videoUrl:
       'https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-overhead-press-side.mp4',
     photoUrlList: [],
-    description: '',
+    description: null,
     difficulty: 'среднее',
     sportsItems: ['штанга'],
     tags: ['плечи', 'трицепс'],
@@ -152,7 +152,7 @@ export default <Exercise[]>[
   {
     id: 14,
     name: 'Разведение гантелей в стороны',
-    videoUrl: '',
+    videoUrl: null,
     photoUrlList: [],
     description: 'Поднять гантели в стороны до уровня плеч.',
     difficulty: 'простое',
@@ -162,7 +162,7 @@ export default <Exercise[]>[
   {
     id: 15,
     name: 'Разгибание рук с гантелями за головой',
-    videoUrl: '',
+    videoUrl: null,
     photoUrlList: [],
     description: 'Опустить гантель за голову, затем разогнуть руки.',
     difficulty: 'среднее',
@@ -172,9 +172,9 @@ export default <Exercise[]>[
   {
     id: 16,
     name: 'Бег',
-    videoUrl: '',
+    videoUrl: null,
     photoUrlList: [],
-    description: '',
+    description: null,
     difficulty: 'простое',
     sportsItems: [],
     tags: ['ноги'],
