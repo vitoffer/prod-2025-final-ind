@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import ExerciseCard from '@/components/ExerciseCard.vue'
 import { useEditingExercise } from '@/composables/editingExercise'
+import { useEditingExerciseOptions } from '@/composables/editingExerciseOptions'
+import { useExerciseOptions } from '@/composables/exerciseOptions'
 import { useFilterExercisesList } from '@/composables/filterExercisesList'
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { ExerciseUnit } from '@/types'
@@ -32,16 +34,22 @@ const {
 } = useEditingExercise()
 
 const {
-  searchSportsItemsSelect,
-  searchTagsSelect,
+  searchSportsItemsSelectFilter,
+  searchTagsSelectFilter,
   filteredExercisesList,
-  difficultyOptions,
-  sportsItemsOptions,
-  tagsOptions,
-  sportsItemsSelectSuggestions,
-  tagsSelectSuggestions,
+  sportsItemsSelectFilterSuggestions,
+  tagsSelectFilterSuggestions,
   filtersObj,
 } = useFilterExercisesList()
+
+const {
+  searchSportsItemsSelectEditing,
+  searchTagsSelectEditing,
+  sportsItemsSelectEditingSuggestions,
+  tagsSelectEditingSuggestions,
+} = useEditingExerciseOptions()
+
+const { difficultyOptions } = useExerciseOptions()
 
 const unitsOptions: ExerciseUnit[] = ['кг', 'мин', 'повт']
 
@@ -99,10 +107,10 @@ const dialogHeader = computed<string>(() => {
             <AutoComplete
               v-model="filtersObj.sportsItems"
               multiple
-              :suggestions="sportsItemsSelectSuggestions"
-              @complete="searchSportsItemsSelect"
+              :suggestions="sportsItemsSelectFilterSuggestions"
+              @complete="searchSportsItemsSelectFilter"
               id="filterSportsItems"
-            ></AutoComplete>
+            />
             <label for="filterSportsItems">Инвентарь</label>
           </FloatLabel>
         </li>
@@ -111,16 +119,15 @@ const dialogHeader = computed<string>(() => {
             <AutoComplete
               v-model="filtersObj.tags"
               multiple
-              :suggestions="tagsSelectSuggestions"
-              @complete="searchTagsSelect"
+              :suggestions="tagsSelectFilterSuggestions"
+              @complete="searchTagsSelectFilter"
               id="filterTags"
-            ></AutoComplete>
+            />
             <label for="filterTags">Теги</label>
           </FloatLabel>
         </li>
       </ul>
     </div>
-
     <Button @click="createExercise" class=""><i class="pi pi-plus"></i></Button>
   </header>
   <div class="exercises-list-container flex flex-wrap justify-evenly">
@@ -148,20 +155,21 @@ const dialogHeader = computed<string>(() => {
           <Textarea v-model="editingExercise.description" id="edExDesc" rows="5" cols="30" />
           <label for="edExDesc">Описание</label>
         </FloatLabel>
-        <MultiSelect
+
+        <AutoComplete
           v-model="editingExercise.sportsItems"
-          :options="sportsItemsOptions"
-          option-label="name"
-          option-value="name"
-          filter
+          multiple
+          :suggestions="sportsItemsSelectEditingSuggestions"
+          @complete="searchSportsItemsSelectEditing"
+          id="editingSportsItems"
           placeholder="Инвентарь"
         />
-        <MultiSelect
+        <AutoComplete
           v-model="editingExercise.tags"
-          :options="tagsOptions"
-          option-label="name"
-          option-value="name"
-          filter
+          multiple
+          :suggestions="tagsSelectEditingSuggestions"
+          @complete="searchTagsSelectEditing"
+          id="editingTags"
           placeholder="Теги"
         />
         <SelectButton

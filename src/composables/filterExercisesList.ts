@@ -1,19 +1,21 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
-import type { Exercise, ExerciseDifficulty, FiltersObject } from '@/types'
+import type { Exercise, FiltersObject } from '@/types'
 import type { AutoCompleteCompleteEvent } from 'primevue'
 import { computed, ref } from 'vue'
+import { useExerciseOptions } from './exerciseOptions'
 
 export function useFilterExercisesList() {
   const exercisesStore = useExercisesStore()
+  const { sportsItemsOptions, tagsOptions } = useExerciseOptions()
 
-  const searchSportsItemsSelect = (event: AutoCompleteCompleteEvent) => {
-    sportsItemsSelectSuggestions.value = sportsItemsOptions.value
+  const searchSportsItemsSelectFilter = (event: AutoCompleteCompleteEvent) => {
+    sportsItemsSelectFilterSuggestions.value = sportsItemsOptions.value
       .filter((option) => option.name.toLowerCase().includes(event.query.toLowerCase()))
       .map((option) => option.name)
   }
 
-  const searchTagsSelect = (event: AutoCompleteCompleteEvent) => {
-    tagsSelectSuggestions.value = tagsOptions.value
+  const searchTagsSelectFilter = (event: AutoCompleteCompleteEvent) => {
+    tagsSelectFilterSuggestions.value = tagsOptions.value
       .filter((option) => option.name.toLowerCase().includes(event.query.toLowerCase()))
       .map((option) => option.name)
   }
@@ -41,35 +43,8 @@ export function useFilterExercisesList() {
     })
   })
 
-  const difficultyOptions: ExerciseDifficulty[] = ['простое', 'среднее', 'сложное']
-  const sportsItemsOptions = computed<{ name: string }[]>(() => {
-    const list: { name: string }[] = []
-
-    for (const exercise of exercisesStore.list) {
-      for (const sportsItem of exercise.sportsItems) {
-        if (!list.find((elem) => elem.name === sportsItem)) {
-          list.push({ name: sportsItem })
-        }
-      }
-    }
-
-    return list
-  })
-  const tagsOptions = computed<{ name: string }[]>(() => {
-    const list: { name: string }[] = []
-
-    for (const exercise of exercisesStore.list) {
-      for (const tag of exercise.tags) {
-        if (!list.find((elem) => elem.name === tag)) {
-          list.push({ name: tag })
-        }
-      }
-    }
-
-    return list
-  })
-  const sportsItemsSelectSuggestions = ref<string[]>([])
-  const tagsSelectSuggestions = ref<string[]>([])
+  const sportsItemsSelectFilterSuggestions = ref<string[]>([])
+  const tagsSelectFilterSuggestions = ref<string[]>([])
 
   const filtersObj = ref<FiltersObject>({
     name: '',
@@ -80,14 +55,11 @@ export function useFilterExercisesList() {
   })
 
   return {
-    searchSportsItemsSelect,
-    searchTagsSelect,
+    searchSportsItemsSelectFilter,
+    searchTagsSelectFilter,
     filteredExercisesList,
-    difficultyOptions,
-    sportsItemsOptions,
-    tagsOptions,
-    sportsItemsSelectSuggestions,
-    tagsSelectSuggestions,
+    sportsItemsSelectFilterSuggestions,
+    tagsSelectFilterSuggestions,
     filtersObj,
   }
 }
