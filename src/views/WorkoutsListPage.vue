@@ -53,9 +53,9 @@ const filterName = ref<string>('')
 
 const filteredWorkoutsList = computed<Workout[]>(() => {
   return workoutsStore.list.filter((workout) => {
-    return (
+    const matchesName =
       filterName.value === '' || workout.name.toLowerCase().includes(filterName.value.toLowerCase())
-    )
+    return matchesName
   })
 })
 
