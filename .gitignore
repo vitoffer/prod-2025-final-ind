@@ -31,3 +31,6 @@ coverage
 
 .vscode
 public
+
+.vercel
+vercel.json
