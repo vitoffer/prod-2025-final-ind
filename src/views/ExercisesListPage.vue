@@ -2,7 +2,7 @@
 import ExerciseCard from '@/components/ExerciseCard.vue'
 import { useEditingExercise } from '@/composables/exercises-list/editingExercise'
 import { useEditingExerciseOptions } from '@/composables/exercises-list/editingExerciseOptions'
-import { useExerciseOptions } from '@/composables/exercises-list/exerciseOptions'
+import { useExerciseOptions } from '@/composables/exerciseOptions'
 import { useFilterExercisesList } from '@/composables/exercises-list/filterExercisesList'
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { ExerciseUnit } from '@/types'

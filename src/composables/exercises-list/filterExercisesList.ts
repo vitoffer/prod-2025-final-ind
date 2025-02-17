@@ -2,7 +2,7 @@ import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, FiltersObject } from '@/types'
 import type { AutoCompleteCompleteEvent } from 'primevue'
 import { computed, ref } from 'vue'
-import { useExerciseOptions } from './exerciseOptions'
+import { useExerciseOptions } from '../exerciseOptions'
 
 export function useFilterExercisesList() {
   const exercisesStore = useExercisesStore()

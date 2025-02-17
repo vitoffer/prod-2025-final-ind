@@ -1,6 +1,6 @@
 import type { AutoCompleteCompleteEvent } from 'primevue'
 import { ref } from 'vue'
-import { useExerciseOptions } from './exerciseOptions'
+import { useExerciseOptions } from '../exerciseOptions'
 
 export function useEditingExerciseOptions() {
   const { sportsItemsOptions, tagsOptions } = useExerciseOptions()
