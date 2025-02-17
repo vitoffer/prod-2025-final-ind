@@ -62,6 +62,16 @@ export function useEditingExercise() {
     videoUrlInvalid.value = false
 
     changeEntity(...args)
+
+    editingExercise.value = {
+      ...editingExercise.value,
+      video:
+        editingExercise.value.video === null
+          ? { type: 'video', url: '' }
+          : editingExercise.value.video,
+      description:
+        editingExercise.value.description === null ? '' : editingExercise.value.description,
+    }
   }
 
   const addExercisePhotoUrl = () => {
