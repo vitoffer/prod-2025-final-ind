@@ -14,6 +14,7 @@ export function useEditingExercise() {
     difficulty: 'простое',
     sportsItems: [],
     tags: [],
+    units: [],
   }
 
   const editingExercise = ref<Exercise>({
@@ -72,6 +73,7 @@ export function useEditingExercise() {
       difficulty: exercise.difficulty,
       sportsItems: exercise.sportsItems,
       tags: exercise.tags,
+      units: exercise.units,
     }
   }
 

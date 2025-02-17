@@ -7,7 +7,7 @@ export interface Exercise {
   difficulty: ExerciseDifficulty
   sportsItems: string[]
   tags: string[]
-  // unit: ExerciseUnit
+  units: ExerciseUnit[]
 }
 
 export type ExerciseDifficulty = 'простое' | 'среднее' | 'сложное'
@@ -15,7 +15,20 @@ export type ExerciseDifficulty = 'простое' | 'среднее' | 'слож
 export type ExerciseUnit = 'мин' | 'кг' | 'повт'
 
 export interface Workout {
-  exercises: { id: number; goal: number }[]
+  id: number
+  name: string
+  exercises: WorkoutExercise[]
+}
+
+export interface WorkoutExercise {
+  id: number
+  goal: WorkoutExerciseGoal
+}
+
+export interface WorkoutExerciseGoal {
+  time?: number
+  repetitions?: number
+  weight?: number
 }
 
 export interface FiltersObject {
