@@ -1,13 +1,39 @@
 <script setup lang="ts">
 import ExerciseCard from '@/components/ExerciseCard.vue'
+import { useEditingExercise } from '@/composables/editingExercise'
+import { useFilterExercisesList } from '@/composables/filterExercisesList'
 import { useExercisesStore } from '@/stores/exercisesStore'
-import type { Exercise, ExerciseDifficulty } from '@/types'
-import { computedAsync } from '@vueuse/core'
-import { FloatLabel, type AutoCompleteCompleteEvent } from 'primevue'
 import { useConfirm } from 'primevue/useconfirm'
-import { computed, ref } from 'vue'
 
 const confirm = useConfirm()
+
+const exercisesStore = useExercisesStore()
+
+const {
+  editingExercise,
+  editExerciseDialogVisible,
+  changeExercise,
+  createExercise,
+  addExercisePhotoUrl,
+  removeExercisePhotoUrl,
+  saveEditingExercise,
+  edExNameInvalid,
+  edExDiffInvalid,
+  edExPhotoUrlListInvalid,
+  edExVideoUrlInvalid,
+} = useEditingExercise()
+
+const {
+  searchSportsItemsSelect,
+  searchTagsSelect,
+  filteredExercisesList,
+  difficultyOptions,
+  sportsItemsOptions,
+  tagsOptions,
+  sportsItemsSelectSuggestions,
+  tagsSelectSuggestions,
+  filtersObj,
+} = useFilterExercisesList()
 
 const confirmRemove = (id: number) => {
   confirm.require({
@@ -28,263 +54,28 @@ const confirmRemove = (id: number) => {
     },
   })
 }
-
-const changeExercise = (id: number) => {
-  editExerciseDialogVisible.value = true
-
-  const foundExercise = JSON.parse(
-    JSON.stringify(exercisesStore.list.find((exercise) => exercise.id === id)),
-  )
-
-  if (foundExercise === undefined) {
-    editingExercise.value = {
-      ...nullExercise,
-      id: exercisesStore.list[exercisesStore.list.length - 1].id + 1,
-    }
-  } else {
-    editingExercise.value = {
-      ...foundExercise,
-      videoUrl: foundExercise.videoUrl ?? '',
-      description: foundExercise.description ?? '',
-    }
-  }
-}
-
-const createExercise = () => {
-  editExerciseDialogVisible.value = true
-  editingExercise.value = {
-    ...nullExercise,
-    id: exercisesStore.list[exercisesStore.list.length - 1].id + 1,
-  }
-}
-
-const addExercisePhotoUrl = () => {
-  editingExercise.value.photoUrlList.push('')
-}
-
-const removeExercisePhotoUrl = () => {
-  editingExercise.value.photoUrlList = editingExercise.value.photoUrlList.slice(
-    0,
-    editingExercise.value.photoUrlList.length - 1,
-  )
-}
-
-const formatExercise = (exercise: Exercise): Exercise => {
-  return {
-    id: exercise.id,
-    name: exercise.name.trim(),
-    videoUrl: exercise.videoUrl === '' ? null : exercise.videoUrl,
-    photoUrlList: exercise.photoUrlList,
-    description: exercise.description == '' ? null : exercise.description,
-    difficulty: exercise.difficulty,
-    sportsItems: exercise.sportsItems,
-    tags: exercise.tags,
-  }
-}
-
-const saveEditingExercise = () => {
-  if (
-    edExNameInvalid.value ||
-    edExDiffInvalid.value ||
-    edExPhotoUrlListInvalid.value.includes(true) ||
-    edExVideoUrlInvalid.value
-  ) {
-    return
-  }
-
-  const formattedExercise = formatExercise(editingExercise.value)
-
-  const existingExercise = exercisesStore.list.find(
-    (exercise) => exercise.id === formattedExercise.id,
-  )
-
-  if (existingExercise) {
-    exercisesStore.updateExercise(existingExercise.id, formattedExercise)
-  } else {
-    exercisesStore.createExercise(formattedExercise)
-  }
-
-  editExerciseDialogVisible.value = false
-}
-
-const searchSportsItemsSelect = (event: AutoCompleteCompleteEvent) => {
-  sportsItemsSelectSuggestions.value = sportsItemsOptions.value
-    .filter((option) => option.name.toLowerCase().includes(event.query.toLowerCase()))
-    .map((option) => option.name)
-}
-
-const searchTagsSelect = (event: AutoCompleteCompleteEvent) => {
-  tagsSelectSuggestions.value = tagsOptions.value
-    .filter((option) => option.name.toLowerCase().includes(event.query.toLowerCase()))
-    .map((option) => option.name)
-}
-
-const filterExerciseList = () => {
-  filteredExercisesList.value = exercisesStore.list.filter((exercise) => {
-    const matchesName =
-      filtersObj.value.name === '' ||
-      exercise.name.toLowerCase().includes(filtersObj.value.name.toLowerCase())
-    const matchesDescription =
-      filtersObj.value.description === '' ||
-      exercise.description?.toLowerCase().includes(filtersObj.value.description.toLowerCase())
-    const matchesDifficulty =
-      filtersObj.value.difficulty === null || exercise.difficulty === filtersObj.value.difficulty
-    const matchesSportsItems =
-      filtersObj.value.sportsItems.length === 0 ||
-      filtersObj.value.sportsItems.some((item) => exercise.sportsItems.includes(item))
-    const matchesTags =
-      filtersObj.value.tags.length === 0 ||
-      filtersObj.value.tags.some((tag) => exercise.tags.includes(tag))
-
-    return (
-      matchesName && matchesDescription && matchesDifficulty && matchesSportsItems && matchesTags
-    )
-  })
-}
-
-const exercisesStore = useExercisesStore()
-
-const nullExercise: Omit<Exercise, 'id'> = {
-  name: '',
-  videoUrl: '',
-  photoUrlList: [''],
-  description: '',
-  difficulty: 'простое',
-  sportsItems: [],
-  tags: [],
-}
-
-const editExerciseDialogVisible = ref<boolean>(false)
-const editingExercise = ref<Exercise>({
-  ...nullExercise,
-  id: exercisesStore.list[exercisesStore.list.length - 1].id + 1,
-})
-
-const filteredExercisesList = ref<Exercise[]>(exercisesStore.list)
-
-const difficultyOptions = ref<ExerciseDifficulty[]>(['простое', 'среднее', 'сложное'])
-const sportsItemsOptions = computed<{ name: string }[]>(() => {
-  const list: { name: string }[] = []
-
-  for (const exercise of exercisesStore.list) {
-    for (const sportsItem of exercise.sportsItems) {
-      if (!list.find((elem) => elem.name === sportsItem)) {
-        list.push({ name: sportsItem })
-      }
-    }
-  }
-
-  return list
-})
-const tagsOptions = computed<{ name: string }[]>(() => {
-  const list: { name: string }[] = []
-
-  for (const exercise of exercisesStore.list) {
-    for (const tag of exercise.tags) {
-      if (!list.find((elem) => elem.name === tag)) {
-        list.push({ name: tag })
-      }
-    }
-  }
-
-  return list
-})
-const sportsItemsSelectSuggestions = ref<string[]>([])
-const tagsSelectSuggestions = ref<string[]>([])
-
-interface FiltersObject {
-  name: string
-  description: string
-  difficulty: string
-  sportsItems: string[]
-  tags: string[]
-}
-
-const filtersObj = ref<FiltersObject>({
-  name: '',
-  description: '',
-  difficulty: '',
-  sportsItems: [],
-  tags: [],
-})
-
-const isImageUrl = async (url: string) => {
-  if (!/https:\/\/.+/.test(url)) {
-    return false
-  }
-  if (/https:\/\/.+\.[(jpg)(jpeg)(png)(webp)(gif)(svg)]/.test(url)) {
-    return true
-  }
-  try {
-    const response = await fetch(url, { method: 'HEAD' })
-    return response.ok && response.headers.get('Content-Type')?.startsWith('image/')
-  } catch (error) {
-    console.error('Ошибка при проверке URL:', error)
-    return false
-  }
-}
-
-const edExNameInvalid = computed<boolean>(() => {
-  return editingExercise.value.name.trim() === ''
-})
-
-const edExDiffInvalid = computed<boolean>(() => {
-  return editingExercise.value.difficulty === null
-})
-
-const edExPhotoUrlListInvalid = computedAsync(async () => {
-  const invalidList = await Promise.all(
-    editingExercise.value.photoUrlList.map(async (url) => {
-      console.log(url)
-      if (url.trim() === '') {
-        return true
-      }
-      return !(await isImageUrl(url))
-    }),
-  )
-
-  return invalidList
-}, new Array(editingExercise.value.photoUrlList.length).fill(false))
-
-const edExVideoUrlInvalid = computed<boolean>(() => {
-  if (editingExercise.value.videoUrl!.trim() === '') {
-    return false
-  }
-  if (!/https:\/\/www.youtube.com\/embed\/.+/.test(editingExercise.value.videoUrl!)) {
-    return true
-  }
-  return false
-})
 </script>
 
 <template>
-  <header class="header flex justify-around">
+  <header class="header flex flex-col justify-around lg:flex-row lg:items-center">
     <div>
-      <p>Фильтры</p>
-      <ul class="filters flex">
+      <p class="text-center">Фильтры</p>
+      <ul class="filters flex flex-col lg:flex-row">
         <li>
           <FloatLabel variant="in" class="mb-2">
-            <InputText id="filterName" v-model="filtersObj.name" @input="filterExerciseList" />
+            <InputText id="filterName" v-model="filtersObj.name" />
             <label for="filterName">Название</label>
           </FloatLabel>
         </li>
         <li>
           <FloatLabel variant="in" class="mb-2">
-            <InputText
-              id="filterName"
-              v-model="filtersObj.description"
-              @input="filterExerciseList"
-            />
+            <InputText id="filterName" v-model="filtersObj.description" />
             <label for="filterName">Описание</label>
           </FloatLabel>
         </li>
         <li>
           <p>Сложность</p>
-          <SelectButton
-            v-model="filtersObj.difficulty"
-            :options="difficultyOptions"
-            @change="filterExerciseList"
-          ></SelectButton>
+          <SelectButton v-model="filtersObj.difficulty" :options="difficultyOptions"></SelectButton>
         </li>
         <li>
           <FloatLabel variant="in" class="mb-2">
@@ -294,7 +85,6 @@ const edExVideoUrlInvalid = computed<boolean>(() => {
               :suggestions="sportsItemsSelectSuggestions"
               @complete="searchSportsItemsSelect"
               id="filterSportsItems"
-              @change="filterExerciseList"
             ></AutoComplete>
             <label for="filterSportsItems">Инвентарь</label>
           </FloatLabel>
@@ -307,16 +97,15 @@ const edExVideoUrlInvalid = computed<boolean>(() => {
               :suggestions="tagsSelectSuggestions"
               @complete="searchTagsSelect"
               id="filterTags"
-              @change="filterExerciseList"
             ></AutoComplete>
             <label for="filterTags">Теги</label>
           </FloatLabel>
         </li>
       </ul>
     </div>
-    <Button @click="createExercise"><i class="pi pi-plus"></i></Button>
+    <Button @click="createExercise" class=""><i class="pi pi-plus"></i></Button>
   </header>
-  <div class="exercises-list-container flex justify-evenly">
+  <div class="exercises-list-container flex flex-wrap justify-evenly">
     <ConfirmDialog></ConfirmDialog>
     <Dialog v-model:visible="editExerciseDialogVisible" modal header="Редактирование упражнения">
       <div class="flex flex-col">
