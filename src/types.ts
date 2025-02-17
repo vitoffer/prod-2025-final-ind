@@ -36,6 +36,8 @@ export interface WorkoutExerciseGoal {
   weight?: number
 }
 
+export type EditingEntity = Exercise | Workout
+
 export interface FiltersObject {
   name: string
   description: string

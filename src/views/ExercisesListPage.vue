@@ -16,20 +16,21 @@ const exercisesStore = useExercisesStore()
 const {
   editingExercise,
   editExerciseDialogVisible,
+  findExercise,
   changeExercise,
   createExercise,
   addExercisePhotoUrl,
   removeExercisePhotoUrl,
   saveEditingExercise,
-  edExNameInvalid,
+  nameInvalid,
   validateName,
-  edExDiffInvalid,
+  diffInvalid,
   validateDiff,
-  edExUnitsInvalid,
+  unitsInvalid,
   validateUnits,
-  edExPhotoUrlListInvalid,
+  photoUrlListInvalid,
   validatePhotoUrlList,
-  edExVideoUrlInvalid,
+  videoUrlInvalid,
   validateVideoUrl,
 } = useEditingExercise()
 
@@ -98,7 +99,6 @@ const dialogHeader = computed<string>(() => {
             <label for="filterDesc">Описание</label>
           </FloatLabel>
         </li>
-
         <li>
           <p>Сложность</p>
           <SelectButton v-model="filtersObj.difficulty" :options="difficultyOptions"></SelectButton>
@@ -137,10 +137,10 @@ const dialogHeader = computed<string>(() => {
       <div class="flex flex-col">
         <FloatLabel variant="in" class="mb-2">
           <InputText
-            id="edExName"
             v-model="editingExercise.name"
-            :invalid="edExNameInvalid"
-            @input="() => (edExNameInvalid = validateName(editingExercise))"
+            :invalid="nameInvalid"
+            @input="() => (nameInvalid = validateName(editingExercise))"
+            id="edExName"
           />
           <label for="edExName">Название</label>
         </FloatLabel>
@@ -149,8 +149,8 @@ const dialogHeader = computed<string>(() => {
           v-model="editingExercise.difficulty"
           :options="difficultyOptions"
           class="mb-2"
-          :invalid="edExDiffInvalid"
-          @change="() => (edExDiffInvalid = validateDiff(editingExercise))"
+          :invalid="diffInvalid"
+          @change="() => (diffInvalid = validateDiff(editingExercise))"
         />
         <FloatLabel variant="in" class="mb-2">
           <Textarea v-model="editingExercise.description" id="edExDesc" rows="5" cols="30" />
@@ -177,9 +177,9 @@ const dialogHeader = computed<string>(() => {
           v-model="editingExercise.units"
           :options="unitsOptions"
           class="mb-2"
-          :invalid="edExUnitsInvalid"
+          :invalid="unitsInvalid"
           multiple
-          @change="() => (edExUnitsInvalid = validateUnits(editingExercise))"
+          @change="() => (unitsInvalid = validateUnits(editingExercise))"
         />
         <InputText
           v-for="(input, index) in editingExercise.photoUrlList"
@@ -187,30 +187,28 @@ const dialogHeader = computed<string>(() => {
           v-model="editingExercise.photoUrlList[index]"
           type="text"
           placeholder="Ссылка на фото"
-          :invalid="edExPhotoUrlListInvalid[index]"
-          @input="
-            async () => (edExPhotoUrlListInvalid = await validatePhotoUrlList(editingExercise))
-          "
+          :invalid="photoUrlListInvalid[index]"
+          @input="async () => (photoUrlListInvalid = await validatePhotoUrlList(editingExercise))"
         />
         <div class="flex justify-center">
-          <Button @click="addExercisePhotoUrl" severity="success">
-            <i class="pi pi-plus"></i>
-          </Button>
           <Button @click="removeExercisePhotoUrl" severity="danger">
             <i class="pi pi-minus"></i>
+          </Button>
+          <Button @click="addExercisePhotoUrl" severity="success">
+            <i class="pi pi-plus"></i>
           </Button>
         </div>
         <InputText
           v-model="editingExercise.video!.url"
           type="text"
           placeholder="Ссылка на видео-файл или на видео youtube или rutube"
-          :invalid="edExVideoUrlInvalid"
-          @input="async () => (edExVideoUrlInvalid = await validateVideoUrl(editingExercise))"
+          :invalid="videoUrlInvalid"
+          @input="async () => (videoUrlInvalid = await validateVideoUrl(editingExercise))"
           class="w-[500px]"
         />
         <div class="flex w-full justify-evenly">
-          <Button @click="saveEditingExercise" severity="success">Сохранить</Button>
           <Button @click="editExerciseDialogVisible = false" severity="danger">Отменить</Button>
+          <Button @click="saveEditingExercise" severity="success">Сохранить</Button>
         </div>
       </div>
     </Dialog>
@@ -219,7 +217,7 @@ const dialogHeader = computed<string>(() => {
       :key="exercise.id"
       :exercise="exercise"
       @remove-exercise="confirmRemove"
-      @change-exercise="changeExercise"
+      @change-exercise="(id) => changeExercise(id, findExercise)"
     />
   </main>
 </template>

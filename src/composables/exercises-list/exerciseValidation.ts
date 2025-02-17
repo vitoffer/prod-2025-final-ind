@@ -1,18 +1,12 @@
-// src/composables/validation.ts
 import { ref } from 'vue'
 import { isCorrectImageUrl, correctVideoUrl } from '@/utils'
 import type { Exercise } from '@/types'
 
-export function useValidation() {
-  const edExNameInvalid = ref<boolean>(false)
-  const edExDiffInvalid = ref<boolean>(false)
-  const edExUnitsInvalid = ref<boolean>(false)
-  const edExPhotoUrlListInvalid = ref<boolean[]>([])
-  const edExVideoUrlInvalid = ref<boolean>(false)
-
-  function validateName(editingExercise: Exercise) {
-    return editingExercise.name.trim() === ''
-  }
+export function useExerciseValidation() {
+  const diffInvalid = ref<boolean>(false)
+  const unitsInvalid = ref<boolean>(false)
+  const photoUrlListInvalid = ref<boolean[]>([])
+  const videoUrlInvalid = ref<boolean>(false)
 
   function validateDiff(editingExercise: Exercise) {
     return editingExercise.difficulty === null
@@ -52,12 +46,10 @@ export function useValidation() {
   }
 
   return {
-    edExNameInvalid,
-    edExDiffInvalid,
-    edExUnitsInvalid,
-    edExPhotoUrlListInvalid,
-    edExVideoUrlInvalid,
-    validateName,
+    diffInvalid,
+    unitsInvalid,
+    photoUrlListInvalid,
+    videoUrlInvalid,
     validateDiff,
     validateUnits,
     validatePhotoUrlList,

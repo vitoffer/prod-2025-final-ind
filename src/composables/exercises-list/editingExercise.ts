@@ -1,23 +1,23 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseVideo } from '@/types'
 import { correctVideoUrl } from '@/utils'
-import { useValidation } from './validation'
 import { useEditingEntity } from '../editingEntity'
+import { useExerciseValidation } from './ExerciseValidation'
+import { useValidation } from '../validation'
 
 export function useEditingExercise() {
   const exercisesStore = useExercisesStore()
+  const { nameInvalid, validateName } = useValidation()
   const {
-    edExNameInvalid,
-    edExDiffInvalid,
-    edExUnitsInvalid,
-    edExPhotoUrlListInvalid,
-    edExVideoUrlInvalid,
-    validateName,
+    diffInvalid,
+    unitsInvalid,
+    photoUrlListInvalid,
+    videoUrlInvalid,
     validateDiff,
     validateUnits,
     validatePhotoUrlList,
     validateVideoUrl,
-  } = useValidation()
+  } = useExerciseValidation()
 
   const nullExercise: Omit<Exercise, 'id'> = {
     name: '',
@@ -32,18 +32,41 @@ export function useEditingExercise() {
     tags: [],
     units: [],
   }
+
   const getNextId = () => exercisesStore.list[exercisesStore.list.length - 1].id + 1
+  const findExercise = (id: number) =>
+    JSON.parse(JSON.stringify(exercisesStore.list.find((exercise) => exercise.id === id)))
 
   const {
-    changeEntity: changeExercise,
-    createEntity: createExercise,
+    changeEntity,
+    createEntity,
     editDialogVisible: editExerciseDialogVisible,
     editingEntity: editingExercise,
   } = useEditingEntity<Exercise>(nullExercise, getNextId)
 
+  function createExercise(...args: Parameters<typeof createEntity>) {
+    nameInvalid.value = false
+    diffInvalid.value = false
+    unitsInvalid.value = false
+    photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
+    videoUrlInvalid.value = false
+
+    createEntity(...args)
+  }
+
+  function changeExercise(...args: Parameters<typeof changeEntity>) {
+    nameInvalid.value = false
+    diffInvalid.value = false
+    unitsInvalid.value = false
+    photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
+    videoUrlInvalid.value = false
+
+    changeEntity(...args)
+  }
+
   const addExercisePhotoUrl = () => {
     editingExercise.value.photoUrlList.push('')
-    edExPhotoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
+    photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
   }
 
   const removeExercisePhotoUrl = () => {
@@ -69,18 +92,18 @@ export function useEditingExercise() {
   }
 
   const saveEditingExercise = async () => {
-    edExNameInvalid.value = validateName(editingExercise.value)
-    edExDiffInvalid.value = validateDiff(editingExercise.value)
-    edExUnitsInvalid.value = validateUnits(editingExercise.value)
-    edExPhotoUrlListInvalid.value = await validatePhotoUrlList(editingExercise.value)
-    edExVideoUrlInvalid.value = await validateVideoUrl(editingExercise.value)
+    nameInvalid.value = validateName(editingExercise.value)
+    diffInvalid.value = validateDiff(editingExercise.value)
+    unitsInvalid.value = validateUnits(editingExercise.value)
+    photoUrlListInvalid.value = await validatePhotoUrlList(editingExercise.value)
+    videoUrlInvalid.value = await validateVideoUrl(editingExercise.value)
 
     if (
-      edExNameInvalid.value ||
-      edExDiffInvalid.value ||
-      edExUnitsInvalid.value ||
-      edExPhotoUrlListInvalid.value.includes(true) ||
-      edExVideoUrlInvalid.value
+      nameInvalid.value ||
+      diffInvalid.value ||
+      unitsInvalid.value ||
+      photoUrlListInvalid.value.includes(true) ||
+      videoUrlInvalid.value
     ) {
       return
     }
@@ -103,20 +126,21 @@ export function useEditingExercise() {
   return {
     editingExercise,
     editExerciseDialogVisible,
+    findExercise,
     changeExercise,
     createExercise,
     addExercisePhotoUrl,
     removeExercisePhotoUrl,
     saveEditingExercise,
-    edExNameInvalid,
+    nameInvalid,
     validateName,
-    edExDiffInvalid,
+    diffInvalid,
     validateDiff,
-    edExUnitsInvalid,
+    unitsInvalid,
     validateUnits,
-    edExPhotoUrlListInvalid,
+    photoUrlListInvalid,
     validatePhotoUrlList,
-    edExVideoUrlInvalid,
+    videoUrlInvalid,
     validateVideoUrl,
   }
 }

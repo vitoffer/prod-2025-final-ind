@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useEditingWorkout } from '@/composables/workouts-list/ediingWorkout'
+import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { Workout } from '@/types'
@@ -17,6 +17,17 @@ function runWorkout(workout: Workout) {
   runWorkoutStore.changeRunWorkout(workout)
   router.push({ name: 'RunWorkoutPage' })
 }
+
+const {
+  editingWorkout,
+  editWorkoutDialogVisible,
+  createWorkout,
+  changeWorkout,
+  findWorkout,
+  nameInvalid,
+  validateName,
+  saveEditingWorkout,
+} = useEditingWorkout()
 
 const confirmRemove = (id: number) => {
   confirm.require({
@@ -48,8 +59,6 @@ const filteredWorkoutsList = computed<Workout[]>(() => {
   })
 })
 
-const { editingWorkout, createWorkout, editWorkoutDialogVisible } = useEditingWorkout()
-
 const dialogHeader = ref<string>('Редактирование тренировки')
 </script>
 
@@ -68,11 +77,16 @@ const dialogHeader = ref<string>('Редактирование трениров�
       <FloatLabel>
         <InputText
           v-model="editingWorkout.name"
-          :invalid="editingWorkout.name === ''"
+          :invalid="nameInvalid"
+          @input="() => (nameInvalid = validateName(editingWorkout))"
           id="edWoName"
         />
         <label for="edWoName">Название</label>
       </FloatLabel>
+      <div class="flex w-full justify-evenly">
+        <Button @click="editWorkoutDialogVisible = false" severity="danger">Отменить</Button>
+        <Button @click="saveEditingWorkout" severity="success">Сохранить</Button>
+      </div>
     </Dialog>
     <ul class="workouts-list mt-6 mr-auto ml-auto flex w-fit flex-col gap-4">
       <li v-for="workout in filteredWorkoutsList" :key="workout.id">
@@ -80,7 +94,9 @@ const dialogHeader = ref<string>('Редактирование трениров�
         <Button aria-label="Run Workout" @click="() => runWorkout(workout)"
           ><i class="pi pi-play"></i
         ></Button>
-        <Button severity="warn"><i class="pi pi-pencil"></i></Button>
+        <Button severity="warn" @click="() => changeWorkout(workout.id, findWorkout)"
+          ><i class="pi pi-pencil"></i
+        ></Button>
         <Button severity="danger" @click="() => confirmRemove(workout.id)"
           ><i class="pi pi-times-circle"></i
         ></Button>
