@@ -1,19 +1,24 @@
 export async function correctVideoUrl(url: string) {
-  if (/https?:\/\/.+\.[(mp4)(webm)(ogg)(avi)(mkv)]/.test(url)) {
+  if (/https?:\/\/.+\.(mp4|webm|ogg|avi|mkv)/.test(url)) {
     return { type: 'video', url: url, error: false }
   }
 
-  if (/https:\/\/(m\.)?youtube\.com\/watch\?.*v=.+/.test(url)) {
+  if (/https:\/\/(m\.|www\.)?youtube\.com\/watch\?v=.+/.test(url)) {
+    const id = new URL(url).searchParams.get('v')
+
     return {
       type: 'iframe',
-      url: `https://www.youtube.com/embed/${url.slice(url.indexOf('v=') + 3, url.length - 1)}`,
+      url: `https://www.youtube.com/embed/${id}`,
       error: false,
     }
   }
+
   if (/https:\/\/youtu\.be\/.+/.test(url)) {
+    const path = new URL(url).pathname
+
     return {
       type: 'iframe',
-      url: `https://www.youtube.com/embed/${url.slice(17, url.length - 1)}`,
+      url: `https://www.youtube.com/embed/${path.slice(1, path.length)}`,
       error: false,
     }
   }
@@ -21,9 +26,11 @@ export async function correctVideoUrl(url: string) {
     return { type: 'iframe', url: url, error: false }
   }
   if (/https:\/\/rutube.ru\/video\/.+/.test(url)) {
+    const path = new URL(url).pathname
+
     return {
       type: 'iframe',
-      url: `https://rutube.ru/play/embed/${url.slice(24, url.slice(24, url.length - 1).indexOf('/'))}`,
+      url: `https://rutube.ru/play/embed/${path.slice(7, path.length)}`,
       error: false,
     }
   }

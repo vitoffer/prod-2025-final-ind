@@ -202,9 +202,10 @@ const dialogHeader = computed<string>(() => {
         <InputText
           v-model="editingExercise.video!.url"
           type="text"
-          placeholder="Ссылка на видео"
+          placeholder="Ссылка на видео-файл или на видео youtube или rutube"
           :invalid="edExVideoUrlInvalid"
           @input="async () => (edExVideoUrlInvalid = await validateVideoUrl(editingExercise))"
+          class="w-[500px]"
         />
         <div class="flex w-full justify-evenly">
           <Button @click="saveEditingExercise" severity="success">Сохранить</Button>
