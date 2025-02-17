@@ -4,15 +4,13 @@ import type { Workout } from '@/types'
 import baseWorkoutsList from '@/base-data/workouts'
 
 export const useWorkoutsStore = defineStore('workouts', () => {
-  // const list = ref<Workout[]>([])
-  // if (localStorage.getItem('workoutsList') === null) {
-  //   list.value = baseWorkoutsList
-  //   localStorage.setItem('workoutsList', JSON.stringify(list.value))
-  // } else {
-  //   list.value = JSON.parse(localStorage.getItem('workoutsList')!)
-  // }
-
-  const list = ref<Workout[]>(baseWorkoutsList)
+  const list = ref<Workout[]>([])
+  if (localStorage.getItem('workoutsList') === null) {
+    list.value = baseWorkoutsList
+    localStorage.setItem('workoutsList', JSON.stringify(list.value))
+  } else {
+    list.value = JSON.parse(localStorage.getItem('workoutsList')!)
+  }
 
   function removeWorkout(id: number) {
     list.value = list.value.filter((workout) => workout.id !== id)
