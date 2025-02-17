@@ -43,3 +43,23 @@ export interface FiltersObject {
   sportsItems: string[]
   tags: string[]
 }
+
+export interface User {
+  age: number
+  height: number
+  weight: number
+  level: number
+  xp: number
+  points: number
+  character: Character
+  customizationItems: string[]
+  achievements: string[]
+}
+
+export interface Character {
+  hat: null
+  body: 'normal'
+  jacket: null
+  pants: null
+  boots: null
+}

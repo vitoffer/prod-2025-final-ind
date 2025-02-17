@@ -1,8 +1,10 @@
+import type { User } from '@/types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref({
+  const baseUser: User = {
+    age: 20,
     height: 180,
     weight: 75,
     level: 1,
@@ -17,7 +19,22 @@ export const useUserStore = defineStore('user', () => {
     },
     customizationItems: [],
     achievements: [],
-  })
+  }
 
-  return { user }
+  const user = ref<User>(baseUser)
+
+  if (localStorage.getItem('user')) {
+    user.value = JSON.parse(localStorage.getItem('user')!)
+  }
+
+  function updateUser(params: Partial<User>) {
+    user.value = {
+      ...user.value,
+      ...params,
+    }
+
+    localStorage.setItem('user', JSON.stringify(user.value))
+  }
+
+  return { user, updateUser }
 })
