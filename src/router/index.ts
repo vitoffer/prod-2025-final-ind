@@ -4,6 +4,7 @@ import ProfilePage from '@/views/ProfilePage.vue'
 import WorkoutsListPage from '@/views/WorkoutsListPage.vue'
 import RunWorkoutPage from '@/views/RunWorkoutPage.vue'
 import { useUserStore } from '@/stores/userStore'
+import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 
 const routes = [
   {
@@ -43,6 +44,14 @@ router.beforeEach((to) => {
   if (userStore.isNewUser) {
     if (to.name !== 'ProfilePage') {
       return { name: 'ProfilePage' }
+    }
+  }
+
+  if (to.name === 'RunWorkoutPage') {
+    const runWorkoutStore = useRunWorkoutStore()
+
+    if (runWorkoutStore.selectedRunWorkout === null) {
+      return { name: 'WorkoutsListPage' }
     }
   }
 })
