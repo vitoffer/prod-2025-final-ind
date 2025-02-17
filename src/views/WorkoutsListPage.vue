@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import EditWorkoutDialog from '@/components/EditWorkoutDialog.vue'
 import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
@@ -73,21 +74,14 @@ const dialogHeader = ref<string>('Редактирование трениров�
   </header>
   <main>
     <ConfirmDialog />
-    <Dialog v-model:visible="editWorkoutDialogVisible" modal :header="dialogHeader">
-      <FloatLabel>
-        <InputText
-          v-model="editingWorkout.name"
-          :invalid="nameInvalid"
-          @input="() => (nameInvalid = validateName(editingWorkout))"
-          id="edWoName"
-        />
-        <label for="edWoName">Название</label>
-      </FloatLabel>
-      <div class="flex w-full justify-evenly">
-        <Button @click="editWorkoutDialogVisible = false" severity="danger">Отменить</Button>
-        <Button @click="saveEditingWorkout" severity="success">Сохранить</Button>
-      </div>
-    </Dialog>
+    <EditWorkoutDialog
+      v-model:edit-workout-dialog-visible="editWorkoutDialogVisible"
+      v-model:editing-workout="editingWorkout"
+      v-model:name-invalid="nameInvalid"
+      :dialog-header="dialogHeader"
+      :validate-name="validateName"
+      :save-editing-workout="saveEditingWorkout"
+    />
     <ul class="workouts-list mt-6 mr-auto ml-auto flex w-fit flex-col gap-4">
       <li v-for="workout in filteredWorkoutsList" :key="workout.id">
         {{ workout.name }}
