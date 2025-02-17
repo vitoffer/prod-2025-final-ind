@@ -22,11 +22,10 @@ export type ExerciseUnit = 'мин' | 'кг' | 'повт'
 export interface Workout {
   id: number
   name: string
-  exercises: WorkoutExercise[]
+  exercises: ExerciseWithGoal[]
 }
 
-export interface WorkoutExercise {
-  id: number
+export type ExerciseWithGoal = Exercise & {
   goal: WorkoutExerciseGoal
 }
 

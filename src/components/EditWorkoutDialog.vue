@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Workout } from '@/types'
+import { useExercisesStore } from '@/stores/exercisesStore'
+import type { Exercise, ExerciseWithGoal, Workout } from '@/types'
 import type { AutoCompleteCompleteEvent } from 'primevue'
 import { ref } from 'vue'
 
@@ -13,28 +14,27 @@ const editWorkoutDialogVisible = defineModel<boolean>('editWorkoutDialogVisible'
 const editingWorkout = defineModel<Workout>('editingWorkout')
 const nameInvalid = defineModel<boolean>('nameInvalid')
 
-const addedExercisesList = ref<string[]>([
-  '1',
-  '2',
-  '2',
-  '2',
-  '2',
-  '2',
-  '2',
-  '2',
-  '2',
-  '2',
-  '2',
-  '2',
-  '2',
-  '2',
-])
+const exercisesStore = useExercisesStore()
 
-const exerciseSearch = ref<string>('')
-const searchExercisesList = ref<string[]>([])
+const exerciseSearch = ref<Exercise | null>(null)
+const searchExercisesList = ref<Exercise[]>([])
 
 const search = (event: AutoCompleteCompleteEvent) => {
-  searchExercisesList.value = [...Array(10).keys()].map((item) => event.query + '-' + item)
+  searchExercisesList.value = exercisesStore.list.filter((exercise) =>
+    exercise.name.toLowerCase().includes(event.query.toLowerCase()),
+  )
+}
+
+const addExerciseToList = () => {
+  editingWorkout.value!.exercises.push({
+    ...exerciseSearch.value,
+    goal: {
+      time: exerciseSearch.value!.units.includes('мин') ? 0 : undefined,
+      repetitions: exerciseSearch.value!.units.includes('повт') ? 0 : undefined,
+      weight: exerciseSearch.value!.units.includes('кг') ? 0 : undefined,
+    },
+  } as ExerciseWithGoal)
+  exerciseSearch.value = null
 }
 </script>
 
@@ -46,25 +46,35 @@ const search = (event: AutoCompleteCompleteEvent) => {
         :invalid="nameInvalid"
         @input="() => (nameInvalid = validateName(editingWorkout!))"
         id="edWoName"
+        class="w-[500px]"
       />
       <label for="edWoName">Название</label>
     </FloatLabel>
     <VirtualScroller
-      :items="addedExercisesList"
+      :items="[...editingWorkout!.exercises]"
       :itemSize="50"
       class="border-surface-200 dark:border-surface-700 rounded border"
-      style="width: 200px; height: 200px"
+      style="width: 500px; height: 200px"
     >
       <template v-slot:item="{ item, options }">
         <div
           :class="['flex items-center p-2', { 'bg-surface-100 dark:bg-surface-700': options.odd }]"
           style="height: 50px"
         >
-          {{ item }}
+          {{ item.name }}
         </div>
       </template>
     </VirtualScroller>
-    <AutoComplete v-model="exerciseSearch" :suggestions="searchExercisesList" @complete="search" />
+    <AutoComplete
+      v-model="exerciseSearch"
+      :suggestions="searchExercisesList"
+      option-label="name"
+      @complete="search"
+      @option-select="addExerciseToList"
+      placeholder="Поиск упражнения по названию"
+      class="w-[500px]"
+      input-class="w-full"
+    />
     <div class="flex w-full justify-evenly">
       <Button @click="editWorkoutDialogVisible = false" severity="danger">Отменить</Button>
       <Button @click="saveEditingWorkout" severity="success">Сохранить</Button>
