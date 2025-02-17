@@ -48,6 +48,7 @@ const infoComponentsList = computed<ExerciseInfoObject[]>(() => {
           frameBorder="0"
           allow="clipboard-write; autoplay"
           allowfullscreen
+          title="Видео плеер"
         ></iframe>
         <video v-else-if="slotProps.item.type === 'video'" controls>
           <source :src="slotProps.item.src" />
