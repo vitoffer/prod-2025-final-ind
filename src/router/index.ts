@@ -1,4 +1,5 @@
 import ExercisesListPage from '@/views/ExercisesListPage.vue'
+import WorkoutsListPage from '@/views/WorkoutsListPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -6,8 +7,17 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      redirect: { name: 'ExercisesListPage' },
+    },
+    {
+      path: '/exercises',
       component: ExercisesListPage,
       name: 'ExercisesListPage',
+    },
+    {
+      path: '/workouts',
+      component: WorkoutsListPage,
+      name: 'WorkoutsListPage',
     },
   ],
 })
