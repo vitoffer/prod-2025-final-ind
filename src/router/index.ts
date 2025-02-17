@@ -1,7 +1,9 @@
-import { createRouter, createWebHistory, type RouteLocation } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import ExercisesListPage from '@/views/ExercisesListPage.vue'
 import ProfilePage from '@/views/ProfilePage.vue'
 import WorkoutsListPage from '@/views/WorkoutsListPage.vue'
+import RunWorkoutPage from '@/views/RunWorkoutPage.vue'
+import { useUserStore } from '@/stores/userStore'
 
 const routes = [
   {
@@ -22,9 +24,11 @@ const routes = [
     path: '/profile',
     component: ProfilePage,
     name: 'ProfilePage',
-    props: (route: RouteLocation) => ({
-      newUser: route.params.newUser === 'true',
-    }),
+  },
+  {
+    path: '/run-workout',
+    component: RunWorkoutPage,
+    name: 'RunWorkoutPage',
   },
 ]
 
@@ -34,13 +38,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  const localStorageUser = localStorage.getItem('user')
+  const userStore = useUserStore()
 
-  if (!localStorageUser) {
+  if (userStore.isNewUser) {
     if (to.name !== 'ProfilePage') {
-      return { name: 'ProfilePage', params: { newUser: 'true' } }
-    } else {
-      to.params.newUser = 'true'
+      return { name: 'ProfilePage' }
     }
   }
 })

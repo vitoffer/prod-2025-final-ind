@@ -3,6 +3,12 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
+  const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
+
+  function toggleIsNewUser() {
+    isNewUser.value = !isNewUser.value
+  }
+
   const baseUser: User = {
     age: 20,
     height: 180,
@@ -36,5 +42,5 @@ export const useUserStore = defineStore('user', () => {
     localStorage.setItem('user', JSON.stringify(user.value))
   }
 
-  return { user, updateUser }
+  return { isNewUser, toggleIsNewUser, user, updateUser }
 })

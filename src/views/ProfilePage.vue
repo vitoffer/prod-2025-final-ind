@@ -1,19 +1,14 @@
 <script setup lang="ts">
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/userStore'
 import { ref } from 'vue'
-
-const props = defineProps<{
-  newUser: boolean
-}>()
 
 const userStore = useUserStore()
 const showDialog = ref(false)
 const age = ref<number | null>(userStore.user.age)
 const height = ref<number | null>(userStore.user.height)
 const weight = ref<number | null>(userStore.user.weight)
-const newUserRef = ref<boolean>(props.newUser)
 
-if (newUserRef.value) {
+if (userStore.isNewUser) {
   showDialog.value = true
 }
 
@@ -21,7 +16,7 @@ const saveUserData = () => {
   if (age.value === null || height.value === null || weight.value === null) return
   userStore.updateUser({ age: age.value, height: height.value, weight: weight.value })
   showDialog.value = false
-  newUserRef.value = false
+  userStore.toggleIsNewUser()
 }
 
 const hatImage = ref<string | null>(null)
@@ -65,7 +60,7 @@ async function loadImages() {
 </script>
 
 <template>
-  <div v-if="newUserRef">
+  <div v-if="userStore.isNewUser">
     <Dialog v-model:visible="showDialog" header="User Information" :modal="true">
       <template #default>
         <div>
