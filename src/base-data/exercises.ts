@@ -4,7 +4,7 @@ export default <Exercise[]>[
   {
     id: 1,
     name: 'Упражнение 1',
-    videoUrl: null,
+    video: null,
     photoUrlList: [],
     description: 'Описание 1',
     difficulty: 'простое',
@@ -15,7 +15,10 @@ export default <Exercise[]>[
   {
     id: 2,
     name: 'Упражнение 2',
-    videoUrl: 'https://rutube.ru/play/embed/348d394918bfe218476abc144918f909',
+    video: {
+      type: 'iframe',
+      url: 'https://rutube.ru/play/embed/348d394918bfe218476abc144918f909',
+    },
     photoUrlList: [],
     description: null,
     difficulty: 'среднее',
@@ -26,7 +29,7 @@ export default <Exercise[]>[
   {
     id: 3,
     name: 'Упражнение 3',
-    videoUrl: null,
+    video: null,
     photoUrlList: [
       'https://fitnessclub24.ru/public/images/gallery/section/thumbs/0/2-3-shragi.jpg',
       'https://avatars.dzeninfra.ru/get-zen_doc/1535103/pub_64dbaa4e73f157490e767716_64dbe7e2a9216a3544dafebe/scale_1200',
@@ -40,7 +43,10 @@ export default <Exercise[]>[
   {
     id: 4,
     name: 'Случай 4',
-    videoUrl: 'https://www.youtube.com/embed/FqF11YdwxrQ',
+    video: {
+      type: 'iframe',
+      url: 'https://www.youtube.com/embed/FqF11YdwxrQ',
+    },
     photoUrlList: [
       'https://fitnessclub24.ru/public/images/gallery/section/thumbs/0/2-3-shragi.jpg',
       'https://avatars.dzeninfra.ru/get-zen_doc/1535103/pub_64dbaa4e73f157490e767716_64dbe7e2a9216a3544dafebe/scale_1200',
@@ -54,8 +60,10 @@ export default <Exercise[]>[
   {
     id: 5,
     name: 'Жим штанги лёжа',
-    videoUrl:
-      'https://media.musclewiki.com/media/uploads/videos/branded/male-barbell-bench-press-side_KciuhbB.mp4',
+    video: {
+      type: 'video',
+      url: 'https://media.musclewiki.com/media/uploads/videos/branded/male-barbell-bench-press-side_KciuhbB.mp4',
+    },
     photoUrlList: [],
     description: 'Опустить штангу к груди, затем выжать вверх.',
     difficulty: 'среднее',
@@ -66,8 +74,10 @@ export default <Exercise[]>[
   {
     id: 6,
     name: 'Разведение гантелей лёжа',
-    videoUrl:
-      'https://media.musclewiki.com/media/uploads/videos/branded/male-dumbbell-incline-chest-flys-front.mp4',
+    video: {
+      type: 'video',
+      url: 'https://media.musclewiki.com/media/uploads/videos/branded/male-dumbbell-incline-chest-flys-front.mp4',
+    },
     photoUrlList: [
       'https://instructorpro.ru/wp-content/uploads/2022/12/%D0%A0%D0%B0%D0%B7%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5-%D1%80%D1%83%D0%BA-%D0%BB%D0%B5%D0%B6%D0%B0-%D0%92%D1%8B%D0%BF%D0%BE%D0%BB%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5.png',
     ],
@@ -80,8 +90,10 @@ export default <Exercise[]>[
   {
     id: 7,
     name: 'Подтягивания широким хватом',
-    videoUrl:
-      'https://media.musclewiki.com/media/uploads/videos/branded/male-bodyweight-pullup-front.mp4',
+    video: {
+      type: 'video',
+      url: 'https://media.musclewiki.com/media/uploads/videos/branded/male-bodyweight-pullup-front.mp4',
+    },
     photoUrlList: [
       'https://avatars.dzeninfra.ru/get-zen_doc/9856080/pub_64c43b5be3f60f18895d0b61_64c44cc4e2687c5d7fe60b36/scale_1200',
     ],
@@ -94,8 +106,10 @@ export default <Exercise[]>[
   {
     id: 8,
     name: 'Тяга гантели в наклоне',
-    videoUrl:
-      'https://media.musclewiki.com/media/uploads/videos/branded/male-Dumbbells-dumbbell-kneeling-single-arm-row-front.mp4',
+    video: {
+      type: 'video',
+      url: 'https://media.musclewiki.com/media/uploads/videos/branded/male-Dumbbells-dumbbell-kneeling-single-arm-row-front.mp4',
+    },
     photoUrlList: [],
     description: 'Упереться одной рукой в скамью, подтянуть гантель к поясу.',
     difficulty: 'среднее',
@@ -106,8 +120,10 @@ export default <Exercise[]>[
   {
     id: 9,
     name: 'Приседания со штангой',
-    videoUrl:
-      'https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-squat-front.mp4',
+    video: {
+      type: 'video',
+      url: 'https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-squat-front.mp4',
+    },
     photoUrlList: [],
     description: 'Опустить таз вниз, затем подняться.',
     difficulty: 'сложное',
@@ -118,8 +134,10 @@ export default <Exercise[]>[
   {
     id: 10,
     name: 'Болгарские сплит-приседы',
-    videoUrl:
-      'https://media.musclewiki.com/media/uploads/videos/branded/male-Dumbbells-dumbbell-bulgarian-split-squat-front.mp4',
+    video: {
+      type: 'video',
+      url: 'https://media.musclewiki.com/media/uploads/videos/branded/male-Dumbbells-dumbbell-bulgarian-split-squat-front.mp4',
+    },
     photoUrlList: [],
     description: 'Одна нога на скамье, другая — делает выпад вниз.',
     difficulty: 'среднее',
@@ -130,8 +148,10 @@ export default <Exercise[]>[
   {
     id: 11,
     name: 'Ягодичный мостик со штангой',
-    videoUrl:
-      'https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-hip-thrust-side.mp4',
+    video: {
+      type: 'video',
+      url: 'https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-hip-thrust-side.mp4',
+    },
     photoUrlList: [],
     description: 'Поднять таз вверх, сжимая ягодицы.',
     difficulty: 'среднее',
@@ -142,7 +162,7 @@ export default <Exercise[]>[
   {
     id: 12,
     name: 'Становая тяга сумо',
-    videoUrl: null,
+    video: null,
     photoUrlList: [],
     description: 'Широкая стойка, подъем штанги с пола.',
     difficulty: 'среднее',
@@ -153,8 +173,10 @@ export default <Exercise[]>[
   {
     id: 13,
     name: 'Армейский жим',
-    videoUrl:
-      'https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-overhead-press-side.mp4',
+    video: {
+      type: 'video',
+      url: 'https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-overhead-press-side.mp4',
+    },
     photoUrlList: [],
     description: null,
     difficulty: 'среднее',
@@ -165,7 +187,7 @@ export default <Exercise[]>[
   {
     id: 14,
     name: 'Разведение гантелей в стороны',
-    videoUrl: null,
+    video: null,
     photoUrlList: [],
     description: 'Поднять гантели в стороны до уровня плеч.',
     difficulty: 'простое',
@@ -176,7 +198,7 @@ export default <Exercise[]>[
   {
     id: 15,
     name: 'Разгибание рук с гантелями за головой',
-    videoUrl: null,
+    video: null,
     photoUrlList: [],
     description: 'Опустить гантель за голову, затем разогнуть руки.',
     difficulty: 'среднее',
@@ -187,7 +209,7 @@ export default <Exercise[]>[
   {
     id: 16,
     name: 'Бег',
-    videoUrl: null,
+    video: null,
     photoUrlList: [],
     description: null,
     difficulty: 'простое',

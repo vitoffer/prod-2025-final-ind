@@ -1,5 +1,6 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
-import type { Exercise } from '@/types'
+import type { Exercise, ExerciseVideo } from '@/types'
+import { correctVideoUrl, isCorrectImageUrl } from '@/utils'
 import { computedAsync } from '@vueuse/core'
 import { computed, ref } from 'vue'
 
@@ -8,7 +9,10 @@ export function useEditingExercise() {
 
   const nullExercise: Omit<Exercise, 'id'> = {
     name: '',
-    videoUrl: '',
+    video: {
+      type: 'video',
+      url: '',
+    },
     photoUrlList: [''],
     description: '',
     difficulty: 'простое',
@@ -38,7 +42,7 @@ export function useEditingExercise() {
     } else {
       editingExercise.value = {
         ...foundExercise,
-        videoUrl: foundExercise.videoUrl ?? '',
+        video: foundExercise.video ?? { type: 'video', url: '' },
         description: foundExercise.description ?? '',
       }
     }
@@ -63,11 +67,12 @@ export function useEditingExercise() {
     )
   }
 
-  const formatExercise = (exercise: Exercise): Exercise => {
+  const formatExercise = async (exercise: Exercise): Promise<Exercise> => {
+    const { error, type, url } = await correctVideoUrl(exercise.video!.url)
     return {
       id: exercise.id,
       name: exercise.name.trim(),
-      videoUrl: exercise.videoUrl === '' ? null : exercise.videoUrl,
+      video: error || exercise.video!.url === '' ? null : ({ type, url } as ExerciseVideo),
       photoUrlList: exercise.photoUrlList,
       description: exercise.description == '' ? null : exercise.description,
       difficulty: exercise.difficulty,
@@ -77,7 +82,7 @@ export function useEditingExercise() {
     }
   }
 
-  const saveEditingExercise = () => {
+  const saveEditingExercise = async () => {
     if (
       edExNameInvalid.value ||
       edExDiffInvalid.value ||
@@ -88,7 +93,7 @@ export function useEditingExercise() {
       return
     }
 
-    const formattedExercise = formatExercise(editingExercise.value)
+    const formattedExercise = await formatExercise(editingExercise.value)
 
     const existingExercise = exercisesStore.list.find(
       (exercise) => exercise.id === formattedExercise.id,
@@ -101,22 +106,6 @@ export function useEditingExercise() {
     }
 
     editExerciseDialogVisible.value = false
-  }
-
-  const isImageUrl = async (url: string) => {
-    if (!/https:\/\/.+/.test(url)) {
-      return false
-    }
-    if (/https:\/\/.+\.[(jpg)(jpeg)(png)(webp)(gif)(svg)]/.test(url)) {
-      return true
-    }
-    try {
-      const response = await fetch(url, { method: 'HEAD' })
-      return response.ok && response.headers.get('Content-Type')?.startsWith('image/')
-    } catch (error) {
-      console.error('Ошибка при проверке URL:', error)
-      return false
-    }
   }
 
   const edExNameInvalid = computed<boolean>(() => {
@@ -146,22 +135,25 @@ export function useEditingExercise() {
         if (url.trim() === '') {
           return true
         }
-        return !(await isImageUrl(url))
+        return !(await isCorrectImageUrl(url))
       }),
     )
 
     return invalidList
   }, new Array(editingExercise.value.photoUrlList.length).fill(false))
 
-  const edExVideoUrlInvalid = computed<boolean>(() => {
-    if (editingExercise.value.videoUrl!.trim() === '') {
+  const edExVideoUrlInvalid = computedAsync(async () => {
+    if (editingExercise.value.video!.url.trim() === '') {
       return false
     }
-    if (!/https:\/\/www.youtube.com\/embed\/.+/.test(editingExercise.value.videoUrl!)) {
+
+    const { error } = await correctVideoUrl(editingExercise.value.video!.url)
+    if (error) {
       return true
     }
+
     return false
-  })
+  }, false)
 
   return {
     editingExercise,

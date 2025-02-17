@@ -176,7 +176,7 @@ const dialogHeader = computed<string>(() => {
           </Button>
         </div>
         <InputText
-          v-model="editingExercise.videoUrl"
+          v-model="editingExercise.video!.url"
           type="text"
           placeholder="Ссылка на видео"
           :invalid="edExVideoUrlInvalid"

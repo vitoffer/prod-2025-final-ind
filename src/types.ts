@@ -1,13 +1,18 @@
 export interface Exercise {
   id: number
   name: string
-  videoUrl: string | null
+  video: null | ExerciseVideo
   photoUrlList: string[]
   description: string | null
   difficulty: ExerciseDifficulty
   sportsItems: string[]
   tags: string[]
   units: ExerciseUnit[]
+}
+
+export interface ExerciseVideo {
+  type: 'iframe' | 'video'
+  url: string
 }
 
 export type ExerciseDifficulty = 'простое' | 'среднее' | 'сложное'
