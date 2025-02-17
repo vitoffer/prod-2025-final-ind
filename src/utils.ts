@@ -35,6 +35,10 @@ export async function correctVideoUrl(url: string) {
     }
   }
 
+  if (!url.startsWith('http')) {
+    return { error: true }
+  }
+
   try {
     const response = await fetch(url, { method: 'HEAD' })
     if (
@@ -54,9 +58,15 @@ export async function isCorrectImageUrl(url: string) {
   if (url.startsWith('data:image')) {
     return true
   }
+
   if (/https?:\/\/.+\.[(jpg)(jpeg)(png)(webp)(gif)(svg)]/.test(url)) {
     return true
   }
+
+  if (!url.startsWith('http')) {
+    return false
+  }
+
   try {
     const response = await fetch(url, { method: 'HEAD' })
     console.log(response.status)

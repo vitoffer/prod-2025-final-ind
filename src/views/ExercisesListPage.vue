@@ -20,10 +20,15 @@ const {
   removeExercisePhotoUrl,
   saveEditingExercise,
   edExNameInvalid,
+  validateName,
   edExDiffInvalid,
+  validateDiff,
   edExUnitsInvalid,
+  validateUnits,
   edExPhotoUrlListInvalid,
+  validatePhotoUrlList,
   edExVideoUrlInvalid,
+  validateVideoUrl,
 } = useEditingExercise()
 
 const {
@@ -115,6 +120,7 @@ const dialogHeader = computed<string>(() => {
         </li>
       </ul>
     </div>
+
     <Button @click="createExercise" class=""><i class="pi pi-plus"></i></Button>
   </header>
   <div class="exercises-list-container flex flex-wrap justify-evenly">
@@ -122,7 +128,12 @@ const dialogHeader = computed<string>(() => {
     <Dialog v-model:visible="editExerciseDialogVisible" modal :header="dialogHeader">
       <div class="flex flex-col">
         <FloatLabel variant="in" class="mb-2">
-          <InputText id="edExName" v-model="editingExercise.name" :invalid="edExNameInvalid" />
+          <InputText
+            id="edExName"
+            v-model="editingExercise.name"
+            :invalid="edExNameInvalid"
+            @input="() => (edExNameInvalid = validateName())"
+          />
           <label for="edExName">Название</label>
         </FloatLabel>
         <span class="mb-1">Сложность</span>
@@ -131,6 +142,7 @@ const dialogHeader = computed<string>(() => {
           :options="difficultyOptions"
           class="mb-2"
           :invalid="edExDiffInvalid"
+          @change="() => (edExDiffInvalid = validateDiff())"
         />
         <FloatLabel variant="in" class="mb-2">
           <Textarea v-model="editingExercise.description" id="edExDesc" rows="5" cols="30" />
@@ -158,6 +170,7 @@ const dialogHeader = computed<string>(() => {
           class="mb-2"
           :invalid="edExUnitsInvalid"
           multiple
+          @change="() => (edExUnitsInvalid = validateUnits())"
         />
         <InputText
           v-for="(input, index) in editingExercise.photoUrlList"
@@ -166,6 +179,7 @@ const dialogHeader = computed<string>(() => {
           type="text"
           placeholder="Ссылка на фото"
           :invalid="edExPhotoUrlListInvalid[index]"
+          @input="async () => (edExPhotoUrlListInvalid = await validatePhotoUrlList())"
         />
         <div class="flex justify-center">
           <Button @click="addExercisePhotoUrl" severity="success">
@@ -180,6 +194,7 @@ const dialogHeader = computed<string>(() => {
           type="text"
           placeholder="Ссылка на видео"
           :invalid="edExVideoUrlInvalid"
+          @input="async () => (edExVideoUrlInvalid = await validateVideoUrl())"
         />
         <div class="flex w-full justify-evenly">
           <Button @click="saveEditingExercise" severity="success">Сохранить</Button>

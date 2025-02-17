@@ -1,8 +1,7 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseVideo } from '@/types'
 import { correctVideoUrl, isCorrectImageUrl } from '@/utils'
-import { computedAsync } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 export function useEditingExercise() {
   const exercisesStore = useExercisesStore()
@@ -29,6 +28,12 @@ export function useEditingExercise() {
 
   const changeExercise = (id: number) => {
     editExerciseDialogVisible.value = true
+
+    edExNameInvalid.value = false
+    edExDiffInvalid.value = false
+    edExUnitsInvalid.value = false
+    edExPhotoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
+    edExVideoUrlInvalid.value = false
 
     const foundExercise = JSON.parse(
       JSON.stringify(exercisesStore.list.find((exercise) => exercise.id === id)),
@@ -58,6 +63,7 @@ export function useEditingExercise() {
 
   const addExercisePhotoUrl = () => {
     editingExercise.value.photoUrlList.push('')
+    edExPhotoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
   }
 
   const removeExercisePhotoUrl = () => {
@@ -83,6 +89,12 @@ export function useEditingExercise() {
   }
 
   const saveEditingExercise = async () => {
+    edExNameInvalid.value = validateName()
+    edExDiffInvalid.value = validateDiff()
+    edExUnitsInvalid.value = validateUnits()
+    edExPhotoUrlListInvalid.value = await validatePhotoUrlList()
+    edExVideoUrlInvalid.value = await validateVideoUrl()
+
     if (
       edExNameInvalid.value ||
       edExDiffInvalid.value ||
@@ -108,15 +120,19 @@ export function useEditingExercise() {
     editExerciseDialogVisible.value = false
   }
 
-  const edExNameInvalid = computed<boolean>(() => {
+  function validateName() {
     return editingExercise.value.name.trim() === ''
-  })
+  }
 
-  const edExDiffInvalid = computed<boolean>(() => {
+  const edExNameInvalid = ref<boolean>(false)
+
+  function validateDiff() {
     return editingExercise.value.difficulty === null
-  })
+  }
 
-  const edExUnitsInvalid = computed<boolean>(() => {
+  const edExDiffInvalid = ref<boolean>(false)
+
+  function validateUnits() {
     if (editingExercise.value.units.length === 0) {
       return true
     }
@@ -127,9 +143,11 @@ export function useEditingExercise() {
       return true
     }
     return false
-  })
+  }
 
-  const edExPhotoUrlListInvalid = computedAsync(async () => {
+  const edExUnitsInvalid = ref<boolean>(false)
+
+  async function validatePhotoUrlList() {
     const invalidList = await Promise.all(
       editingExercise.value.photoUrlList.map(async (url) => {
         if (url.trim() === '') {
@@ -140,9 +158,13 @@ export function useEditingExercise() {
     )
 
     return invalidList
-  }, new Array(editingExercise.value.photoUrlList.length).fill(false))
+  }
 
-  const edExVideoUrlInvalid = computedAsync(async () => {
+  const edExPhotoUrlListInvalid = ref<boolean[]>(
+    new Array(editingExercise.value.photoUrlList.length).fill(false),
+  )
+
+  async function validateVideoUrl() {
     if (editingExercise.value.video!.url.trim() === '') {
       return false
     }
@@ -153,7 +175,9 @@ export function useEditingExercise() {
     }
 
     return false
-  }, false)
+  }
+
+  const edExVideoUrlInvalid = ref<boolean>(false)
 
   return {
     editingExercise,
@@ -164,9 +188,14 @@ export function useEditingExercise() {
     removeExercisePhotoUrl,
     saveEditingExercise,
     edExNameInvalid,
+    validateName,
     edExDiffInvalid,
+    validateDiff,
     edExUnitsInvalid,
+    validateUnits,
     edExPhotoUrlListInvalid,
+    validatePhotoUrlList,
     edExVideoUrlInvalid,
+    validateVideoUrl,
   }
 }
