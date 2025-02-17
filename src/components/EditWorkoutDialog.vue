@@ -36,6 +36,12 @@ const addExerciseToList = () => {
   } as ExerciseWithGoal)
   exerciseSearch.value = null
 }
+
+const removeAddedExercise = (id: number) => {
+  editingWorkout.value!.exercises = editingWorkout.value!.exercises.filter(
+    (exercise) => exercise.id !== id,
+  )
+}
 </script>
 
 <template>
@@ -53,16 +59,15 @@ const addExerciseToList = () => {
     <VirtualScroller
       :items="[...editingWorkout!.exercises]"
       :itemSize="50"
-      class="border-surface-200 dark:border-surface-700 rounded border"
+      class="rounded border border-gray-200"
       style="width: 500px; height: 200px"
     >
       <template v-slot:item="{ item, options }">
-        <div
-          :class="['flex items-center p-2', { 'bg-surface-100 dark:bg-surface-700': options.odd }]"
-          style="height: 50px"
-        >
-          {{ item.name }}
-        </div>
+        <EditWorkoutAddedExercise
+          @remove-added-exercise="removeAddedExercise"
+          :exercise="item"
+          :options="options"
+        />
       </template>
     </VirtualScroller>
     <AutoComplete
