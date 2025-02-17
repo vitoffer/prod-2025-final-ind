@@ -15,12 +15,16 @@ function runWorkout(workout: Workout) {
 </script>
 
 <template>
-  <ul class="workouts-list mt-6 mr-auto ml-auto flex w-fit flex-col gap-4">
-    <li v-for="workout in workoutsStore.list" :key="workout.id">
-      {{ workout.name }}
-      <Button @click="() => runWorkout(workout)"><i class="pi pi-play"></i></Button>
-    </li>
-  </ul>
+  <main>
+    <ul class="workouts-list mt-6 mr-auto ml-auto flex w-fit flex-col gap-4">
+      <li v-for="workout in workoutsStore.list" :key="workout.id">
+        {{ workout.name }}
+        <Button aria-label="Run Workout" @click="() => runWorkout(workout)"
+          ><i class="pi pi-play"></i
+        ></Button>
+      </li>
+    </ul>
+  </main>
 </template>
 
 <style scoped></style>

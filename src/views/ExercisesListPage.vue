@@ -94,10 +94,11 @@ const dialogHeader = computed<string>(() => {
         </li>
         <li>
           <FloatLabel variant="in" class="mb-2">
-            <InputText id="filterName" v-model="filtersObj.description" />
-            <label for="filterName">Описание</label>
+            <InputText id="filterDesc" v-model="filtersObj.description" />
+            <label for="filterDesc">Описание</label>
           </FloatLabel>
         </li>
+
         <li>
           <p>Сложность</p>
           <SelectButton v-model="filtersObj.difficulty" :options="difficultyOptions"></SelectButton>
@@ -130,7 +131,7 @@ const dialogHeader = computed<string>(() => {
     </div>
     <Button @click="createExercise" class=""><i class="pi pi-plus"></i></Button>
   </header>
-  <div class="exercises-list-container flex flex-wrap justify-evenly">
+  <main class="exercises-list-container flex flex-wrap justify-evenly">
     <ConfirmDialog></ConfirmDialog>
     <Dialog v-model:visible="editExerciseDialogVisible" modal :header="dialogHeader">
       <div class="flex flex-col">
@@ -220,7 +221,7 @@ const dialogHeader = computed<string>(() => {
       @remove-exercise="confirmRemove"
       @change-exercise="changeExercise"
     />
-  </div>
+  </main>
 </template>
 
 <style scoped lang="scss"></style>
