@@ -2,8 +2,8 @@ import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseVideo } from '@/types'
 import { correctVideoUrl } from '@/utils'
 import { useEditingEntity } from '../editingEntity'
-import { useExerciseValidation } from './ExerciseValidation'
 import { useValidation } from '../validation'
+import { useExerciseValidation } from './exerciseValidation'
 
 export function useEditingExercise() {
   const exercisesStore = useExercisesStore()
