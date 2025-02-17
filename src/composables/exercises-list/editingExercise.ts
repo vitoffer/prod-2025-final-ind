@@ -1,8 +1,8 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseVideo } from '@/types'
 import { correctVideoUrl } from '@/utils'
-import { ref } from 'vue'
 import { useValidation } from './validation'
+import { useEditingEntity } from '../editingEntity'
 
 export function useEditingExercise() {
   const exercisesStore = useExercisesStore()
@@ -32,47 +32,14 @@ export function useEditingExercise() {
     tags: [],
     units: [],
   }
+  const getNextId = () => exercisesStore.list[exercisesStore.list.length - 1].id + 1
 
-  const editingExercise = ref<Exercise>({
-    ...nullExercise,
-    id: exercisesStore.list[exercisesStore.list.length - 1].id + 1,
-  })
-  const editExerciseDialogVisible = ref<boolean>(false)
-
-  const changeExercise = (id: number) => {
-    editExerciseDialogVisible.value = true
-
-    edExNameInvalid.value = false
-    edExDiffInvalid.value = false
-    edExUnitsInvalid.value = false
-    edExPhotoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
-    edExVideoUrlInvalid.value = false
-
-    const foundExercise = JSON.parse(
-      JSON.stringify(exercisesStore.list.find((exercise) => exercise.id === id)),
-    )
-
-    if (foundExercise === undefined) {
-      editingExercise.value = {
-        ...nullExercise,
-        id: exercisesStore.list[exercisesStore.list.length - 1].id + 1,
-      }
-    } else {
-      editingExercise.value = {
-        ...foundExercise,
-        video: foundExercise.video ?? { type: 'video', url: '' },
-        description: foundExercise.description ?? '',
-      }
-    }
-  }
-
-  const createExercise = () => {
-    editExerciseDialogVisible.value = true
-    editingExercise.value = {
-      ...nullExercise,
-      id: exercisesStore.list[exercisesStore.list.length - 1].id + 1,
-    }
-  }
+  const {
+    changeEntity: changeExercise,
+    createEntity: createExercise,
+    editDialogVisible: editExerciseDialogVisible,
+    editingEntity: editingExercise,
+  } = useEditingEntity<Exercise>(nullExercise, getNextId)
 
   const addExercisePhotoUrl = () => {
     editingExercise.value.photoUrlList.push('')
