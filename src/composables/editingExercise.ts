@@ -1,10 +1,23 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseVideo } from '@/types'
-import { correctVideoUrl, isCorrectImageUrl } from '@/utils'
+import { correctVideoUrl } from '@/utils'
 import { ref } from 'vue'
+import { useValidation } from './validation'
 
 export function useEditingExercise() {
   const exercisesStore = useExercisesStore()
+  const {
+    edExNameInvalid,
+    edExDiffInvalid,
+    edExUnitsInvalid,
+    edExPhotoUrlListInvalid,
+    edExVideoUrlInvalid,
+    validateName,
+    validateDiff,
+    validateUnits,
+    validatePhotoUrlList,
+    validateVideoUrl,
+  } = useValidation()
 
   const nullExercise: Omit<Exercise, 'id'> = {
     name: '',
@@ -89,11 +102,11 @@ export function useEditingExercise() {
   }
 
   const saveEditingExercise = async () => {
-    edExNameInvalid.value = validateName()
-    edExDiffInvalid.value = validateDiff()
-    edExUnitsInvalid.value = validateUnits()
-    edExPhotoUrlListInvalid.value = await validatePhotoUrlList()
-    edExVideoUrlInvalid.value = await validateVideoUrl()
+    edExNameInvalid.value = validateName(editingExercise.value)
+    edExDiffInvalid.value = validateDiff(editingExercise.value)
+    edExUnitsInvalid.value = validateUnits(editingExercise.value)
+    edExPhotoUrlListInvalid.value = await validatePhotoUrlList(editingExercise.value)
+    edExVideoUrlInvalid.value = await validateVideoUrl(editingExercise.value)
 
     if (
       edExNameInvalid.value ||
@@ -119,65 +132,6 @@ export function useEditingExercise() {
 
     editExerciseDialogVisible.value = false
   }
-
-  function validateName() {
-    return editingExercise.value.name.trim() === ''
-  }
-
-  const edExNameInvalid = ref<boolean>(false)
-
-  function validateDiff() {
-    return editingExercise.value.difficulty === null
-  }
-
-  const edExDiffInvalid = ref<boolean>(false)
-
-  function validateUnits() {
-    if (editingExercise.value.units.length === 0) {
-      return true
-    }
-    if (
-      editingExercise.value.units.includes('мин') &&
-      (editingExercise.value.units.includes('кг') || editingExercise.value.units.includes('повт'))
-    ) {
-      return true
-    }
-    return false
-  }
-
-  const edExUnitsInvalid = ref<boolean>(false)
-
-  async function validatePhotoUrlList() {
-    const invalidList = await Promise.all(
-      editingExercise.value.photoUrlList.map(async (url) => {
-        if (url.trim() === '') {
-          return true
-        }
-        return !(await isCorrectImageUrl(url))
-      }),
-    )
-
-    return invalidList
-  }
-
-  const edExPhotoUrlListInvalid = ref<boolean[]>(
-    new Array(editingExercise.value.photoUrlList.length).fill(false),
-  )
-
-  async function validateVideoUrl() {
-    if (editingExercise.value.video!.url.trim() === '') {
-      return false
-    }
-
-    const { error } = await correctVideoUrl(editingExercise.value.video!.url)
-    if (error) {
-      return true
-    }
-
-    return false
-  }
-
-  const edExVideoUrlInvalid = ref<boolean>(false)
 
   return {
     editingExercise,

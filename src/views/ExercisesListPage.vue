@@ -132,7 +132,7 @@ const dialogHeader = computed<string>(() => {
             id="edExName"
             v-model="editingExercise.name"
             :invalid="edExNameInvalid"
-            @input="() => (edExNameInvalid = validateName())"
+            @input="() => (edExNameInvalid = validateName(editingExercise))"
           />
           <label for="edExName">Название</label>
         </FloatLabel>
@@ -142,7 +142,7 @@ const dialogHeader = computed<string>(() => {
           :options="difficultyOptions"
           class="mb-2"
           :invalid="edExDiffInvalid"
-          @change="() => (edExDiffInvalid = validateDiff())"
+          @change="() => (edExDiffInvalid = validateDiff(editingExercise))"
         />
         <FloatLabel variant="in" class="mb-2">
           <Textarea v-model="editingExercise.description" id="edExDesc" rows="5" cols="30" />
@@ -170,7 +170,7 @@ const dialogHeader = computed<string>(() => {
           class="mb-2"
           :invalid="edExUnitsInvalid"
           multiple
-          @change="() => (edExUnitsInvalid = validateUnits())"
+          @change="() => (edExUnitsInvalid = validateUnits(editingExercise))"
         />
         <InputText
           v-for="(input, index) in editingExercise.photoUrlList"
@@ -179,7 +179,9 @@ const dialogHeader = computed<string>(() => {
           type="text"
           placeholder="Ссылка на фото"
           :invalid="edExPhotoUrlListInvalid[index]"
-          @input="async () => (edExPhotoUrlListInvalid = await validatePhotoUrlList())"
+          @input="
+            async () => (edExPhotoUrlListInvalid = await validatePhotoUrlList(editingExercise))
+          "
         />
         <div class="flex justify-center">
           <Button @click="addExercisePhotoUrl" severity="success">
@@ -194,7 +196,7 @@ const dialogHeader = computed<string>(() => {
           type="text"
           placeholder="Ссылка на видео"
           :invalid="edExVideoUrlInvalid"
-          @input="async () => (edExVideoUrlInvalid = await validateVideoUrl())"
+          @input="async () => (edExVideoUrlInvalid = await validateVideoUrl(editingExercise))"
         />
         <div class="flex w-full justify-evenly">
           <Button @click="saveEditingExercise" severity="success">Сохранить</Button>

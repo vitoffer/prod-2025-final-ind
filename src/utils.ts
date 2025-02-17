@@ -69,7 +69,6 @@ export async function isCorrectImageUrl(url: string) {
 
   try {
     const response = await fetch(url, { method: 'HEAD' })
-    console.log(response.status)
     return (
       response.ok &&
       (response.headers.get('Content-Type')?.startsWith('image/') ||
