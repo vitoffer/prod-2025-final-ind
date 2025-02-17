@@ -3,7 +3,9 @@ import ExerciseCard from '@/components/ExerciseCard.vue'
 import { useEditingExercise } from '@/composables/editingExercise'
 import { useFilterExercisesList } from '@/composables/filterExercisesList'
 import { useExercisesStore } from '@/stores/exercisesStore'
+import type { ExerciseUnit } from '@/types'
 import { useConfirm } from 'primevue/useconfirm'
+import { computed } from 'vue'
 
 const confirm = useConfirm()
 
@@ -19,6 +21,7 @@ const {
   saveEditingExercise,
   edExNameInvalid,
   edExDiffInvalid,
+  edExUnitsInvalid,
   edExPhotoUrlListInvalid,
   edExVideoUrlInvalid,
 } = useEditingExercise()
@@ -34,6 +37,8 @@ const {
   tagsSelectSuggestions,
   filtersObj,
 } = useFilterExercisesList()
+
+const unitsOptions: ExerciseUnit[] = ['кг', 'мин', 'повт']
 
 const confirmRemove = (id: number) => {
   confirm.require({
@@ -54,6 +59,13 @@ const confirmRemove = (id: number) => {
     },
   })
 }
+
+const dialogHeader = computed<string>(() => {
+  if (exercisesStore.list.find((exercise) => exercise.id === editingExercise.value.id)) {
+    return 'Редактирование упражнения'
+  }
+  return 'Создание упражнения'
+})
 </script>
 
 <template>
@@ -107,7 +119,7 @@ const confirmRemove = (id: number) => {
   </header>
   <div class="exercises-list-container flex flex-wrap justify-evenly">
     <ConfirmDialog></ConfirmDialog>
-    <Dialog v-model:visible="editExerciseDialogVisible" modal header="Редактирование упражнения">
+    <Dialog v-model:visible="editExerciseDialogVisible" modal :header="dialogHeader">
       <div class="flex flex-col">
         <FloatLabel variant="in" class="mb-2">
           <InputText id="edExName" v-model="editingExercise.name" :invalid="edExNameInvalid" />
@@ -131,7 +143,7 @@ const confirmRemove = (id: number) => {
           option-value="name"
           filter
           placeholder="Инвентарь"
-        ></MultiSelect>
+        />
         <MultiSelect
           v-model="editingExercise.tags"
           :options="tagsOptions"
@@ -139,7 +151,14 @@ const confirmRemove = (id: number) => {
           option-value="name"
           filter
           placeholder="Теги"
-        ></MultiSelect>
+        />
+        <SelectButton
+          v-model="editingExercise.units"
+          :options="unitsOptions"
+          class="mb-2"
+          :invalid="edExUnitsInvalid"
+          multiple
+        />
         <InputText
           v-for="(input, index) in editingExercise.photoUrlList"
           :key="index"

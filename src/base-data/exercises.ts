@@ -10,6 +10,7 @@ export default <Exercise[]>[
     difficulty: 'простое',
     sportsItems: ['скакалка'],
     tags: ['ноги'],
+    units: ['повт'],
   },
   {
     id: 2,
@@ -20,6 +21,7 @@ export default <Exercise[]>[
     difficulty: 'среднее',
     sportsItems: ['штанга'],
     tags: ['бицепс', '12222', '22222', '22223', '42222', '522222222', '6', '7', '8', '0'],
+    units: ['повт', 'кг'],
   },
   {
     id: 3,
@@ -33,6 +35,7 @@ export default <Exercise[]>[
     difficulty: 'сложное',
     sportsItems: ['гантели'],
     tags: ['спина'],
+    units: ['повт', 'кг'],
   },
   {
     id: 4,
@@ -46,6 +49,7 @@ export default <Exercise[]>[
     difficulty: 'простое',
     sportsItems: [],
     tags: [],
+    units: ['мин'],
   },
   {
     id: 5,
@@ -57,6 +61,7 @@ export default <Exercise[]>[
     difficulty: 'среднее',
     sportsItems: ['штанга', 'скамья'],
     tags: ['грудные', 'трицепс', 'плечи'],
+    units: ['повт', 'кг'],
   },
   {
     id: 6,
@@ -70,6 +75,7 @@ export default <Exercise[]>[
     difficulty: 'среднее',
     sportsItems: ['гантели', 'скамья'],
     tags: ['грудные', 'изоляция'],
+    units: ['повт', 'кг'],
   },
   {
     id: 7,
@@ -83,6 +89,7 @@ export default <Exercise[]>[
     difficulty: 'среднее',
     sportsItems: ['турник'],
     tags: ['спина', 'бицепс'],
+    units: ['повт'],
   },
   {
     id: 8,
@@ -94,6 +101,7 @@ export default <Exercise[]>[
     difficulty: 'среднее',
     sportsItems: ['гантели', 'скамья'],
     tags: ['спина', 'бицепс'],
+    units: ['повт', 'кг'],
   },
   {
     id: 9,
@@ -105,6 +113,7 @@ export default <Exercise[]>[
     difficulty: 'сложное',
     sportsItems: ['штанга', 'стойка'],
     tags: ['квадрицепсы', 'ягодицы', 'бёдра'],
+    units: ['повт', 'кг'],
   },
   {
     id: 10,
@@ -116,6 +125,7 @@ export default <Exercise[]>[
     difficulty: 'среднее',
     sportsItems: ['гантели', 'скамья'],
     tags: ['ноги', 'ягодицы'],
+    units: ['повт', 'кг'],
   },
   {
     id: 11,
@@ -127,6 +137,7 @@ export default <Exercise[]>[
     difficulty: 'среднее',
     sportsItems: ['штанга', 'скамья'],
     tags: ['ягодицы', 'поясница'],
+    units: ['повт', 'кг'],
   },
   {
     id: 12,
@@ -137,6 +148,7 @@ export default <Exercise[]>[
     difficulty: 'среднее',
     sportsItems: ['штанга'],
     tags: ['ягодицы', 'ноги', 'поясница'],
+    units: ['повт', 'кг'],
   },
   {
     id: 13,
@@ -148,6 +160,7 @@ export default <Exercise[]>[
     difficulty: 'среднее',
     sportsItems: ['штанга'],
     tags: ['плечи', 'трицепс'],
+    units: ['повт', 'кг'],
   },
   {
     id: 14,
@@ -158,6 +171,7 @@ export default <Exercise[]>[
     difficulty: 'простое',
     sportsItems: ['гантели'],
     tags: ['плечи', 'изоляция'],
+    units: ['повт', 'кг'],
   },
   {
     id: 15,
@@ -168,6 +182,7 @@ export default <Exercise[]>[
     difficulty: 'среднее',
     sportsItems: ['гантели'],
     tags: ['трицепс'],
+    units: ['повт', 'кг'],
   },
   {
     id: 16,
@@ -178,5 +193,6 @@ export default <Exercise[]>[
     difficulty: 'простое',
     sportsItems: [],
     tags: ['ноги'],
+    units: ['мин'],
   },
 ]

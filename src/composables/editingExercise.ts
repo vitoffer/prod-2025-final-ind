@@ -81,6 +81,7 @@ export function useEditingExercise() {
     if (
       edExNameInvalid.value ||
       edExDiffInvalid.value ||
+      edExUnitsInvalid.value ||
       edExPhotoUrlListInvalid.value.includes(true) ||
       edExVideoUrlInvalid.value
     ) {
@@ -126,10 +127,22 @@ export function useEditingExercise() {
     return editingExercise.value.difficulty === null
   })
 
+  const edExUnitsInvalid = computed<boolean>(() => {
+    if (editingExercise.value.units.length === 0) {
+      return true
+    }
+    if (
+      editingExercise.value.units.includes('мин') &&
+      (editingExercise.value.units.includes('кг') || editingExercise.value.units.includes('повт'))
+    ) {
+      return true
+    }
+    return false
+  })
+
   const edExPhotoUrlListInvalid = computedAsync(async () => {
     const invalidList = await Promise.all(
       editingExercise.value.photoUrlList.map(async (url) => {
-        console.log(url)
         if (url.trim() === '') {
           return true
         }
@@ -160,6 +173,7 @@ export function useEditingExercise() {
     saveEditingExercise,
     edExNameInvalid,
     edExDiffInvalid,
+    edExUnitsInvalid,
     edExPhotoUrlListInvalid,
     edExVideoUrlInvalid,
   }
