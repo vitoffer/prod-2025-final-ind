@@ -1,6 +1,6 @@
 import { ref } from 'vue'
-import { isCorrectImageUrl, correctVideoUrl } from '@/utils'
 import type { Exercise } from '@/types'
+import { correctVideoUrl, isCorrectImageUrl } from '@/utils/media'
 
 export function useExerciseValidation() {
   const diffInvalid = ref<boolean>(false)
