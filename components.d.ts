@@ -11,6 +11,7 @@ declare module 'vue' {
     Button: typeof import('primevue/button')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     Dialog: typeof import('primevue/dialog')['default']
+    EditExerciseDialog: typeof import('./src/components/EditExerciseDialog.vue')['default']
     EditWorkoutAddedExercise: typeof import('./src/components/EditWorkoutAddedExercise.vue')['default']
     EditWorkoutDialog: typeof import('./src/components/EditWorkoutDialog.vue')['default']
     ExerciseCard: typeof import('./src/components/ExerciseCard.vue')['default']

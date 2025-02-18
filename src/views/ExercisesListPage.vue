@@ -15,6 +15,7 @@ import {
   isUnitsListValid,
   isVideoUrlValid,
 } from '@/utils/validation'
+import EditExerciseDialog from '@/components/EditExerciseDialog.vue'
 
 const confirm = useConfirm()
 
@@ -44,13 +45,6 @@ const {
   sportsItemsSuggestions: SISuggestionsFilter,
   tagsSuggestions: TSuggestionsFilter,
 } = useExercisesListSuggestions('filter')
-
-const {
-  showSportsItemsSuggestions: showSISuggestionsEditing,
-  showTagsSuggestions: showTSuggestionsEditing,
-  sportsItemsSuggestions: SISuggestionsEditing,
-  tagsSuggestions: TSuggestionsEditing,
-} = useExercisesListSuggestions('editing')
 
 function confirmRemove(id: number) {
   confirm.require({
@@ -93,86 +87,19 @@ const dialogHeader = computed<string>(() => {
   </header>
   <main class="exercises-list-container flex flex-wrap justify-evenly">
     <ConfirmDialog></ConfirmDialog>
-    <Dialog v-model:visible="editExerciseDialogVisible" modal :header="dialogHeader">
-      <div class="flex flex-col">
-        <FloatLabel variant="in" class="mb-2">
-          <InputText
-            v-model="editingExercise.name"
-            :invalid="nameInvalid"
-            @input="() => (nameInvalid = !isNameValid(editingExercise))"
-            id="edExName"
-          />
-          <label for="edExName">Название</label>
-        </FloatLabel>
-        <span class="mb-1">Сложность</span>
-        <SelectButton
-          v-model="editingExercise.difficulty"
-          :options="difficultyOptions"
-          class="mb-2"
-          :invalid="difficultyInvalid"
-          @change="() => (difficultyInvalid = !isDifficultyValid(editingExercise))"
-        />
-        <FloatLabel variant="in" class="mb-2">
-          <Textarea v-model="editingExercise.description" id="edExDesc" rows="5" cols="30" />
-          <label for="edExDesc">Описание</label>
-        </FloatLabel>
-        <AutoComplete
-          v-model="editingExercise.sportsItems"
-          multiple
-          :suggestions="SISuggestionsEditing"
-          @complete="showSISuggestionsEditing"
-          id="editingSportsItems"
-          placeholder="Инвентарь"
-        />
-        <AutoComplete
-          v-model="editingExercise.tags"
-          multiple
-          :suggestions="TSuggestionsEditing"
-          @complete="showTSuggestionsEditing"
-          id="editingTags"
-          placeholder="Теги"
-        />
-        <SelectButton
-          v-model="editingExercise.units"
-          :options="unitsOptions"
-          class="mb-2"
-          :invalid="unitsListInvalid"
-          multiple
-          @change="() => (unitsListInvalid = !isUnitsListValid(editingExercise))"
-        />
-        <InputText
-          v-for="(input, index) in editingExercise.photoUrlList"
-          :key="index"
-          v-model="editingExercise.photoUrlList[index]"
-          type="text"
-          placeholder="Ссылка на фото"
-          :invalid="photoUrlListInvalid[index]"
-          @input="
-            async () => (photoUrlListInvalid = await getInvalidPhotoUrlsList(editingExercise))
-          "
-        />
-        <div class="flex justify-center">
-          <Button @click="removeExercisePhotoUrl" severity="danger">
-            <i class="pi pi-minus"></i>
-          </Button>
-          <Button @click="addExercisePhotoUrl" severity="success">
-            <i class="pi pi-plus"></i>
-          </Button>
-        </div>
-        <InputText
-          v-model="editingExercise.video!.url"
-          type="text"
-          placeholder="Ссылка на видео-файл или на видео youtube или rutube"
-          :invalid="videoUrlInvalid"
-          @input="async () => (videoUrlInvalid = !(await isVideoUrlValid(editingExercise)))"
-          class="w-[500px]"
-        />
-        <div class="flex w-full justify-evenly">
-          <Button @click="editExerciseDialogVisible = false" severity="danger">Отменить</Button>
-          <Button @click="saveEditingExercise" severity="success">Сохранить</Button>
-        </div>
-      </div>
-    </Dialog>
+    <EditExerciseDialog
+      v-model:edit-exercise-dialog-visible="editExerciseDialogVisible"
+      v-model:editing-exercise="editingExercise"
+      v-model:name-invalid="nameInvalid"
+      v-model:difficulty-invalid="difficultyInvalid"
+      v-model:units-list-invalid="unitsListInvalid"
+      v-model:photo-url-list-invalid="photoUrlListInvalid"
+      v-model:video-url-invalid="videoUrlInvalid"
+      :dialog-header="dialogHeader"
+      :save-editing-exercise="saveEditingExercise"
+      @remove-exercise-photo-url="removeExercisePhotoUrl"
+      @add-exercise-photo-url="addExercisePhotoUrl"
+    />
     <ExerciseCard
       v-for="exercise in filteredExercisesList"
       :key="exercise.id"
