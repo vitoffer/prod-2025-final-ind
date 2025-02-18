@@ -4,10 +4,10 @@ import type { Exercise, ExerciseWithGoal, Workout, WorkoutExerciseGoal } from '@
 import type { AutoCompleteCompleteEvent } from 'primevue'
 import { ref } from 'vue'
 import EditWorkoutAddedExercise from './EditWorkoutAddedExercise.vue'
+import { isNameValid } from '@/utils/validation'
 
 defineProps<{
   dialogHeader: string
-  validateName: (workout: Workout) => boolean
   saveEditingWorkout: () => void
   runWorkout: () => void
   newWorkout: boolean
@@ -57,7 +57,7 @@ const removeAddedExercise = (index: number) => {
       <InputText
         v-model="editingWorkout!.name"
         :invalid="nameInvalid"
-        @input="() => (nameInvalid = validateName(editingWorkout!))"
+        @input="() => (nameInvalid = !isNameValid(editingWorkout!))"
         id="edWoName"
         class="w-[500px]"
       />

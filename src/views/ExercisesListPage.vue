@@ -9,9 +9,9 @@ import { difficultyOptions, unitsOptions } from '@/constants'
 import { useExercisesListSuggestions } from '@/composables/exercises-list/suggestions'
 import { useExercisesListFilter } from '@/composables/exercises-list/filter'
 import {
+  getInvalidPhotoUrlsList,
   isDifficultyValid,
   isNameValid,
-  isPhotoUrlListValid,
   isUnitsListValid,
   isVideoUrlValid,
 } from '@/utils/validation'
@@ -99,7 +99,7 @@ const dialogHeader = computed<string>(() => {
           <InputText
             v-model="editingExercise.name"
             :invalid="nameInvalid"
-            @input="() => (nameInvalid = isNameValid(editingExercise))"
+            @input="() => (nameInvalid = !isNameValid(editingExercise))"
             id="edExName"
           />
           <label for="edExName">Название</label>
@@ -110,7 +110,7 @@ const dialogHeader = computed<string>(() => {
           :options="difficultyOptions"
           class="mb-2"
           :invalid="difficultyInvalid"
-          @change="() => (difficultyInvalid = isDifficultyValid(editingExercise))"
+          @change="() => (difficultyInvalid = !isDifficultyValid(editingExercise))"
         />
         <FloatLabel variant="in" class="mb-2">
           <Textarea v-model="editingExercise.description" id="edExDesc" rows="5" cols="30" />
@@ -138,7 +138,7 @@ const dialogHeader = computed<string>(() => {
           class="mb-2"
           :invalid="unitsListInvalid"
           multiple
-          @change="() => (unitsListInvalid = isUnitsListValid(editingExercise))"
+          @change="() => (unitsListInvalid = !isUnitsListValid(editingExercise))"
         />
         <InputText
           v-for="(input, index) in editingExercise.photoUrlList"
@@ -147,7 +147,9 @@ const dialogHeader = computed<string>(() => {
           type="text"
           placeholder="Ссылка на фото"
           :invalid="photoUrlListInvalid[index]"
-          @input="async () => (photoUrlListInvalid = await isPhotoUrlListValid(editingExercise))"
+          @input="
+            async () => (photoUrlListInvalid = await getInvalidPhotoUrlsList(editingExercise))
+          "
         />
         <div class="flex justify-center">
           <Button @click="removeExercisePhotoUrl" severity="danger">
@@ -162,7 +164,7 @@ const dialogHeader = computed<string>(() => {
           type="text"
           placeholder="Ссылка на видео-файл или на видео youtube или rutube"
           :invalid="videoUrlInvalid"
-          @input="async () => (videoUrlInvalid = await isVideoUrlValid(editingExercise))"
+          @input="async () => (videoUrlInvalid = !(await isVideoUrlValid(editingExercise)))"
           class="w-[500px]"
         />
         <div class="flex w-full justify-evenly">

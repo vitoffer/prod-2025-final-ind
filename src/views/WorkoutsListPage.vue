@@ -3,7 +3,6 @@ import EditWorkoutDialog from '@/components/EditWorkoutDialog.vue'
 import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { Workout } from '@/types'
-import { isNameValid } from '@/utils/validation'
 import { useConfirm } from 'primevue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -78,7 +77,6 @@ const isNewWorkout = computed<boolean>(() => {
       v-model:editing-workout="editingWorkout"
       v-model:name-invalid="nameInvalid"
       :dialog-header="dialogHeader"
-      :validate-name="isNameValid"
       :save-editing-workout="saveEditingWorkout"
       :run-workout="validateAndRunWorkout"
       :new-workout="isNewWorkout"

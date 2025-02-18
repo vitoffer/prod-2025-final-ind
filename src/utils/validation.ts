@@ -23,7 +23,7 @@ export async function isPhotoUrlValid(url: string) {
   return await isCorrectImageUrl(url)
 }
 
-export async function isPhotoUrlListValid(editingExercise: Exercise) {
+export async function getInvalidPhotoUrlsList(editingExercise: Exercise) {
   const invalidList = await Promise.all(
     editingExercise.photoUrlList.map(async (url) => {
       return !(await isPhotoUrlValid(url))
