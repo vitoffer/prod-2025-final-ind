@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import ExerciseCardInfo from '@/components/ExerciseCardInfo.vue'
+import { useExerciseTimer } from '@/composables/run-workout/exerciseTimer'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import type { ExerciseWithGoal } from '@/types'
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, ref } from 'vue'
 
 const runWorkoutStore = useRunWorkoutStore()
 
@@ -25,34 +26,7 @@ const completeExercise = () => {
 const startWorkoutTime = new Date().getTime()
 const elapsedWorkoutTime = ref<number | null>(null)
 
-const startExerciseTime = ref<number | null>(null)
-const endExerciseTime = ref<number | null>(null)
-
-const exercisesListInfo = ref<any>([])
-
-watch(
-  () => currentExercise.value,
-  () => {
-    if (startExerciseTime.value) {
-      exercisesListInfo.value[currentExerciseIndex.value] =
-        new Date().getTime() - startExerciseTime.value
-    }
-    if (currentExercise.value.units.includes('мин')) {
-      startExerciseTime.value = new Date().getTime()
-    } else {
-      startExerciseTime.value = null
-    }
-  },
-  { immediate: true },
-)
-
-setTimeout(() => {
-  completeExercise()
-  setTimeout(() => {
-    completeExercise()
-    // setTimeout(completeExercise, 0)
-  }, 2000)
-}, 1000)
+const { formattedRemainingExerciseTime } = useExerciseTimer(currentExercise)
 </script>
 
 <template>
@@ -61,8 +35,7 @@ setTimeout(() => {
     <ExerciseCardInfo :exercise="currentExercise" />
   </div>
   <div v-if="currentExercise.units.includes('мин')" class="timer">
-    Затраченное время на упражнение:
-    {{ Math.ceil((new Date().getTime() - startExerciseTime!) / 1000) }} секунд
+    Осталось: {{ formattedRemainingExerciseTime }}
   </div>
   <div v-if="!currentExercise.units.includes('мин')">
     <Button severity="success" @click="completeExercise">Готово</Button>

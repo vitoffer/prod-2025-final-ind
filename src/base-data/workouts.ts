@@ -14,9 +14,9 @@ export default <Workout[]>[
         difficulty: 'простое',
         sportsItems: ['скакалка'],
         tags: ['ноги'],
-        units: ['повт'],
+        units: ['мин'],
         goal: {
-          repetitions: 20,
+          time: 4,
         },
       },
     ],
@@ -78,7 +78,7 @@ export default <Workout[]>[
         tags: [],
         units: ['мин'],
         goal: {
-          time: 100,
+          time: 3,
         },
       },
     ],
