@@ -44,6 +44,13 @@ const formattedElapsedWorkoutTime = computed<string>(() => {
     : ''
 })
 
+const skippedExercisesIndexes = ref<number[]>([])
+
+const skipExercise = () => {
+  skippedExercisesIndexes.value.push(currentExerciseIndex.value)
+  completeExercise()
+}
+
 const {
   formattedRemainingExerciseTime,
   exerciseTimerId,
@@ -64,11 +71,37 @@ const formattedUnitsToComplete = computed<string>(() => {
   }
   return ''
 })
+
+const formattedWorkoutInfo = computed<string>(() => {
+  if (!workoutCompleted.value) return ''
+  const completedExercises =
+    runWorkoutStore.selectedRunWorkout?.exercises.filter((exercise, index) => {
+      return !skippedExercisesIndexes.value.includes(index)
+    }) || []
+
+  const completedTimeExercises = completedExercises.filter((exercise) =>
+    exercise.units.includes('мин'),
+  )
+  const completedRepetitionsExercises = completedExercises.filter((exercise) =>
+    exercise.units.includes('повт'),
+  )
+  const completedUnits = {
+    time: completedTimeExercises.reduce((sum, exercise) => {
+      return sum + exercise.goal.time!
+    }, 0),
+    repetitions: completedRepetitionsExercises.reduce((sum, exercise) => {
+      return sum + exercise.goal.repetitions!
+    }, 0),
+  }
+  return `На упражнения потрачено: ${completedUnits.time} секунд.\n Повторений сделано: ${completedUnits.repetitions}`
+})
 </script>
 
 <template>
   <div v-if="workoutCompleted">
     <p>Тренировка закончена. Она длилась: {{ formattedElapsedWorkoutTime }}</p>
+    <p>Информация о тренировке:</p>
+    <p>{{ formattedWorkoutInfo }}</p>
   </div>
   <div v-else-if="currentExercise" class="exercise-container">
     <p>{{ currentExercise.name }}</p>
@@ -88,6 +121,7 @@ const formattedUnitsToComplete = computed<string>(() => {
       {{ formattedUnitsToComplete }}
       <Button severity="success" @click="completeExercise">Готово</Button>
     </div>
+    <Button @click="skipExercise">Пропустить упражнение</Button>
   </div>
   <div v-else class="rest-container">Отдых {{ formattedRemainingRestTime }}</div>
 </template>
