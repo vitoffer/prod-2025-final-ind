@@ -47,7 +47,12 @@ const formattedElapsedWorkoutTime = computed<string>(() => {
     : ''
 })
 
-const { formattedRemainingExerciseTime } = useExerciseTimer(currentExercise, completeExercise)
+const {
+  formattedRemainingExerciseTime,
+  exerciseTimerId,
+  startExerciseTimer,
+  remainingExerciseTime,
+} = useExerciseTimer(currentExercise)
 const { formattedRemainingRestTime } = useRestTimer(currentExercise, completeRest)
 </script>
 
@@ -61,7 +66,13 @@ const { formattedRemainingRestTime } = useRestTimer(currentExercise, completeRes
       <ExerciseCardInfo :exercise="currentExercise" />
     </div>
     <div v-if="currentExercise.units.includes('мин')" class="timer">
-      Осталось: {{ formattedRemainingExerciseTime }}
+      <Button v-if="!exerciseTimerId && remainingExerciseTime !== 0" @click="startExerciseTimer"
+        >Начать упражнение: {{ currentExercise.goal.time }} секунд</Button
+      >
+      <Button v-else-if="!exerciseTimerId && remainingExerciseTime === 0" @click="completeExercise"
+        >Далее</Button
+      >
+      <p v-else>Осталось: {{ formattedRemainingExerciseTime }}</p>
     </div>
     <div v-if="!currentExercise.units.includes('мин')">
       <Button severity="success" @click="completeExercise">Готово</Button>

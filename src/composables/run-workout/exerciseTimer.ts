@@ -1,10 +1,7 @@
 import type { ExerciseWithGoal } from '@/types'
-import { computed, ref, watch, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 
-export const useExerciseTimer = (
-  currentExercise: Ref<ExerciseWithGoal | null>,
-  completeExercise: () => void,
-) => {
+export const useExerciseTimer = (currentExercise: Ref<ExerciseWithGoal | null>) => {
   const exerciseTimerId = ref<number | null>(null)
   const elapsedExerciseTime = ref<number>(0)
   const totalExerciseTime = computed<number | null>(() => {
@@ -28,7 +25,6 @@ export const useExerciseTimer = (
 
       if (remainingExerciseTime.value === 0) {
         stopTimer()
-        completeExercise()
       }
     }, 1000)
   }
@@ -38,16 +34,21 @@ export const useExerciseTimer = (
     exerciseTimerId.value = null
   }
 
-  watch(
-    () => currentExercise.value,
-    () => {
-      if (!currentExercise.value) return
-      if (!currentExercise.value.units.includes('мин')) {
-        return
-      }
-      startTimer()
-    },
-    { immediate: true },
-  )
-  return { formattedRemainingExerciseTime }
+  // watch(
+  //   () => currentExercise.value,
+  //   () => {
+  //     if (!currentExercise.value) return
+  //     if (!currentExercise.value.units.includes('мин')) {
+  //       return
+  //     }
+  //     startTimer()
+  //   },
+  //   { immediate: true },
+  // )
+  return {
+    formattedRemainingExerciseTime,
+    exerciseTimerId,
+    startExerciseTimer: startTimer,
+    remainingExerciseTime,
+  }
 }
