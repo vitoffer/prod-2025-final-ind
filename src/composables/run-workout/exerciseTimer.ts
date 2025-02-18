@@ -34,17 +34,6 @@ export const useExerciseTimer = (currentExercise: Ref<ExerciseWithGoal | null>) 
     exerciseTimerId.value = null
   }
 
-  // watch(
-  //   () => currentExercise.value,
-  //   () => {
-  //     if (!currentExercise.value) return
-  //     if (!currentExercise.value.units.includes('мин')) {
-  //       return
-  //     }
-  //     startTimer()
-  //   },
-  //   { immediate: true },
-  // )
   return {
     formattedRemainingExerciseTime,
     exerciseTimerId,
