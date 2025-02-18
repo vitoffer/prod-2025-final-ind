@@ -9,9 +9,6 @@ import { computed, ref } from 'vue'
 const runWorkoutStore = useRunWorkoutStore()
 
 const currentExerciseIndex = ref<number>(0)
-// const currentExercise = computed<ExerciseWithGoal>(() => {
-//   return runWorkoutStore.selectedRunWorkout!.exercises[currentExerciseIndex.value]
-// })
 
 const currentExercise = ref<ExerciseWithGoal | null>(
   runWorkoutStore.selectedRunWorkout!.exercises[currentExerciseIndex.value],
@@ -54,6 +51,19 @@ const {
   remainingExerciseTime,
 } = useExerciseTimer(currentExercise)
 const { formattedRemainingRestTime } = useRestTimer(currentExercise, completeRest)
+const formattedUnitsToComplete = computed<string>(() => {
+  if (!currentExercise.value) return ''
+  if (currentExercise.value.units.includes('кг') && currentExercise.value.units.includes('повт')) {
+    return `${currentExercise.value.goal.repetitions} повт по ${currentExercise.value.goal.weight} кг`
+  }
+  if (currentExercise.value.units.includes('кг')) {
+    return `1 повт по ${currentExercise.value.goal.weight} кг`
+  }
+  if (currentExercise.value.units.includes('повт')) {
+    return `${currentExercise.value.goal.repetitions} повт`
+  }
+  return ''
+})
 </script>
 
 <template>
@@ -75,6 +85,7 @@ const { formattedRemainingRestTime } = useRestTimer(currentExercise, completeRes
       <p v-else>Осталось: {{ formattedRemainingExerciseTime }}</p>
     </div>
     <div v-if="!currentExercise.units.includes('мин')">
+      {{ formattedUnitsToComplete }}
       <Button severity="success" @click="completeExercise">Готово</Button>
     </div>
   </div>
