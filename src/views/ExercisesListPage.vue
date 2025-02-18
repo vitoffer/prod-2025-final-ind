@@ -5,16 +5,9 @@ import { useExercisesStore } from '@/stores/exercisesStore'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed } from 'vue'
 import ExercisesListFilters from '@/components/ExercisesListFilters.vue'
-import { difficultyOptions, unitsOptions } from '@/constants'
 import { useExercisesListSuggestions } from '@/composables/exercises-list/suggestions'
 import { useExercisesListFilter } from '@/composables/exercises-list/filter'
-import {
-  getInvalidPhotoUrlsList,
-  isDifficultyValid,
-  isNameValid,
-  isUnitsListValid,
-  isVideoUrlValid,
-} from '@/utils/validation'
+
 import EditExerciseDialog from '@/components/EditExerciseDialog.vue'
 
 const confirm = useConfirm()
