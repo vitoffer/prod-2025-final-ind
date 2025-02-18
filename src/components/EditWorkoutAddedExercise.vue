@@ -1,25 +1,13 @@
 <script setup lang="ts">
 import type { ExerciseWithGoal } from '@/types'
 import type { VirtualScrollerItemOptions } from 'primevue'
-import { computed } from 'vue'
+import GoalInput from './GoalInput.vue'
 
-const props = defineProps<{ exercise: ExerciseWithGoal; options: VirtualScrollerItemOptions }>()
+defineProps<{ options: VirtualScrollerItemOptions }>()
 
-const formattedGoal = computed<string>(() => {
-  if (props.exercise.units.includes('мин')) {
-    return `${props.exercise.goal.time} мин`
-  }
-  if (props.exercise.units.includes('повт') && props.exercise.units.includes('кг')) {
-    return `${props.exercise.goal.repetitions} повторений, ${props.exercise.goal.weight} кг`
-  }
-  if (props.exercise.units.includes('повт')) {
-    return `${props.exercise.goal.repetitions} повторений`
-  }
-  if (props.exercise.units.includes('кг')) {
-    return `1 повт, ${props.exercise.goal.weight} кг`
-  }
-  return ''
-})
+defineEmits<{ (e: 'removeAddedExercise', id: number): void }>()
+
+const exercise = defineModel<ExerciseWithGoal>('exercise')
 </script>
 
 <template>
@@ -28,14 +16,31 @@ const formattedGoal = computed<string>(() => {
     style="height: 50px"
   >
     <p>
-      {{ exercise.name }}
+      {{ exercise!.name }}
     </p>
-    <p>
-      {{ formattedGoal }}
+    <p class="mr-3 ml-auto">
+      <template v-if="exercise!.units.includes('мин')">
+        <GoalInput v-model="exercise!.goal.time" />
+        мин
+      </template>
+      <template v-else-if="exercise!.units.includes('повт') && exercise!.units.includes('кг')">
+        <GoalInput v-model="exercise!.goal.repetitions" />
+        повт, по
+        <GoalInput v-model="exercise!.goal.weight" />
+        кг
+      </template>
+      <template v-else-if="exercise!.units.includes('повт')">
+        <GoalInput v-model="exercise!.goal.repetitions" />
+        повт
+      </template>
+      <template v-else-if="exercise!.units.includes('кг')">
+        <GoalInput v-model="exercise!.goal.weight" />
+        кг
+      </template>
     </p>
-    <Button severity="danger" @click="$emit('removeAddedExercise', exercise.id)"
-      ><i class="pi pi-times-circle"></i
-    ></Button>
+    <Button severity="danger" @click="$emit('removeAddedExercise', exercise!.id)">
+      <i class="pi pi-times-circle" />
+    </Button>
   </div>
 </template>
 

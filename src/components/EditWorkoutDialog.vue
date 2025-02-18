@@ -3,6 +3,7 @@ import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseWithGoal, Workout } from '@/types'
 import type { AutoCompleteCompleteEvent } from 'primevue'
 import { ref } from 'vue'
+import EditWorkoutAddedExercise from './EditWorkoutAddedExercise.vue'
 
 defineProps<{
   dialogHeader: string
@@ -62,11 +63,11 @@ const removeAddedExercise = (id: number) => {
       class="rounded border border-gray-200"
       style="width: 500px; height: 200px"
     >
-      <template v-slot:item="{ item, options }">
+      <template v-slot:item="{ options }">
         <EditWorkoutAddedExercise
-          @remove-added-exercise="removeAddedExercise"
-          :exercise="item"
           :options="options"
+          v-model:exercise="editingWorkout!.exercises[options.index]"
+          @removeAddedExercise="removeAddedExercise"
         />
       </template>
     </VirtualScroller>

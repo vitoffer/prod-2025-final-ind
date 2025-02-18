@@ -40,11 +40,9 @@ defineProps<{ exercise: Exercise }>()
     </div>
     <div class="buttons mt-4 flex justify-around">
       <Button @click="$emit('changeExercise', exercise.id)" severity="warn">
-        <!-- class="flex aspect-square cursor-pointer items-center justify-center rounded-md border-4 border-amber-400 p-1 leading-none" -->
         <i class="pi pi-pencil" style="font-size: 1.25rem"></i>
       </Button>
       <Button @click="$emit('removeExercise', exercise.id)" severity="danger">
-        <!-- class="flex aspect-square cursor-pointer items-center justify-center rounded-md border-4 border-red-400 p-1 leading-none" -->
         <i class="pi pi-times-circle" style="font-size: 1.25rem"></i>
       </Button>
     </div>

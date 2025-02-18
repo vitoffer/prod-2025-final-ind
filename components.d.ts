@@ -17,6 +17,7 @@ declare module 'vue' {
     ExerciseCardInfo: typeof import('./src/components/ExerciseCardInfo.vue')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
     Galleria: typeof import('primevue/galleria')['default']
+    GoalInput: typeof import('./src/components/GoalInput.vue')['default']
     InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
