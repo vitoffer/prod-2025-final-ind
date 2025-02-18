@@ -7,29 +7,37 @@ export const useRestTimer = (
 ) => {
   const restTimerId = ref<number | null>(null)
   const elapsedRestTime = ref<number>(0)
-  const totalRestTime = 2
-  const remainingRestTime = computed<number>(() => {
-    return totalRestTime - elapsedRestTime.value
-  })
+  const totalRestTime = 10
+  const remainingRestTime = ref<number>(0)
   const formattedRemainingRestTime = computed<string>(() => {
     return `${remainingRestTime.value} сек`
   })
 
   const startTimer = () => {
     elapsedRestTime.value = 0
+    remainingRestTime.value = totalRestTime - elapsedRestTime.value
     restTimerId.value = setInterval(() => {
-      elapsedRestTime.value += 1
-
       if (remainingRestTime.value === 0) {
         stopTimer()
         completeRest()
       }
+
+      elapsedRestTime.value += 1
+      remainingRestTime.value -= 1
     }, 1000)
   }
 
   const stopTimer = () => {
     clearInterval(restTimerId.value!)
     restTimerId.value = null
+  }
+
+  const increaseRemainingRestTime = () => {
+    remainingRestTime.value += 10
+  }
+
+  const decreaseRemainingRestTime = () => {
+    remainingRestTime.value = Math.max(0, remainingRestTime.value - 10)
   }
 
   watch(
@@ -42,5 +50,5 @@ export const useRestTimer = (
     },
     { immediate: true },
   )
-  return { formattedRemainingRestTime }
+  return { formattedRemainingRestTime, increaseRemainingRestTime, decreaseRemainingRestTime }
 }

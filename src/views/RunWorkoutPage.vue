@@ -57,7 +57,8 @@ const {
   startExerciseTimer,
   remainingExerciseTime,
 } = useExerciseTimer(currentExercise)
-const { formattedRemainingRestTime } = useRestTimer(currentExercise, completeRest)
+const { formattedRemainingRestTime, increaseRemainingRestTime, decreaseRemainingRestTime } =
+  useRestTimer(currentExercise, completeRest)
 const formattedUnitsToComplete = computed<string>(() => {
   if (!currentExercise.value) return ''
   if (currentExercise.value.units.includes('кг') && currentExercise.value.units.includes('повт')) {
@@ -123,7 +124,11 @@ const formattedWorkoutInfo = computed<string>(() => {
     </div>
     <Button @click="skipExercise">Пропустить упражнение</Button>
   </div>
-  <div v-else class="rest-container">Отдых {{ formattedRemainingRestTime }}</div>
+  <div v-else class="rest-container">
+    <p>Отдых {{ formattedRemainingRestTime }}</p>
+    <Button @click="increaseRemainingRestTime">+10 сек</Button>
+    <Button @click="decreaseRemainingRestTime">-10 сек</Button>
+  </div>
 </template>
 
 <style scoped></style>
