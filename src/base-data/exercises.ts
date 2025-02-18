@@ -6,7 +6,7 @@ export default <Exercise[]>[
     name: 'Упражнение 1',
     video: null,
     photoUrlList: [],
-    description: 'Описание 1',
+    description: null,
     difficulty: 'простое',
     sportsItems: ['скакалка'],
     tags: ['ноги'],
@@ -17,7 +17,7 @@ export default <Exercise[]>[
     name: 'Упражнение 2',
     video: {
       type: 'iframe',
-      url: 'https://rutube.ru/play/embed/348d394918bfe218476abc144918f909',
+      url: 'https://www.youtube.com/embed/FqF11YdwxrQ',
     },
     photoUrlList: [],
     description: null,
@@ -45,7 +45,7 @@ export default <Exercise[]>[
     name: 'Случай 4',
     video: {
       type: 'iframe',
-      url: 'https://www.youtube.com/embed/FqF11YdwxrQ',
+      url: 'https://rutube.ru/play/embed/348d394918bfe218476abc144918f909',
     },
     photoUrlList: [
       'https://fitnessclub24.ru/public/images/gallery/section/thumbs/0/2-3-shragi.jpg',

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Exercise } from '@/types'
 import { computed } from 'vue'
+import IframeLoader from './IframeLoader.vue'
 
 const props = defineProps<{ exercise: Exercise }>()
 
@@ -27,6 +28,16 @@ const infoComponentsList = computed<ExerciseInfoObject[]>(() => {
   }
   return list
 })
+
+const activeIndex = computed<number>(() => {
+  if (
+    infoComponentsList.value.length > 1 &&
+    infoComponentsList.value.find((elem) => elem.type === 'iframe') !== undefined
+  )
+    return 1
+
+  return 0
+})
 </script>
 
 <template>
@@ -38,18 +49,15 @@ const infoComponentsList = computed<ExerciseInfoObject[]>(() => {
     showItemNavigatorsOnHover
     showIndicators
     showIndicatorsOnItem
+    :active-index="activeIndex"
   >
     <template #item="slotProps">
       <div class="flex h-[250px] w-[100%] items-center">
-        <iframe
+        <IframeLoader
           v-if="slotProps.item.type === 'iframe'"
-          class="aspect-video w-[100%] rounded-xl"
+          class="w-[100%] rounded-xl"
           :src="slotProps.item.src"
-          frameBorder="0"
-          allow="clipboard-write; autoplay"
-          allowfullscreen
-          title="Видео плеер"
-        ></iframe>
+        />
         <video v-else-if="slotProps.item.type === 'video'" controls>
           <source :src="slotProps.item.src" />
         </video>

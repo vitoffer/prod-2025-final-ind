@@ -18,11 +18,13 @@ declare module 'vue' {
     FloatLabel: typeof import('primevue/floatlabel')['default']
     Galleria: typeof import('primevue/galleria')['default']
     GoalInput: typeof import('./src/components/GoalInput.vue')['default']
+    IframeLoader: typeof import('./src/components/IframeLoader.vue')['default']
     InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SelectButton: typeof import('primevue/selectbutton')['default']
+    Skeleton: typeof import('primevue/skeleton')['default']
     Textarea: typeof import('primevue/textarea')['default']
     VirtualScroller: typeof import('primevue/virtualscroller')['default']
   }
