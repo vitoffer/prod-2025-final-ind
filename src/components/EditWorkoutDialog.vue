@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useExercisesStore } from '@/stores/exercisesStore'
-import type { Exercise, ExerciseWithGoal, Workout } from '@/types'
+import type { Exercise, ExerciseWithGoal, Workout, WorkoutExerciseGoal } from '@/types'
 import type { AutoCompleteCompleteEvent } from 'primevue'
 import { ref } from 'vue'
 import EditWorkoutAddedExercise from './EditWorkoutAddedExercise.vue'
@@ -27,13 +27,19 @@ const search = (event: AutoCompleteCompleteEvent) => {
 }
 
 const addExerciseToList = () => {
+  const newGoal: WorkoutExerciseGoal = {}
+  if (exerciseSearch.value!.units.includes('мин')) {
+    newGoal.time = 0
+  }
+  if (exerciseSearch.value!.units.includes('повт')) {
+    newGoal.repetitions = 0
+  }
+  if (exerciseSearch.value!.units.includes('кг')) {
+    newGoal.weight = 0
+  }
   editingWorkout.value!.exercises.push({
     ...exerciseSearch.value,
-    goal: {
-      time: exerciseSearch.value!.units.includes('мин') ? 0 : undefined,
-      repetitions: exerciseSearch.value!.units.includes('повт') ? 0 : undefined,
-      weight: exerciseSearch.value!.units.includes('кг') ? 0 : undefined,
-    },
+    goal: newGoal,
   } as ExerciseWithGoal)
   exerciseSearch.value = null
 }
