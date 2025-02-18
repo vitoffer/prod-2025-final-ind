@@ -23,19 +23,20 @@ export function useFilterExercisesList() {
   const filteredExercisesList = computed<Exercise[]>(() => {
     return exercisesStore.list.filter((exercise) => {
       const matchesName =
-        filtersObj.value.name === '' ||
-        exercise.name.toLowerCase().includes(filtersObj.value.name.toLowerCase())
+        filtersObject.value.name === '' ||
+        exercise.name.toLowerCase().includes(filtersObject.value.name.toLowerCase())
       const matchesDescription =
-        filtersObj.value.description === '' ||
-        exercise.description?.toLowerCase().includes(filtersObj.value.description.toLowerCase())
+        filtersObject.value.description === '' ||
+        exercise.description?.toLowerCase().includes(filtersObject.value.description.toLowerCase())
       const matchesDifficulty =
-        filtersObj.value.difficulty === null || exercise.difficulty === filtersObj.value.difficulty
+        filtersObject.value.difficulty === null ||
+        exercise.difficulty === filtersObject.value.difficulty
       const matchesSportsItems =
-        filtersObj.value.sportsItems.length === 0 ||
-        filtersObj.value.sportsItems.some((item) => exercise.sportsItems.includes(item))
+        filtersObject.value.sportsItems.length === 0 ||
+        filtersObject.value.sportsItems.some((item) => exercise.sportsItems.includes(item))
       const matchesTags =
-        filtersObj.value.tags.length === 0 ||
-        filtersObj.value.tags.some((tag) => exercise.tags.includes(tag))
+        filtersObject.value.tags.length === 0 ||
+        filtersObject.value.tags.some((tag) => exercise.tags.includes(tag))
 
       return (
         matchesName && matchesDescription && matchesDifficulty && matchesSportsItems && matchesTags
@@ -46,7 +47,7 @@ export function useFilterExercisesList() {
   const sportsItemsSelectFilterSuggestions = ref<string[]>([])
   const tagsSelectFilterSuggestions = ref<string[]>([])
 
-  const filtersObj = ref<FiltersObject>({
+  const filtersObject = ref<FiltersObject>({
     name: '',
     description: '',
     difficulty: null,
@@ -60,6 +61,6 @@ export function useFilterExercisesList() {
     filteredExercisesList,
     sportsItemsSelectFilterSuggestions,
     tagsSelectFilterSuggestions,
-    filtersObj,
+    filtersObject,
   }
 }

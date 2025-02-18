@@ -15,6 +15,7 @@ declare module 'vue' {
     EditWorkoutDialog: typeof import('./src/components/EditWorkoutDialog.vue')['default']
     ExerciseCard: typeof import('./src/components/ExerciseCard.vue')['default']
     ExerciseCardInfo: typeof import('./src/components/ExerciseCardInfo.vue')['default']
+    ExercisesListFilters: typeof import('./src/components/ExercisesListFilters.vue')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
     Galleria: typeof import('primevue/galleria')['default']
     GoalInput: typeof import('./src/components/GoalInput.vue')['default']

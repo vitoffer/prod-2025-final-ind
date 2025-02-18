@@ -2,12 +2,13 @@
 import ExerciseCard from '@/components/ExerciseCard.vue'
 import { useEditingExercise } from '@/composables/exercises-list/editingExercise'
 import { useEditingExerciseOptions } from '@/composables/exercises-list/editingExerciseOptions'
-import { useExerciseOptions } from '@/composables/exerciseOptions'
 import { useFilterExercisesList } from '@/composables/exercises-list/filterExercisesList'
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { ExerciseUnit } from '@/types'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed } from 'vue'
+import ExercisesListFilters from '@/components/ExercisesListFilters.vue'
+import { difficultyOptions } from '@/constants'
 
 const confirm = useConfirm()
 
@@ -40,7 +41,7 @@ const {
   filteredExercisesList,
   sportsItemsSelectFilterSuggestions,
   tagsSelectFilterSuggestions,
-  filtersObj,
+  filtersObject,
 } = useFilterExercisesList()
 
 const {
@@ -49,8 +50,6 @@ const {
   sportsItemsSelectEditingSuggestions,
   tagsSelectEditingSuggestions,
 } = useEditingExerciseOptions()
-
-const { difficultyOptions } = useExerciseOptions()
 
 const unitsOptions: ExerciseUnit[] = ['кг', 'мин', 'повт']
 
@@ -84,51 +83,14 @@ const dialogHeader = computed<string>(() => {
 
 <template>
   <header class="header flex flex-col justify-around lg:flex-row lg:items-center">
-    <div>
-      <p class="text-center">Фильтры</p>
-      <ul class="filters flex flex-col lg:flex-row">
-        <li>
-          <FloatLabel variant="in" class="mb-2">
-            <InputText id="filterName" v-model="filtersObj.name" />
-            <label for="filterName">Название</label>
-          </FloatLabel>
-        </li>
-        <li>
-          <FloatLabel variant="in" class="mb-2">
-            <InputText id="filterDesc" v-model="filtersObj.description" />
-            <label for="filterDesc">Описание</label>
-          </FloatLabel>
-        </li>
-        <li>
-          <p>Сложность</p>
-          <SelectButton v-model="filtersObj.difficulty" :options="difficultyOptions"></SelectButton>
-        </li>
-        <li>
-          <FloatLabel variant="in" class="mb-2">
-            <AutoComplete
-              v-model="filtersObj.sportsItems"
-              multiple
-              :suggestions="sportsItemsSelectFilterSuggestions"
-              @complete="searchSportsItemsSelectFilter"
-              id="filterSportsItems"
-            />
-            <label for="filterSportsItems">Инвентарь</label>
-          </FloatLabel>
-        </li>
-        <li>
-          <FloatLabel variant="in" class="mb-2">
-            <AutoComplete
-              v-model="filtersObj.tags"
-              multiple
-              :suggestions="tagsSelectFilterSuggestions"
-              @complete="searchTagsSelectFilter"
-              id="filterTags"
-            />
-            <label for="filterTags">Теги</label>
-          </FloatLabel>
-        </li>
-      </ul>
-    </div>
+    <ExercisesListFilters
+      v-model:filters-object="filtersObject"
+      :sports-items-select-suggestions="sportsItemsSelectFilterSuggestions"
+      :tags-select-suggestions="tagsSelectFilterSuggestions"
+      @search-sports-items-select="searchSportsItemsSelectFilter"
+      @search-tags-select="searchTagsSelectFilter"
+    />
+
     <Button @click="createExercise" class=""><i class="pi pi-plus"></i></Button>
   </header>
   <main class="exercises-list-container flex flex-wrap justify-evenly">

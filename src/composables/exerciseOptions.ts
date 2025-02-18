@@ -1,11 +1,9 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
-import type { ExerciseDifficulty } from '@/types'
 import { computed } from 'vue'
 
 export function useExerciseOptions() {
   const exercisesStore = useExercisesStore()
 
-  const difficultyOptions: ExerciseDifficulty[] = ['простое', 'среднее', 'сложное']
   const sportsItemsOptions = computed<{ name: string }[]>(() => {
     const list: { name: string }[] = []
 
@@ -34,7 +32,6 @@ export function useExerciseOptions() {
   })
 
   return {
-    difficultyOptions,
     sportsItemsOptions,
     tagsOptions,
   }
