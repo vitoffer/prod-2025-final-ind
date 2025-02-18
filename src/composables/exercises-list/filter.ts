@@ -1,24 +1,17 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, FiltersObject } from '@/types'
-import type { AutoCompleteCompleteEvent } from 'primevue'
 import { computed, ref } from 'vue'
-import { useExerciseOptions } from '../exerciseOptions'
 
-export function useFilterExercisesList() {
+export function useExercisesListFilter() {
   const exercisesStore = useExercisesStore()
-  const { sportsItemsOptions, tagsOptions } = useExerciseOptions()
 
-  const searchSportsItemsSelectFilter = (event: AutoCompleteCompleteEvent) => {
-    sportsItemsSelectFilterSuggestions.value = sportsItemsOptions.value
-      .filter((option) => option.name.toLowerCase().includes(event.query.toLowerCase()))
-      .map((option) => option.name)
-  }
-
-  const searchTagsSelectFilter = (event: AutoCompleteCompleteEvent) => {
-    tagsSelectFilterSuggestions.value = tagsOptions.value
-      .filter((option) => option.name.toLowerCase().includes(event.query.toLowerCase()))
-      .map((option) => option.name)
-  }
+  const filtersObject = ref<FiltersObject>({
+    name: '',
+    description: '',
+    difficulty: null,
+    sportsItems: [],
+    tags: [],
+  })
 
   const filteredExercisesList = computed<Exercise[]>(() => {
     return exercisesStore.list.filter((exercise) => {
@@ -44,23 +37,8 @@ export function useFilterExercisesList() {
     })
   })
 
-  const sportsItemsSelectFilterSuggestions = ref<string[]>([])
-  const tagsSelectFilterSuggestions = ref<string[]>([])
-
-  const filtersObject = ref<FiltersObject>({
-    name: '',
-    description: '',
-    difficulty: null,
-    sportsItems: [],
-    tags: [],
-  })
-
   return {
-    searchSportsItemsSelectFilter,
-    searchTagsSelectFilter,
-    filteredExercisesList,
-    sportsItemsSelectFilterSuggestions,
-    tagsSelectFilterSuggestions,
     filtersObject,
+    filteredExercisesList,
   }
 }

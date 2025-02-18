@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import ExerciseCard from '@/components/ExerciseCard.vue'
 import { useEditingExercise } from '@/composables/exercises-list/editingExercise'
-import { useEditingExerciseOptions } from '@/composables/exercises-list/editingExerciseOptions'
-import { useFilterExercisesList } from '@/composables/exercises-list/filterExercisesList'
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { ExerciseUnit } from '@/types'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed } from 'vue'
 import ExercisesListFilters from '@/components/ExercisesListFilters.vue'
 import { difficultyOptions } from '@/constants'
+import { useExercisesListSuggestions } from '@/composables/exercises-list/suggestions'
+import { useExercisesListFilter } from '@/composables/exercises-list/filter'
 
 const confirm = useConfirm()
 
@@ -35,25 +35,24 @@ const {
   validateVideoUrl,
 } = useEditingExercise()
 
+const { filteredExercisesList, filtersObject } = useExercisesListFilter()
 const {
-  searchSportsItemsSelectFilter,
-  searchTagsSelectFilter,
-  filteredExercisesList,
-  sportsItemsSelectFilterSuggestions,
-  tagsSelectFilterSuggestions,
-  filtersObject,
-} = useFilterExercisesList()
+  showSportsItemsSuggestions: showSISuggestionsFilter,
+  showTagsSuggestions: showTSuggestionsFilter,
+  sportsItemsSuggestions: SISuggestionsFilter,
+  tagsSuggestions: TSuggestionsFilter,
+} = useExercisesListSuggestions('filter')
 
 const {
-  searchSportsItemsSelectEditing,
-  searchTagsSelectEditing,
-  sportsItemsSelectEditingSuggestions,
-  tagsSelectEditingSuggestions,
-} = useEditingExerciseOptions()
+  showSportsItemsSuggestions: showSISuggestionsEditing,
+  showTagsSuggestions: showTSuggestionsEditing,
+  sportsItemsSuggestions: SISuggestionsEditing,
+  tagsSuggestions: TSuggestionsEditing,
+} = useExercisesListSuggestions('editing')
 
 const unitsOptions: ExerciseUnit[] = ['кг', 'мин', 'повт']
 
-const confirmRemove = (id: number) => {
+function confirmRemove(id: number) {
   confirm.require({
     message: 'Вы уверены, что хотите удалить это упражнение?',
     header: 'Подтверждение',
@@ -85,12 +84,11 @@ const dialogHeader = computed<string>(() => {
   <header class="header flex flex-col justify-around lg:flex-row lg:items-center">
     <ExercisesListFilters
       v-model:filters-object="filtersObject"
-      :sports-items-select-suggestions="sportsItemsSelectFilterSuggestions"
-      :tags-select-suggestions="tagsSelectFilterSuggestions"
-      @search-sports-items-select="searchSportsItemsSelectFilter"
-      @search-tags-select="searchTagsSelectFilter"
+      :sports-items-select-suggestions="SISuggestionsFilter"
+      :tags-select-suggestions="TSuggestionsFilter"
+      @search-sports-items-select="showSISuggestionsFilter"
+      @search-tags-select="showTSuggestionsFilter"
     />
-
     <Button @click="createExercise" class=""><i class="pi pi-plus"></i></Button>
   </header>
   <main class="exercises-list-container flex flex-wrap justify-evenly">
@@ -118,20 +116,19 @@ const dialogHeader = computed<string>(() => {
           <Textarea v-model="editingExercise.description" id="edExDesc" rows="5" cols="30" />
           <label for="edExDesc">Описание</label>
         </FloatLabel>
-
         <AutoComplete
           v-model="editingExercise.sportsItems"
           multiple
-          :suggestions="sportsItemsSelectEditingSuggestions"
-          @complete="searchSportsItemsSelectEditing"
+          :suggestions="SISuggestionsEditing"
+          @complete="showSISuggestionsEditing"
           id="editingSportsItems"
           placeholder="Инвентарь"
         />
         <AutoComplete
           v-model="editingExercise.tags"
           multiple
-          :suggestions="tagsSelectEditingSuggestions"
-          @complete="searchTagsSelectEditing"
+          :suggestions="TSuggestionsEditing"
+          @complete="showTSuggestionsEditing"
           id="editingTags"
           placeholder="Теги"
         />
