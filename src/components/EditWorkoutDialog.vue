@@ -9,6 +9,8 @@ defineProps<{
   dialogHeader: string
   validateName: (workout: Workout) => boolean
   saveEditingWorkout: () => void
+  runWorkout: () => void
+  newWorkout: boolean
 }>()
 
 const editWorkoutDialogVisible = defineModel<boolean>('editWorkoutDialogVisible')
@@ -88,6 +90,7 @@ const removeAddedExercise = (index: number) => {
     <div class="flex w-full justify-evenly">
       <Button @click="editWorkoutDialogVisible = false" severity="danger">Отменить</Button>
       <Button @click="saveEditingWorkout" severity="success">Сохранить</Button>
+      <Button v-if="newWorkout" @click="() => runWorkout()">Запустить без сохранения</Button>
     </div>
   </Dialog>
 </template>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import EditWorkoutDialog from '@/components/EditWorkoutDialog.vue'
 import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
-import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { Workout } from '@/types'
 import { useConfirm } from 'primevue'
@@ -11,13 +10,7 @@ import { useRouter } from 'vue-router'
 const confirm = useConfirm()
 
 const workoutsStore = useWorkoutsStore()
-const runWorkoutStore = useRunWorkoutStore()
 const router = useRouter()
-
-function runWorkout(workout: Workout) {
-  runWorkoutStore.changeRunWorkout(workout)
-  router.push({ name: 'RunWorkoutPage' })
-}
 
 const {
   editingWorkout,
@@ -28,7 +21,9 @@ const {
   nameInvalid,
   validateName,
   saveEditingWorkout,
-} = useEditingWorkout()
+  validateAndRunWorkout,
+  runWorkout,
+} = useEditingWorkout(router)
 
 const confirmRemove = (id: number) => {
   confirm.require({
@@ -61,6 +56,10 @@ const filteredWorkoutsList = computed<Workout[]>(() => {
 })
 
 const dialogHeader = ref<string>('Редактирование тренировки')
+
+const isNewWorkout = computed<boolean>(() => {
+  return workoutsStore.list.find((workout) => workout.id === editingWorkout.value.id) === undefined
+})
 </script>
 
 <template>
@@ -81,6 +80,8 @@ const dialogHeader = ref<string>('Редактирование трениров�
       :dialog-header="dialogHeader"
       :validate-name="validateName"
       :save-editing-workout="saveEditingWorkout"
+      :run-workout="validateAndRunWorkout"
+      :new-workout="isNewWorkout"
     />
     <ul class="workouts-list mt-6 mr-auto ml-auto flex w-fit flex-col gap-4">
       <li v-for="workout in filteredWorkoutsList" :key="workout.id">

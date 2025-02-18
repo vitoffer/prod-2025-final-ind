@@ -2,9 +2,12 @@ import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { Workout } from '@/types'
 import { useEditingEntity } from '../editingEntity'
 import { useValidation } from '../validation'
+import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
+import type { Router } from 'vue-router'
 
-export const useEditingWorkout = () => {
+export const useEditingWorkout = (router: Router) => {
   const workoutsStore = useWorkoutsStore()
+  const runWorkoutStore = useRunWorkoutStore()
   const { nameInvalid, validateName } = useValidation()
 
   const nullWorkout: Omit<Workout, 'id'> = {
@@ -55,6 +58,24 @@ export const useEditingWorkout = () => {
     editWorkoutDialogVisible.value = false
   }
 
+  const validateAndRunWorkout = async () => {
+    console.log(editingWorkout.value.name)
+    nameInvalid.value = validateName(editingWorkout.value)
+
+    if (nameInvalid.value) {
+      return
+    }
+
+    editWorkoutDialogVisible.value = false
+
+    runWorkout(editingWorkout.value)
+  }
+
+  const runWorkout = (workout: Workout) => {
+    runWorkoutStore.changeRunWorkout(workout)
+    router.push({ name: 'RunWorkoutPage' })
+  }
+
   return {
     editingWorkout,
     editWorkoutDialogVisible,
@@ -64,5 +85,7 @@ export const useEditingWorkout = () => {
     nameInvalid,
     validateName,
     saveEditingWorkout,
+    validateAndRunWorkout,
+    runWorkout,
   }
 }
