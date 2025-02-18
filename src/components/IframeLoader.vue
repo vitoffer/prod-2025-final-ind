@@ -23,6 +23,7 @@ const handleIframeError = () => {
 }
 
 const iframe = useTemplateRef('iframe')
+const loadingText = useTemplateRef('loadingText')
 const firstLoad = ref(true)
 const timeoutId = ref(
   setTimeout(() => {
@@ -33,6 +34,11 @@ const timeoutId = ref(
     iframe.value.src = ''
   }, 3000),
 )
+
+setTimeout(() => {
+  if (!loadingText.value) return
+  loadingText.value.textContent = 'Загрузка...'
+}, 400)
 </script>
 
 <template>
@@ -40,7 +46,7 @@ const timeoutId = ref(
     <p v-if="hasError" class="text-center">
       Ошибка загрузки контента. Пожалуйста, проверьте ссылку или попробуйте позже.
     </p>
-    <p v-else-if="!isLoaded" class="text-center">Загрузка...</p>
+    <p v-else-if="!isLoaded" class="text-center" ref="loadingText"></p>
     <iframe
       v-show="isLoaded && !hasError"
       :src="src"
