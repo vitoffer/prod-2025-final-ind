@@ -2,13 +2,19 @@
 import ExerciseCard from '@/components/ExerciseCard.vue'
 import { useEditingExercise } from '@/composables/exercises-list/editingExercise'
 import { useExercisesStore } from '@/stores/exercisesStore'
-import type { ExerciseUnit } from '@/types'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed } from 'vue'
 import ExercisesListFilters from '@/components/ExercisesListFilters.vue'
-import { difficultyOptions } from '@/constants'
+import { difficultyOptions, unitsOptions } from '@/constants'
 import { useExercisesListSuggestions } from '@/composables/exercises-list/suggestions'
 import { useExercisesListFilter } from '@/composables/exercises-list/filter'
+import {
+  isDifficultyValid,
+  isNameValid,
+  isPhotoUrlListValid,
+  isUnitsListValid,
+  isVideoUrlValid,
+} from '@/utils/validation'
 
 const confirm = useConfirm()
 
@@ -24,18 +30,14 @@ const {
   removeExercisePhotoUrl,
   saveEditingExercise,
   nameInvalid,
-  validateName,
-  diffInvalid,
-  validateDiff,
-  unitsInvalid,
-  validateUnits,
+  difficultyInvalid,
+  unitsListInvalid,
   photoUrlListInvalid,
-  validatePhotoUrlList,
   videoUrlInvalid,
-  validateVideoUrl,
 } = useEditingExercise()
 
 const { filteredExercisesList, filtersObject } = useExercisesListFilter()
+
 const {
   showSportsItemsSuggestions: showSISuggestionsFilter,
   showTagsSuggestions: showTSuggestionsFilter,
@@ -49,8 +51,6 @@ const {
   sportsItemsSuggestions: SISuggestionsEditing,
   tagsSuggestions: TSuggestionsEditing,
 } = useExercisesListSuggestions('editing')
-
-const unitsOptions: ExerciseUnit[] = ['кг', 'мин', 'повт']
 
 function confirmRemove(id: number) {
   confirm.require({
@@ -99,7 +99,7 @@ const dialogHeader = computed<string>(() => {
           <InputText
             v-model="editingExercise.name"
             :invalid="nameInvalid"
-            @input="() => (nameInvalid = validateName(editingExercise))"
+            @input="() => (nameInvalid = isNameValid(editingExercise))"
             id="edExName"
           />
           <label for="edExName">Название</label>
@@ -109,8 +109,8 @@ const dialogHeader = computed<string>(() => {
           v-model="editingExercise.difficulty"
           :options="difficultyOptions"
           class="mb-2"
-          :invalid="diffInvalid"
-          @change="() => (diffInvalid = validateDiff(editingExercise))"
+          :invalid="difficultyInvalid"
+          @change="() => (difficultyInvalid = isDifficultyValid(editingExercise))"
         />
         <FloatLabel variant="in" class="mb-2">
           <Textarea v-model="editingExercise.description" id="edExDesc" rows="5" cols="30" />
@@ -136,9 +136,9 @@ const dialogHeader = computed<string>(() => {
           v-model="editingExercise.units"
           :options="unitsOptions"
           class="mb-2"
-          :invalid="unitsInvalid"
+          :invalid="unitsListInvalid"
           multiple
-          @change="() => (unitsInvalid = validateUnits(editingExercise))"
+          @change="() => (unitsListInvalid = isUnitsListValid(editingExercise))"
         />
         <InputText
           v-for="(input, index) in editingExercise.photoUrlList"
@@ -147,7 +147,7 @@ const dialogHeader = computed<string>(() => {
           type="text"
           placeholder="Ссылка на фото"
           :invalid="photoUrlListInvalid[index]"
-          @input="async () => (photoUrlListInvalid = await validatePhotoUrlList(editingExercise))"
+          @input="async () => (photoUrlListInvalid = await isPhotoUrlListValid(editingExercise))"
         />
         <div class="flex justify-center">
           <Button @click="removeExercisePhotoUrl" severity="danger">
@@ -162,7 +162,7 @@ const dialogHeader = computed<string>(() => {
           type="text"
           placeholder="Ссылка на видео-файл или на видео youtube или rutube"
           :invalid="videoUrlInvalid"
-          @input="async () => (videoUrlInvalid = await validateVideoUrl(editingExercise))"
+          @input="async () => (videoUrlInvalid = await isVideoUrlValid(editingExercise))"
           class="w-[500px]"
         />
         <div class="flex w-full justify-evenly">

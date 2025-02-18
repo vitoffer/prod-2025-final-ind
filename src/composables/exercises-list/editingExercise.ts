@@ -1,23 +1,19 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseVideo } from '@/types'
 import { useEditingEntity } from '../editingEntity'
-import { useValidation } from '../validation'
 import { useExerciseValidation } from './exerciseValidation'
 import { correctVideoUrl } from '@/utils/media'
+import {
+  isDifficultyValid,
+  isPhotoUrlListValid,
+  isUnitsListValid,
+  isVideoUrlValid,
+} from '@/utils/validation'
 
 export function useEditingExercise() {
   const exercisesStore = useExercisesStore()
-  const { nameInvalid, validateName } = useValidation()
-  const {
-    diffInvalid,
-    unitsInvalid,
-    photoUrlListInvalid,
-    videoUrlInvalid,
-    validateDiff,
-    validateUnits,
-    validatePhotoUrlList,
-    validateVideoUrl,
-  } = useExerciseValidation()
+  const { nameInvalid, difficultyInvalid, unitsListInvalid, photoUrlListInvalid, videoUrlInvalid } =
+    useExerciseValidation()
 
   const nullExercise: Omit<Exercise, 'id'> = {
     name: '',
@@ -46,8 +42,8 @@ export function useEditingExercise() {
 
   function createExercise(...args: Parameters<typeof createEntity>) {
     nameInvalid.value = false
-    diffInvalid.value = false
-    unitsInvalid.value = false
+    difficultyInvalid.value = false
+    unitsListInvalid.value = false
     photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
     videoUrlInvalid.value = false
 
@@ -56,8 +52,8 @@ export function useEditingExercise() {
 
   function changeExercise(...args: Parameters<typeof changeEntity>) {
     nameInvalid.value = false
-    diffInvalid.value = false
-    unitsInvalid.value = false
+    difficultyInvalid.value = false
+    unitsListInvalid.value = false
     photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
     videoUrlInvalid.value = false
 
@@ -102,16 +98,16 @@ export function useEditingExercise() {
   }
 
   const saveEditingExercise = async () => {
-    nameInvalid.value = validateName(editingExercise.value)
-    diffInvalid.value = validateDiff(editingExercise.value)
-    unitsInvalid.value = validateUnits(editingExercise.value)
-    photoUrlListInvalid.value = await validatePhotoUrlList(editingExercise.value)
-    videoUrlInvalid.value = await validateVideoUrl(editingExercise.value)
+    nameInvalid.value = editingExercise.value.name.trim() === ''
+    difficultyInvalid.value = isDifficultyValid(editingExercise.value)
+    unitsListInvalid.value = isUnitsListValid(editingExercise.value)
+    photoUrlListInvalid.value = await isPhotoUrlListValid(editingExercise.value)
+    videoUrlInvalid.value = await isVideoUrlValid(editingExercise.value)
 
     if (
       nameInvalid.value ||
-      diffInvalid.value ||
-      unitsInvalid.value ||
+      difficultyInvalid.value ||
+      unitsListInvalid.value ||
       photoUrlListInvalid.value.includes(true) ||
       videoUrlInvalid.value
     ) {
@@ -143,14 +139,9 @@ export function useEditingExercise() {
     removeExercisePhotoUrl,
     saveEditingExercise,
     nameInvalid,
-    validateName,
-    diffInvalid,
-    validateDiff,
-    unitsInvalid,
-    validateUnits,
+    difficultyInvalid,
+    unitsListInvalid,
     photoUrlListInvalid,
-    validatePhotoUrlList,
     videoUrlInvalid,
-    validateVideoUrl,
   }
 }
