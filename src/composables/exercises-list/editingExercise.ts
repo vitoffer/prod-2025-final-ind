@@ -4,8 +4,8 @@ import { useEditingEntity } from '../editingEntity'
 import { useExerciseValidation } from './exerciseValidation'
 import { correctVideoUrl } from '@/utils/media'
 import {
+  getInvalidPhotoUrlsList,
   isDifficultyValid,
-  isPhotoUrlListValid,
   isUnitsListValid,
   isVideoUrlValid,
 } from '@/utils/validation'
@@ -101,7 +101,7 @@ export function useEditingExercise() {
     nameInvalid.value = editingExercise.value.name.trim() === ''
     difficultyInvalid.value = isDifficultyValid(editingExercise.value)
     unitsListInvalid.value = isUnitsListValid(editingExercise.value)
-    photoUrlListInvalid.value = await isPhotoUrlListValid(editingExercise.value)
+    photoUrlListInvalid.value = await getInvalidPhotoUrlsList(editingExercise.value)
     videoUrlInvalid.value = await isVideoUrlValid(editingExercise.value)
 
     if (
