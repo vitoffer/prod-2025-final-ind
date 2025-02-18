@@ -5,7 +5,7 @@ import GoalInput from './GoalInput.vue'
 
 defineProps<{ options: VirtualScrollerItemOptions }>()
 
-defineEmits<{ (e: 'removeAddedExercise', id: number): void }>()
+defineEmits<{ (e: 'removeAddedExercise'): void }>()
 
 const exercise = defineModel<ExerciseWithGoal>('exercise')
 </script>
@@ -38,7 +38,7 @@ const exercise = defineModel<ExerciseWithGoal>('exercise')
         кг
       </template>
     </p>
-    <Button severity="danger" @click="$emit('removeAddedExercise', exercise!.id)">
+    <Button severity="danger" @click="$emit('removeAddedExercise')">
       <i class="pi pi-times-circle" />
     </Button>
   </div>

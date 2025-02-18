@@ -38,10 +38,8 @@ const addExerciseToList = () => {
   exerciseSearch.value = null
 }
 
-const removeAddedExercise = (id: number) => {
-  editingWorkout.value!.exercises = editingWorkout.value!.exercises.filter(
-    (exercise) => exercise.id !== id,
-  )
+const removeAddedExercise = (index: number) => {
+  editingWorkout.value!.exercises.splice(index, 1)
 }
 </script>
 
@@ -67,7 +65,7 @@ const removeAddedExercise = (id: number) => {
         <EditWorkoutAddedExercise
           :options="options"
           v-model:exercise="editingWorkout!.exercises[options.index]"
-          @removeAddedExercise="removeAddedExercise"
+          @remove-added-exercise="() => removeAddedExercise(options.index)"
         />
       </template>
     </VirtualScroller>
