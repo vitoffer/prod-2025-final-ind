@@ -1,14 +1,15 @@
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { Workout } from '@/types'
 import { useEditingEntity } from '../editingEntity'
-import { useValidation } from '../validation'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import type { Router } from 'vue-router'
+import { ref } from 'vue'
+import { isNameValid } from '@/utils/validation'
 
 export const useEditingWorkout = (router: Router) => {
   const workoutsStore = useWorkoutsStore()
   const runWorkoutStore = useRunWorkoutStore()
-  const { nameInvalid, validateName } = useValidation()
+  const nameInvalid = ref<boolean>()
 
   const nullWorkout: Omit<Workout, 'id'> = {
     name: '',
@@ -39,7 +40,7 @@ export const useEditingWorkout = (router: Router) => {
   }
 
   const saveEditingWorkout = async () => {
-    nameInvalid.value = validateName(editingWorkout.value)
+    nameInvalid.value = isNameValid(editingWorkout.value)
 
     if (nameInvalid.value) {
       return
@@ -60,7 +61,7 @@ export const useEditingWorkout = (router: Router) => {
 
   const validateAndRunWorkout = async () => {
     console.log(editingWorkout.value.name)
-    nameInvalid.value = validateName(editingWorkout.value)
+    nameInvalid.value = isNameValid(editingWorkout.value)
 
     if (nameInvalid.value) {
       return
@@ -83,7 +84,6 @@ export const useEditingWorkout = (router: Router) => {
     changeWorkout,
     findWorkout,
     nameInvalid,
-    validateName,
     saveEditingWorkout,
     validateAndRunWorkout,
     runWorkout,

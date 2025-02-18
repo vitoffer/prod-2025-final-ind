@@ -3,6 +3,7 @@ import EditWorkoutDialog from '@/components/EditWorkoutDialog.vue'
 import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { Workout } from '@/types'
+import { isNameValid } from '@/utils/validation'
 import { useConfirm } from 'primevue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -19,7 +20,6 @@ const {
   changeWorkout,
   findWorkout,
   nameInvalid,
-  validateName,
   saveEditingWorkout,
   validateAndRunWorkout,
   runWorkout,
@@ -78,7 +78,7 @@ const isNewWorkout = computed<boolean>(() => {
       v-model:editing-workout="editingWorkout"
       v-model:name-invalid="nameInvalid"
       :dialog-header="dialogHeader"
-      :validate-name="validateName"
+      :validate-name="isNameValid"
       :save-editing-workout="saveEditingWorkout"
       :run-workout="validateAndRunWorkout"
       :new-workout="isNewWorkout"
@@ -86,15 +86,15 @@ const isNewWorkout = computed<boolean>(() => {
     <ul class="workouts-list mt-6 mr-auto ml-auto flex w-fit flex-col gap-4">
       <li v-for="workout in filteredWorkoutsList" :key="workout.id">
         {{ workout.name }}
-        <Button aria-label="Run Workout" @click="() => runWorkout(workout)"
-          ><i class="pi pi-play"></i
-        ></Button>
-        <Button severity="warn" @click="() => changeWorkout(workout.id, findWorkout)"
-          ><i class="pi pi-pencil"></i
-        ></Button>
-        <Button severity="danger" @click="() => confirmRemove(workout.id)"
-          ><i class="pi pi-times-circle"></i
-        ></Button>
+        <Button aria-label="Run Workout" @click="() => runWorkout(workout)">
+          <i class="pi pi-play"></i>
+        </Button>
+        <Button severity="warn" @click="() => changeWorkout(workout.id, findWorkout)">
+          <i class="pi pi-pencil"></i>
+        </Button>
+        <Button severity="danger" @click="() => confirmRemove(workout.id)">
+          <i class="pi pi-times-circle"></i>
+        </Button>
       </li>
     </ul>
   </main>
