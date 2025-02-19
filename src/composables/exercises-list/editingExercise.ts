@@ -6,6 +6,7 @@ import { correctVideoUrl } from '@/utils/media'
 import {
   getInvalidPhotoUrlsList,
   isDifficultyValid,
+  isNameValid,
   isUnitsListValid,
   isVideoUrlValid,
 } from '@/utils/validation'
@@ -98,11 +99,11 @@ export function useEditingExercise() {
   }
 
   const saveEditingExercise = async () => {
-    nameInvalid.value = editingExercise.value.name.trim() === ''
-    difficultyInvalid.value = isDifficultyValid(editingExercise.value)
-    unitsListInvalid.value = isUnitsListValid(editingExercise.value)
+    nameInvalid.value = !isNameValid(editingExercise.value)
+    difficultyInvalid.value = !isDifficultyValid(editingExercise.value)
+    unitsListInvalid.value = !isUnitsListValid(editingExercise.value)
     photoUrlListInvalid.value = await getInvalidPhotoUrlsList(editingExercise.value)
-    videoUrlInvalid.value = await isVideoUrlValid(editingExercise.value)
+    videoUrlInvalid.value = !(await isVideoUrlValid(editingExercise.value))
 
     if (
       nameInvalid.value ||

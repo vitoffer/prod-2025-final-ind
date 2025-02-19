@@ -7,7 +7,7 @@ defineProps<{ exercise: Exercise }>()
 
 <template>
   <article
-    class="exercise-card flex w-[450px] flex-col rounded-2xl border-4 border-green-700 pt-3 pr-4 pb-3 pl-4"
+    class="exercise-card flex w-full flex-col rounded-2xl border-4 border-green-700 pt-3 pr-4 pb-3 pl-4"
   >
     <div class="mb-2 text-center text-2xl font-semibold">{{ exercise.name }}</div>
     <div class="wrapper mb-auto flex h-[250px] w-[100%] items-center justify-stretch">

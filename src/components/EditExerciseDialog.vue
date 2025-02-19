@@ -35,26 +35,28 @@ const {
 
 <template>
   <Dialog v-model:visible="editExerciseDialogVisible" modal :header="dialogHeader">
-    <div class="flex flex-col">
-      <FloatLabel variant="in" class="mb-2">
+    <div class="flex flex-col gap-2">
+      <FloatLabel variant="in">
         <InputText
           v-model="editingExercise!.name"
           :invalid="nameInvalid"
           @input="() => (nameInvalid = !isNameValid(editingExercise!))"
           id="edExName"
+          class="w-full"
         />
         <label for="edExName">Название</label>
       </FloatLabel>
-      <span class="mb-1">Сложность</span>
-      <SelectButton
-        v-model="editingExercise!.difficulty"
-        :options="difficultyOptions"
-        class="mb-2"
-        :invalid="difficultyInvalid"
-        @change="() => (difficultyInvalid = !isDifficultyValid(editingExercise!))"
-      />
-      <FloatLabel variant="in" class="mb-2">
-        <Textarea v-model="editingExercise!.description" id="edExDesc" rows="5" cols="30" />
+      <div class="mr-auto ml-auto md:mr-0 md:ml-0">
+        <p class="mb-1 text-center md:text-start">Сложность</p>
+        <SelectButton
+          v-model="editingExercise!.difficulty"
+          :options="difficultyOptions"
+          :invalid="difficultyInvalid"
+          @change="() => (difficultyInvalid = !isDifficultyValid(editingExercise!))"
+        />
+      </div>
+      <FloatLabel variant="in">
+        <Textarea v-model="editingExercise!.description" id="edExDesc" rows="5" class="w-full" />
         <label for="edExDesc">Описание</label>
       </FloatLabel>
       <AutoComplete
@@ -76,10 +78,10 @@ const {
       <SelectButton
         v-model="editingExercise!.units"
         :options="unitsOptions"
-        class="mb-2"
         :invalid="unitsListInvalid"
         multiple
         @change="() => (unitsListInvalid = !isUnitsListValid(editingExercise!))"
+        class="mr-auto ml-auto md:mr-0 md:ml-0"
       />
       <InputText
         v-for="(input, index) in editingExercise!.photoUrlList"
@@ -90,7 +92,7 @@ const {
         :invalid="photoUrlListInvalid![index]"
         @input="async () => (photoUrlListInvalid = await getInvalidPhotoUrlsList(editingExercise!))"
       />
-      <div class="flex justify-center">
+      <div class="flex justify-center gap-4">
         <Button @click="$emit('removeExercisePhotoUrl')" severity="danger">
           <i class="pi pi-minus"></i>
         </Button>
@@ -98,14 +100,21 @@ const {
           <i class="pi pi-plus"></i>
         </Button>
       </div>
-      <InputText
-        v-model="editingExercise!.video!.url"
-        type="text"
-        placeholder="Ссылка на видео-файл или на видео youtube или rutube"
-        :invalid="videoUrlInvalid"
-        @input="async () => (videoUrlInvalid = !(await isVideoUrlValid(editingExercise!)))"
-        class="w-[500px]"
-      />
+      <FloatLabel variant="in" class="w-[500px] max-w-full">
+        <InputText
+          v-model="editingExercise!.video!.url"
+          type="text"
+          :invalid="videoUrlInvalid"
+          @input="async () => (videoUrlInvalid = !(await isVideoUrlValid(editingExercise!)))"
+          id="editingVideoUrl"
+          class="w-full"
+        />
+        <label
+          for="editingVideoUrl"
+          class="w-full overflow-hidden pr-8 text-ellipsis whitespace-nowrap"
+          >Ссылка на видео-файл или на видео youtube или rutube</label
+        >
+      </FloatLabel>
       <div class="flex w-full justify-evenly">
         <Button @click="editExerciseDialogVisible = false" severity="danger">Отменить</Button>
         <Button @click="saveEditingExercise" severity="success">Сохранить</Button>

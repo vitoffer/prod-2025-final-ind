@@ -40,7 +40,7 @@ export const useEditingWorkout = (router: Router) => {
   }
 
   const saveEditingWorkout = async () => {
-    nameInvalid.value = isNameValid(editingWorkout.value)
+    nameInvalid.value = !isNameValid(editingWorkout.value)
 
     if (nameInvalid.value) {
       return

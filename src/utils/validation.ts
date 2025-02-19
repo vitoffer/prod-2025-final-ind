@@ -34,8 +34,8 @@ export async function getInvalidPhotoUrlsList(editingExercise: Exercise) {
 
 export async function isVideoUrlValid(editingExercise: Exercise) {
   if (editingExercise.video!.url.trim() === '') {
-    return false
+    return true
   }
   const { error } = await correctVideoUrl(editingExercise.video!.url)
-  return error ? true : false
+  return error ? false : true
 }

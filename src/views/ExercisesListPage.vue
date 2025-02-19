@@ -68,7 +68,8 @@ const dialogHeader = computed<string>(() => {
 </script>
 
 <template>
-  <header class="header flex flex-col justify-around lg:flex-row lg:items-center">
+  <header class="header flex flex-col items-center justify-center p-3 lg:flex-row lg:items-center">
+    <p class="mb-1 lg:mr-8">Фильтры:</p>
     <ExercisesListFilters
       v-model:filters-object="filtersObject"
       :sports-items-select-suggestions="SISuggestionsFilter"
@@ -76,10 +77,12 @@ const dialogHeader = computed<string>(() => {
       @search-sports-items-select="showSISuggestionsFilter"
       @search-tags-select="showTSuggestionsFilter"
     />
-    <Button @click="createExercise" class=""><i class="pi pi-plus"></i></Button>
+    <Button @click="createExercise" class="mt-4 !p-4 lg:ml-8">
+      <i class="pi pi-plus"></i>
+    </Button>
   </header>
   <main class="exercises-list-container flex flex-wrap justify-evenly">
-    <ConfirmDialog></ConfirmDialog>
+    <ConfirmDialog class="max-w-full"></ConfirmDialog>
     <EditExerciseDialog
       v-model:edit-exercise-dialog-visible="editExerciseDialogVisible"
       v-model:editing-exercise="editingExercise"
@@ -92,14 +95,17 @@ const dialogHeader = computed<string>(() => {
       :save-editing-exercise="saveEditingExercise"
       @remove-exercise-photo-url="removeExercisePhotoUrl"
       @add-exercise-photo-url="addExercisePhotoUrl"
+      class="!max-h-[95%] max-w-full"
     />
-    <ExerciseCard
-      v-for="exercise in filteredExercisesList"
-      :key="exercise.id"
-      :exercise="exercise"
-      @remove-exercise="confirmRemove"
-      @change-exercise="(id) => changeExercise(id, findExercise)"
-    />
+    <ul class="flex flex-wrap justify-center gap-4 pr-4 pl-4">
+      <li v-for="exercise in filteredExercisesList" :key="exercise.id" class="w-full sm:w-[380px]">
+        <ExerciseCard
+          :exercise="exercise"
+          @remove-exercise="confirmRemove"
+          @change-exercise="(id) => changeExercise(id, findExercise)"
+        />
+      </li>
+    </ul>
   </main>
 </template>
 
