@@ -51,7 +51,7 @@ const activeIndex = computed<number>(() => {
     :active-index="activeIndex"
   >
     <template #item="slotProps">
-      <div class="flex min-h-[192px] w-[100%] items-center">
+      <div class="flex h-[192px] w-[100%] items-center">
         <IframeLoader
           v-if="slotProps.item.type === 'iframe'"
           class="w-[100%] rounded-xl"
@@ -64,6 +64,7 @@ const activeIndex = computed<number>(() => {
           v-else-if="slotProps.item.type === 'photo'"
           :src="slotProps.item.src"
           alt="Картинка упражнения"
+          class="h-full w-full object-contain"
         />
         <p v-else-if="slotProps.item.type === 'text'" class="m-3 self-start text-center text-lg">
           {{ slotProps.item.text }}
@@ -79,7 +80,6 @@ const activeIndex = computed<number>(() => {
 }
 
 .p-galleria {
-  /* border: 0 solid #00000000 !important; */
   width: 100%;
   height: fit-content;
 }
