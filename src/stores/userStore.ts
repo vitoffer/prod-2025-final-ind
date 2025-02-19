@@ -4,6 +4,7 @@ import { ref } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
   const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
+  // const isNewUser = ref<boolean>(false)
 
   function toggleIsNewUser() {
     isNewUser.value = !isNewUser.value
@@ -19,7 +20,8 @@ export const useUserStore = defineStore('user', () => {
     character: {
       hat: null,
       body: 'normal',
-      jacket: null,
+      necklace: null,
+      bracelet: null,
       pants: null,
       boots: null,
     },
@@ -28,6 +30,24 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const user = ref<User>(baseUser)
+  // const user = ref<User>({
+  //   age: 20,
+  //   height: 180,
+  //   weight: 75,
+  //   level: 1,
+  //   xp: 0,
+  //   points: 10,
+  //   character: {
+  //     hat: '1',
+  //     body: 'fit',
+  //     necklace: '1',
+  //     bracelet: '1',
+  //     pants: '3',
+  //     boots: '1',
+  //   },
+  //   customizationItems: [],
+  //   achievements: [],
+  // })
 
   if (localStorage.getItem('user')) {
     user.value = JSON.parse(localStorage.getItem('user')!)

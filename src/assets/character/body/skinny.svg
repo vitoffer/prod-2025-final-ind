@@ -1,12 +1,9 @@
-<svg width="18" height="30" viewBox="0 0 18 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="5.5" y="0.5" width="7" height="7" stroke="black"/>
-<rect x="5.5" y="20.5" width="3" height="9" stroke="black"/>
-<rect x="9.5" y="20.5" width="3" height="9" stroke="black"/>
-<line x1="4" y1="20.5" x2="2" y2="20.5" stroke="black"/>
-<line x1="14" y1="20.5" x2="16" y2="20.5" stroke="black"/>
-<line x1="2.5" y1="20" x2="2.5" y2="9" stroke="black"/>
-<line x1="2" y1="8.5" x2="16" y2="8.5" stroke="black"/>
-<line x1="15.5" y1="9" x2="15.5" y2="20" stroke="black"/>
-<line x1="6" y1="19.5" x2="3" y2="19.5" stroke="black"/>
-<line x1="12" y1="19.5" x2="15" y2="19.5" stroke="black"/>
+<svg width="115" height="262" viewBox="0 0 115 262" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M86.9 185.8V172.8C86.9 180 92.7 185.8 99.9 185.8H100.2C107.4 185.8 113.2 180 113.2 172.8V106.8C113.2 88.8 98.6 77 80.5 77H34.2C16.2 77 1.5 88.8 1.5 106.8V172.8C1.5 180 7.3 185.8 14.5 185.8C21.7 185.8 27.5 180 27.5 172.8V185.8" fill="#D2996C"/>
+<path d="M86.9 185.8V172.8C86.9 180 92.7 185.8 99.9 185.8H100.2C107.4 185.8 113.2 180 113.2 172.8V106.8C113.2 88.8 98.6 77 80.5 77H34.2C16.2 77 1.5 88.8 1.5 106.8V172.8C1.5 180 7.3 185.8 14.5 185.8C21.7 185.8 27.5 180 27.5 172.8V185.8" stroke="black" stroke-width="3" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M27.5 114.8V245.3C27.5 253.5 34.2 260.2 42.4 260.2C50.6 260.2 57.3 253.5 57.3 245.3V182.3" fill="#D2996C"/>
+<path d="M27.5 114.8V245.3C27.5 253.5 34.2 260.2 42.4 260.2C50.6 260.2 57.3 253.5 57.3 245.3V182.3" stroke="black" stroke-width="3" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M57.2 182.2V245.2C57.2 253.4 63.9 260.1 72.1 260.1C80.3 260.1 87 253.4 87 245.2V114.8" fill="#D2996C"/>
+<path d="M57.2 182.2V245.2C57.2 253.4 63.9 260.1 72.1 260.1C80.3 260.1 87 253.4 87 245.2V114.8" stroke="black" stroke-width="3" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M57.2 60.9C73.6029 60.9 86.9 47.6029 86.9 31.2C86.9 14.7971 73.6029 1.5 57.2 1.5C40.7971 1.5 27.5 14.7971 27.5 31.2C27.5 47.6029 40.7971 60.9 57.2 60.9Z" fill="#D2996C" stroke="black" stroke-width="3" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

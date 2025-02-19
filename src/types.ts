@@ -58,9 +58,12 @@ export interface User {
 }
 
 export interface Character {
-  hat: null
-  body: 'normal'
-  jacket: null
-  pants: null
-  boots: null
+  hat: string | null
+  body: BodyType
+  necklace: string | null
+  bracelet: string | null
+  pants: string | null
+  boots: string | null
 }
+
+type BodyType = 'skinny' | 'normal' | 'fit'

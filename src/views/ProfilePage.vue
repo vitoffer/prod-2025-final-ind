@@ -21,7 +21,8 @@ const saveUserData = () => {
 
 const hatImage = ref<string | null>(null)
 const bodyImage = ref<string | null>(null)
-const jacketImage = ref<string | null>(null)
+const necklaceImage = ref<string | null>(null)
+const braceletImage = ref<string | null>(null)
 const pantsImage = ref<string | null>(null)
 const bootsImage = ref<string | null>(null)
 
@@ -38,20 +39,26 @@ async function loadImages() {
     `../assets/character/body/${userStore.user.character.body}.svg`,
     import.meta.url,
   ).href
-  if (userStore.user.character.jacket) {
-    hatImage.value = new URL(
-      `../assets/character/jacket/${userStore.user.character.jacket}.svg`,
+  if (userStore.user.character.necklace) {
+    necklaceImage.value = new URL(
+      `../assets/character/necklace/${userStore.user.character.necklace}.svg`,
+      import.meta.url,
+    ).href
+  }
+  if (userStore.user.character.bracelet) {
+    braceletImage.value = new URL(
+      `../assets/character/bracelet/${userStore.user.character.bracelet}.svg`,
       import.meta.url,
     ).href
   }
   if (userStore.user.character.pants) {
-    hatImage.value = new URL(
+    pantsImage.value = new URL(
       `../assets/character/pants/${userStore.user.character.pants}.svg`,
       import.meta.url,
     ).href
   }
   if (userStore.user.character.boots) {
-    hatImage.value = new URL(
+    bootsImage.value = new URL(
       `../assets/character/boots/${userStore.user.character.boots}.svg`,
       import.meta.url,
     ).href
@@ -87,31 +94,37 @@ async function loadImages() {
     <p>Доступные предметы кастомизации: {{ userStore.user.customizationItems }}</p>
     <p>Ачивки: {{ userStore.user.achievements }}</p>
     <p>Персонаж:</p>
-    <div class="w-fit bg-gray-300 p-4">
+    <div class="relative w-fit bg-gray-300 p-4">
       <img
         v-if="userStore.user.character.hat"
         :src="hatImage || ''"
         alt="Шапка"
-        class="w-[200px]"
+        class="absolute top-[0px] left-[50%] -translate-x-[50%]"
       />
-      <img :src="bodyImage || ''" alt="Тело" class="w-[200px]" />
+      <img :src="bodyImage || ''" alt="Тело" class="" />
       <img
-        v-if="userStore.user.character.jacket"
-        :src="jacketImage || ''"
-        alt="Жилет"
-        class="w-[200px]"
+        v-if="userStore.user.character.necklace"
+        :src="necklaceImage || ''"
+        alt="Цепочка"
+        class="absolute top-[92px] left-[50%] -translate-x-[50%]"
+      />
+      <img
+        v-if="userStore.user.character.bracelet"
+        :src="braceletImage || ''"
+        alt="Браслет"
+        class="absolute top-[170px] left-[30.5px] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.pants"
         :src="pantsImage || ''"
         alt="Штаны"
-        class="w-[200px]"
+        class="absolute top-[192px] left-[50%] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.boots"
         :src="bootsImage || ''"
         alt="Ботинки"
-        class="w-[200px]"
+        class="absolute top-[261px] left-[50%] -translate-x-[50%]"
       />
     </div>
   </div>
