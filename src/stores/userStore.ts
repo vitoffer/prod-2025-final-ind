@@ -12,8 +12,8 @@ export const useUserStore = defineStore('user', () => {
 
   const baseUser: User = {
     age: 20,
-    height: 180,
-    weight: 75,
+    heightCm: 180,
+    weightKg: 75,
     level: 1,
     xp: 0,
     points: 10,

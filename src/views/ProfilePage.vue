@@ -5,8 +5,8 @@ import { ref } from 'vue'
 const userStore = useUserStore()
 const showDialog = ref(false)
 const age = ref<number | null>(userStore.user.age)
-const height = ref<number | null>(userStore.user.height)
-const weight = ref<number | null>(userStore.user.weight)
+const height = ref<number | null>(userStore.user.heightCm)
+const weight = ref<number | null>(userStore.user.weightKg)
 
 if (userStore.isNewUser) {
   showDialog.value = true
@@ -14,7 +14,7 @@ if (userStore.isNewUser) {
 
 const saveUserData = () => {
   if (age.value === null || height.value === null || weight.value === null) return
-  userStore.updateUser({ age: age.value, height: height.value, weight: weight.value })
+  userStore.updateUser({ age: age.value, heightCm: height.value, weightKg: weight.value })
   showDialog.value = false
   userStore.toggleIsNewUser()
 }
@@ -86,8 +86,8 @@ async function loadImages() {
   </div>
   <div v-else>
     <p>Возраст: {{ userStore.user.age }} лет</p>
-    <p>Рост: {{ userStore.user.height }} см</p>
-    <p>Вес: {{ userStore.user.weight }} кг</p>
+    <p>Рост: {{ userStore.user.heightCm }} см</p>
+    <p>Вес: {{ userStore.user.weightKg }} кг</p>
     <p>Уровень: {{ userStore.user.level }}</p>
     <p>XP: {{ userStore.user.xp }}</p>
     <p>Очки: {{ userStore.user.points }}</p>
