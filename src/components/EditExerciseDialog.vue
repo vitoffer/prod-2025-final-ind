@@ -87,7 +87,7 @@ const {
         :invalid="unitsListInvalid"
         multiple
         @change="() => (unitsListInvalid = !isUnitsListValid(editingExercise!))"
-        class="mr-auto ml-auto md:mr-0 md:ml-0"
+        class="mr-auto ml-auto max-w-full md:mr-0 md:ml-0"
       />
       <InputText
         v-for="(input, index) in editingExercise!.photoUrlList"
