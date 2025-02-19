@@ -57,7 +57,6 @@ const removeAddedExercise = (index: number) => {
 <template>
   <Dialog v-model:visible="editWorkoutDialogVisible" modal :header="dialogHeader">
     <FloatLabel>
-      <label for="edWoName">Название</label>
       <InputText
         v-model="editingWorkout!.name"
         :invalid="nameInvalid"
@@ -65,6 +64,7 @@ const removeAddedExercise = (index: number) => {
         id="edWoName"
         class="w-[500px]"
       />
+      <label for="edWoName">Название</label>
     </FloatLabel>
     <VirtualScroller
       :items="[...editingWorkout!.exercises]"

@@ -65,8 +65,8 @@ const isNewWorkout = computed<boolean>(() => {
   <header class="flex flex-col items-center">
     <p>Фильтры</p>
     <FloatLabel variant="in">
-      <label for="filterName">Название</label>
       <InputText v-model="filterName" id="filterName" />
+      <label for="filterName">Название</label>
     </FloatLabel>
     <Button @click="createWorkout" aria-label="Create workout"><i class="pi pi-plus"></i></Button>
   </header>
