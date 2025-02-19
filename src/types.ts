@@ -37,7 +37,6 @@ export interface WorkoutExerciseGoal {
 }
 
 export interface GoalTime {
-  hours: number
   minutes: number
   seconds: number
 }

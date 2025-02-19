@@ -31,7 +31,7 @@ const search = (event: AutoCompleteCompleteEvent) => {
 const addExerciseToList = () => {
   const newGoal: WorkoutExerciseGoal = {}
   if (exerciseSearch.value!.unitsList.includes('время')) {
-    newGoal.time = { hours: 0, minutes: 0, seconds: 0 }
+    newGoal.time = { minutes: 0, seconds: 0 }
   }
   if (exerciseSearch.value!.unitsList.includes('подходы')) {
     newGoal.sets = 0
@@ -67,19 +67,6 @@ const removeAddedExercise = (index: number) => {
         />
         <label for="edWoName">Название</label>
       </FloatLabel>
-      <VirtualScroller
-        :items="[...editingWorkout!.exercises]"
-        :itemSize="50"
-        class="h-[200px] w-full rounded border border-gray-500"
-      >
-        <template v-slot:item="{ options }">
-          <EditWorkoutAddedExercise
-            :options="options"
-            v-model:exercise="editingWorkout!.exercises[options.index]"
-            @remove-added-exercise="() => removeAddedExercise(options.index)"
-          />
-        </template>
-      </VirtualScroller>
       <FloatLabel variant="in">
         <AutoComplete
           v-model="exerciseSearch"
@@ -93,6 +80,18 @@ const removeAddedExercise = (index: number) => {
         />
         <label for="exerciseSearch">Поиск упражнения по названию</label>
       </FloatLabel>
+      <VirtualScroller
+        :items="[...editingWorkout!.exercises]"
+        class="h-[200px] w-full rounded border border-gray-500"
+      >
+        <template v-slot:item="{ options }">
+          <EditWorkoutAddedExercise
+            :options="options"
+            v-model:exercise="editingWorkout!.exercises[options.index]"
+            @remove-added-exercise="() => removeAddedExercise(options.index)"
+          />
+        </template>
+      </VirtualScroller>
       <div class="flex w-full justify-evenly">
         <Button
           @click="editWorkoutDialogVisible = false"
