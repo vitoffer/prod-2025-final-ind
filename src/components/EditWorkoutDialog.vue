@@ -56,54 +56,57 @@ const removeAddedExercise = (index: number) => {
 
 <template>
   <Dialog v-model:visible="editWorkoutDialogVisible" modal :header="dialogHeader">
-    <FloatLabel>
-      <InputText
-        v-model="editingWorkout!.name"
-        :invalid="nameInvalid"
-        @input="() => (nameInvalid = !isNameValid(editingWorkout!))"
-        id="edWoName"
-        class="w-[500px]"
-      />
-      <label for="edWoName">Название</label>
-    </FloatLabel>
-    <VirtualScroller
-      :items="[...editingWorkout!.exercises]"
-      :itemSize="50"
-      class="rounded border border-gray-200"
-      style="width: 500px; height: 200px"
-    >
-      <template v-slot:item="{ options }">
-        <EditWorkoutAddedExercise
-          :options="options"
-          v-model:exercise="editingWorkout!.exercises[options.index]"
-          @remove-added-exercise="() => removeAddedExercise(options.index)"
+    <div class="flex flex-col gap-2">
+      <FloatLabel variant="in">
+        <InputText
+          v-model="editingWorkout!.name"
+          :invalid="nameInvalid"
+          @input="() => (nameInvalid = !isNameValid(editingWorkout!))"
+          id="edWoName"
+          class="w-full"
         />
-      </template>
-    </VirtualScroller>
-    <AutoComplete
-      v-model="exerciseSearch"
-      :suggestions="searchExercisesList"
-      option-label="name"
-      @complete="search"
-      @option-select="addExerciseToList"
-      placeholder="Поиск упражнения по названию"
-      class="w-[500px]"
-      input-class="w-full"
-      aria-label="Search for exercise"
-    />
-    <div class="flex w-full justify-evenly">
-      <Button
-        @click="editWorkoutDialogVisible = false"
-        severity="danger"
-        aria-label="Cancel editing workout"
-        >Отменить</Button
+        <label for="edWoName">Название</label>
+      </FloatLabel>
+      <VirtualScroller
+        :items="[...editingWorkout!.exercises]"
+        :itemSize="50"
+        class="h-[200px] w-full rounded border border-gray-500"
       >
-      <Button @click="saveEditingWorkout" severity="success" aria-label="Save workout"
-        >Сохранить</Button
-      >
-      <Button v-if="newWorkout" @click="() => runWorkout()" aria-label="Run workout"
-        >Запустить без сохранения</Button
-      >
+        <template v-slot:item="{ options }">
+          <EditWorkoutAddedExercise
+            :options="options"
+            v-model:exercise="editingWorkout!.exercises[options.index]"
+            @remove-added-exercise="() => removeAddedExercise(options.index)"
+          />
+        </template>
+      </VirtualScroller>
+      <FloatLabel variant="in">
+        <AutoComplete
+          v-model="exerciseSearch"
+          :suggestions="searchExercisesList"
+          option-label="name"
+          @complete="search"
+          @option-select="addExerciseToList"
+          input-class="w-full"
+          id="exerciseSearch"
+          class="w-full"
+        />
+        <label for="exerciseSearch">Поиск упражнения по названию</label>
+      </FloatLabel>
+      <div class="flex w-full justify-evenly">
+        <Button
+          @click="editWorkoutDialogVisible = false"
+          severity="danger"
+          aria-label="Cancel editing workout"
+          >Отменить</Button
+        >
+        <Button @click="saveEditingWorkout" severity="success" aria-label="Save workout"
+          >Сохранить</Button
+        >
+        <Button v-if="newWorkout" @click="() => runWorkout()" aria-label="Run workout"
+          >Запустить</Button
+        >
+      </div>
     </div>
   </Dialog>
 </template>

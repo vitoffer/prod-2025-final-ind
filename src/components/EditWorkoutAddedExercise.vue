@@ -12,7 +12,7 @@ const exercise = defineModel<ExerciseWithGoal>('exercise')
 
 <template>
   <div
-    :class="['flex items-center justify-between p-2', { 'bg-[var(--p-surface-700)]': options.odd }]"
+    class="flex items-center justify-between border-b-gray-500 p-2 not-last:border-b"
     style="height: 50px"
   >
     <p>
@@ -33,7 +33,7 @@ const exercise = defineModel<ExerciseWithGoal>('exercise')
         >по <GoalInput v-model="exercise!.goal.time" type="time" /> мин</template
       > -->
     </p>
-    <Button severity="danger" @click="$emit('removeAddedExercise')">
+    <Button severity="danger" @click="$emit('removeAddedExercise')" class="!p-2">
       <i class="pi pi-times-circle" />
     </Button>
   </div>
