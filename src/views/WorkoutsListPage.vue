@@ -63,10 +63,9 @@ const isNewWorkout = computed<boolean>(() => {
 
 <template>
   <header class="flex flex-col items-center">
-    <p class="mt-2 mb-2">Фильтры</p>
-    <FloatLabel variant="in" class="mb-3">
-      <InputText v-model="filterName" id="filterName" />
-      <label for="filterName">Название</label>
+    <FloatLabel variant="in" class="mt-4 mb-3 w-[80vw] sm:mt-2 sm:w-[400px]">
+      <InputText v-model="filterName" id="filterName" class="w-full" />
+      <label for="filterName">Поиск по названию</label>
     </FloatLabel>
     <Button @click="createWorkout" aria-label="Create workout" class="!p-[10px]"
       ><i class="pi pi-plus !text-[1.25rem]"></i
@@ -88,7 +87,7 @@ const isNewWorkout = computed<boolean>(() => {
       <li
         v-for="workout in filteredWorkoutsList"
         :key="workout.id"
-        class="flex items-center justify-between gap-16 border-t border-gray-400 pt-3 last:border-b last:pb-3 sm:gap-64 md:gap-[460px]"
+        class="flex w-[80vw] items-center justify-between gap-8 border-t border-gray-400 pt-3 last:border-b last:pb-3 sm:gap-64 md:w-full md:gap-[460px]"
       >
         <span class="text-[1.15rem]">
           {{ workout.name }}
