@@ -76,8 +76,8 @@ const dialogHeader = computed<string>(() => {
       @search-sports-items-select="showSISuggestionsFilter"
       @search-tags-select="showTSuggestionsFilter"
     />
-    <Button @click="createExercise" class="mt-4 !p-4 lg:ml-8" aria-label="Create exercise">
-      <i class="pi pi-plus"></i>
+    <Button @click="createExercise" class="mt-4 !p-3 lg:ml-8" aria-label="Create exercise">
+      <i class="pi pi-plus !text-[1.5rem]"></i>
     </Button>
   </header>
   <main class="exercises-list-container mb-4 flex flex-wrap justify-evenly">

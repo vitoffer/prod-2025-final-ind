@@ -55,7 +55,12 @@ const removeAddedExercise = (index: number) => {
 </script>
 
 <template>
-  <Dialog v-model:visible="editWorkoutDialogVisible" modal :header="dialogHeader">
+  <Dialog
+    v-model:visible="editWorkoutDialogVisible"
+    modal
+    :header="dialogHeader"
+    class="!w-[90vw] !max-w-[800px] sm:!w-[80vw] xl:!w-[60vw]"
+  >
     <div class="flex flex-col gap-2">
       <FloatLabel variant="in">
         <InputText
@@ -82,7 +87,8 @@ const removeAddedExercise = (index: number) => {
       </FloatLabel>
       <VirtualScroller
         :items="[...editingWorkout!.exercises]"
-        class="h-[200px] w-full rounded border border-gray-500"
+        class="h-[300px] w-full rounded border border-gray-500"
+        :item-size="50"
       >
         <template v-slot:item="{ options }">
           <EditWorkoutAddedExercise

@@ -63,13 +63,13 @@ const isNewWorkout = computed<boolean>(() => {
 
 <template>
   <header class="flex flex-col items-center">
-    <p class="mb-2">Фильтры</p>
+    <p class="mt-2 mb-2">Фильтры</p>
     <FloatLabel variant="in" class="mb-3">
       <InputText v-model="filterName" id="filterName" />
       <label for="filterName">Название</label>
     </FloatLabel>
-    <Button @click="createWorkout" aria-label="Create workout" class="!p-3"
-      ><i class="pi pi-plus"></i
+    <Button @click="createWorkout" aria-label="Create workout" class="!p-[10px]"
+      ><i class="pi pi-plus !text-[1.25rem]"></i
     ></Button>
   </header>
   <main class="mt-4 mr-auto ml-auto w-fit">

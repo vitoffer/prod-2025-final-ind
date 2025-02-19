@@ -31,11 +31,11 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
           size="small"
           :options="setsOptions"
           label-class="!p-0"
-          class="!border-none !pr-1 !pl-1"
+          class="!border-none !p-1 not-last:mb-1"
           :invalid="!exercise!.goal.sets"
         >
           <template #value="slotProps">
-            <div class="p-1">
+            <div class="p-1 leading-normal">
               {{ slotProps.value }}
             </div>
           </template>
@@ -50,6 +50,7 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
           :min="1"
           :max="999"
           input-class="goal-number-input repetitions"
+          class="not-last:mb-1"
           :invalid="!exercise!.goal.repetitions"
         />
         повторений</template
@@ -61,7 +62,8 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
           size="small"
           :min="0.1"
           :max="999"
-          input-class="goal-number-input weight "
+          input-class="goal-number-input weight"
+          class="not-last:mb-1"
           :invalid="!exercise!.goal.weightKg"
         />
         кг</template
@@ -74,7 +76,7 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
           v-model="time"
           slotChar="00:00"
           size="small"
-          class="goal-number-input time"
+          class="goal-number-input time not-last:mb-1"
         />
       </template>
     </div>
@@ -92,20 +94,17 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
 
 :deep(.p-select-dropdown) {
   width: fit-content;
-  padding-inline: 8px;
   padding-inline: 4px;
 }
 
 :deep(.goal-number-input) {
   box-sizing: content-box;
   text-align: center;
-  line-height: 1em;
-  padding: 4px;
-  margin-block: 2px;
+  padding: 8px 4px;
   border: none;
 
   &.repetitions {
-    width: 3ch;
+    width: 4ch;
   }
 
   &.weight {
