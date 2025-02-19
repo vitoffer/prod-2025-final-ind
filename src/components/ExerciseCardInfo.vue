@@ -48,11 +48,10 @@ const activeIndex = computed<number>(() => {
     showItemNavigators
     showItemNavigatorsOnHover
     showIndicators
-    showIndicatorsOnItem
     :active-index="activeIndex"
   >
     <template #item="slotProps">
-      <div class="flex h-[250px] w-[100%] items-center">
+      <div class="flex min-h-[192px] w-[100%] items-center">
         <IframeLoader
           v-if="slotProps.item.type === 'iframe'"
           class="w-[100%] rounded-xl"
@@ -66,7 +65,7 @@ const activeIndex = computed<number>(() => {
           :src="slotProps.item.src"
           alt="Картинка упражнения"
         />
-        <p v-else-if="slotProps.item.type === 'text'" class="self-start text-lg">
+        <p v-else-if="slotProps.item.type === 'text'" class="m-3 self-start text-center text-lg">
           {{ slotProps.item.text }}
         </p>
       </div>
@@ -74,4 +73,14 @@ const activeIndex = computed<number>(() => {
   </Galleria>
 </template>
 
-<style scoped></style>
+<style scoped>
+:deep(.p-galleria-indicator-list) {
+  padding: 6px !important;
+}
+
+.p-galleria {
+  /* border: 0 solid #00000000 !important; */
+  width: 100%;
+  height: fit-content;
+}
+</style>

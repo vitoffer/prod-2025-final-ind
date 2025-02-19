@@ -23,7 +23,7 @@
         </li>
       </ul>
     </nav>
-    <div class="sm:order-1">
+    <div class="mb-[50px] sm:order-1 sm:mb-0">
       <RouterView></RouterView>
     </div>
   </div>

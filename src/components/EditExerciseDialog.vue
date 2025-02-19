@@ -59,22 +59,28 @@ const {
         <Textarea v-model="editingExercise!.description" id="edExDesc" rows="5" class="w-full" />
         <label for="edExDesc">Описание</label>
       </FloatLabel>
-      <AutoComplete
-        v-model="editingExercise!.sportsItems"
-        multiple
-        :suggestions="sportsItemsSuggestions"
-        @complete="showSportsItemsSuggestions"
-        id="editingSportsItems"
-        placeholder="Инвентарь"
-      />
-      <AutoComplete
-        v-model="editingExercise!.tags"
-        multiple
-        :suggestions="tagsSuggestions"
-        @complete="showTagsSuggestions"
-        id="editingTags"
-        placeholder="Теги"
-      />
+      <FloatLabel variant="in">
+        <AutoComplete
+          v-model="editingExercise!.sportsItems"
+          multiple
+          :suggestions="sportsItemsSuggestions"
+          @complete="showSportsItemsSuggestions"
+          id="editingSportsItems"
+          class="w-full"
+        />
+        <label for="editingSportsItems">Инвентарь</label>
+      </FloatLabel>
+      <FloatLabel variant="in">
+        <AutoComplete
+          v-model="editingExercise!.tags"
+          multiple
+          :suggestions="tagsSuggestions"
+          @complete="showTagsSuggestions"
+          id="editingTags"
+          class="w-full"
+        />
+        <label for="editingTags">Теги</label>
+      </FloatLabel>
       <SelectButton
         v-model="editingExercise!.units"
         :options="unitsOptions"

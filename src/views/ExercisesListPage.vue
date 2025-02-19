@@ -81,7 +81,7 @@ const dialogHeader = computed<string>(() => {
       <i class="pi pi-plus"></i>
     </Button>
   </header>
-  <main class="exercises-list-container flex flex-wrap justify-evenly">
+  <main class="exercises-list-container mb-4 flex flex-wrap justify-evenly">
     <ConfirmDialog class="max-w-full"></ConfirmDialog>
     <EditExerciseDialog
       v-model:edit-exercise-dialog-visible="editExerciseDialogVisible"
@@ -98,7 +98,11 @@ const dialogHeader = computed<string>(() => {
       class="!max-h-[95%] max-w-full"
     />
     <ul class="flex flex-wrap justify-center gap-4 pr-4 pl-4">
-      <li v-for="exercise in filteredExercisesList" :key="exercise.id" class="w-full sm:w-[380px]">
+      <li
+        v-for="exercise in filteredExercisesList"
+        :key="exercise.id"
+        class="w-full self-stretch justify-self-stretch sm:w-[380px]"
+      >
         <ExerciseCard
           :exercise="exercise"
           @remove-exercise="confirmRemove"
