@@ -60,8 +60,7 @@ export const useEditingWorkout = (router: Router) => {
   }
 
   const validateAndRunWorkout = async () => {
-    console.log(editingWorkout.value.name)
-    nameInvalid.value = isNameValid(editingWorkout.value)
+    nameInvalid.value = !isNameValid(editingWorkout.value)
 
     if (nameInvalid.value) {
       return
