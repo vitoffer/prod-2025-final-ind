@@ -10,7 +10,7 @@ export function isDifficultyValid(editingExercise: Exercise) {
 }
 
 export function isUnitsListValid(editingExercise: Exercise) {
-  if (editingExercise.units.length === 0) {
+  if (editingExercise.unitsList.length === 0) {
     return false
   }
   return true
