@@ -72,7 +72,7 @@ const isNewWorkout = computed<boolean>(() => {
       ><i class="pi pi-plus"></i
     ></Button>
   </header>
-  <main class="mt-4">
+  <main class="mt-4 mr-auto ml-auto w-fit">
     <ConfirmDialog />
     <EditWorkoutDialog
       v-model:edit-workout-dialog-visible="editWorkoutDialogVisible"
@@ -84,34 +84,36 @@ const isNewWorkout = computed<boolean>(() => {
       :new-workout="isNewWorkout"
       class="!max-h-[95%] max-w-full"
     />
-    <ul class="workouts-list mr-auto ml-auto flex w-fit flex-col gap-3">
+    <ul class="workouts-list flex w-full flex-col gap-3 sm:w-fit">
       <li
         v-for="workout in filteredWorkoutsList"
         :key="workout.id"
-        class="flex items-center gap-2 border-b-gray-400 not-last:border-b not-last:pb-3"
+        class="flex items-center justify-between gap-16 border-t border-gray-400 pt-3 last:border-b last:pb-3 sm:gap-64 md:gap-[460px]"
       >
         <span class="text-[1.15rem]">
           {{ workout.name }}
         </span>
-        <Button @click="() => runWorkout(workout)" aria-label="Run workout" class="!p-[10px]">
-          <i class="pi pi-play !text-[1.25rem]"></i>
-        </Button>
-        <Button
-          severity="warn"
-          @click="() => changeWorkout(workout.id, findWorkout)"
-          aria-label="Change workout"
-          class="!p-[10px]"
-        >
-          <i class="pi pi-pencil !text-[1.25rem]"></i>
-        </Button>
-        <Button
-          severity="danger"
-          @click="() => confirmRemove(workout.id)"
-          aria-label="Remove workout"
-          class="!p-[10px]"
-        >
-          <i class="pi pi-times-circle !text-[1.25rem]"></i>
-        </Button>
+        <div class="flex gap-2">
+          <Button @click="() => runWorkout(workout)" aria-label="Run workout" class="!p-[10px]">
+            <i class="pi pi-play !text-[1.25rem]"></i>
+          </Button>
+          <Button
+            severity="warn"
+            @click="() => changeWorkout(workout.id, findWorkout)"
+            aria-label="Change workout"
+            class="!p-[10px]"
+          >
+            <i class="pi pi-pencil !text-[1.25rem]"></i>
+          </Button>
+          <Button
+            severity="danger"
+            @click="() => confirmRemove(workout.id)"
+            aria-label="Remove workout"
+            class="!p-[10px]"
+          >
+            <i class="pi pi-times-circle !text-[1.25rem]"></i>
+          </Button>
+        </div>
       </li>
     </ul>
   </main>
