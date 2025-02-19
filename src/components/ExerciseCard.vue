@@ -15,7 +15,7 @@ defineProps<{ exercise: Exercise }>()
     </div>
     <div class="mt-3">
       <div class="tags-container">
-        <ul class="tags-list mb-4 flex flex-nowrap gap-1 overflow-hidden">
+        <ul class="tags-list mb-4 flex flex-nowrap gap-1 overflow-x-auto pb-1">
           <li class="tag tag-difficulty rounded-md border-2 pr-2 pl-2">
             {{ exercise.difficulty }}
           </li>
@@ -28,7 +28,7 @@ defineProps<{ exercise: Exercise }>()
           </li>
         </ul>
       </div>
-      <ul class="sports-items-list flex flex-wrap gap-1">
+      <ul class="sports-items-list flex flex-wrap gap-1 overflow-x-auto pb-1">
         <li
           v-for="item in exercise.sportsItems.slice(0, 3)"
           :key="item"
@@ -57,4 +57,19 @@ defineProps<{ exercise: Exercise }>()
   </article>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.tags-list,
+.sports-items-list {
+  scrollbar-width: 3px;
+  scrollbar-color: var(--color-zinc-700);
+
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-zinc-700);
+    border-radius: 2px;
+  }
+}
+</style>
