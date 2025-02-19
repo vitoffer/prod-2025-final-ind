@@ -3,3 +3,17 @@
 @layer tailwind {
   @import 'tailwindcss';
 }
+
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 14px;
+  }
+}

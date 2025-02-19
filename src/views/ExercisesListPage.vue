@@ -96,7 +96,7 @@ const dialogHeader = computed<string>(() => {
       @add-exercise-photo-url="addExercisePhotoUrl"
       class="!max-h-[95%] max-w-full"
     />
-    <ul class="flex flex-wrap justify-center gap-4 pr-4 pl-4">
+    <ul class="flex w-full flex-wrap justify-center gap-4 pr-4 pl-4">
       <li
         v-for="exercise in filteredExercisesList"
         :key="exercise.id"
