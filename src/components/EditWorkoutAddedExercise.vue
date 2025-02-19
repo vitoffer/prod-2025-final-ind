@@ -19,24 +19,19 @@ const exercise = defineModel<ExerciseWithGoal>('exercise')
       {{ exercise!.name }}
     </p>
     <p class="mr-3 ml-auto">
-      <template v-if="exercise!.units.includes('мин')">
-        <GoalInput v-model="exercise!.goal.time" />
-        мин
-      </template>
-      <template v-else-if="exercise!.units.includes('повт') && exercise!.units.includes('кг')">
-        <GoalInput v-model="exercise!.goal.repetitions" />
-        повт, по
-        <GoalInput v-model="exercise!.goal.weight" />
-        кг
-      </template>
-      <template v-else-if="exercise!.units.includes('повт')">
-        <GoalInput v-model="exercise!.goal.repetitions" />
-        повт
-      </template>
-      <template v-else-if="exercise!.units.includes('кг')">
-        <GoalInput v-model="exercise!.goal.weight" />
-        кг
-      </template>
+      <!-- <template v-if="exercise!.unitsList.includes('подходы')"
+        ><GoalInput v-model="exercise!.goal.sets" type="sets" /> подходов</template
+      >
+      <template v-if="exercise!.unitsList.includes('повторения')"
+        >по
+        <GoalInput v-model="exercise!.goal.repetitions" type="repetitions" /> повторений</template
+      >
+      <template v-if="exercise!.unitsList.includes('вес')"
+        >по <GoalInput v-model="exercise!.goal.weightKg" type="weightKg" /> кг</template
+      >
+      <template v-if="exercise!.unitsList.includes('время')"
+        >по <GoalInput v-model="exercise!.goal.time" type="time" /> мин</template
+      > -->
     </p>
     <Button severity="danger" @click="$emit('removeAddedExercise')">
       <i class="pi pi-times-circle" />

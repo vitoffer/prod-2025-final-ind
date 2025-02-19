@@ -10,13 +10,14 @@ export default <Workout[]>[
         name: 'Упражнение 1',
         video: null,
         photoUrlList: [],
-        description: 'Описание 1',
+        description: null,
         difficulty: 'простое',
         sportsItems: ['скакалка'],
         tags: ['ноги'],
-        units: ['мин'],
+        unitsList: ['повторения', 'подходы'],
         goal: {
-          time: 4,
+          sets: 2,
+          repetitions: 20,
         },
       },
     ],
@@ -30,17 +31,17 @@ export default <Workout[]>[
         name: 'Упражнение 2',
         video: {
           type: 'iframe',
-          url: 'https://rutube.ru/play/embed/348d394918bfe218476abc144918f909',
+          url: 'https://www.youtube.com/embed/FqF11YdwxrQ',
         },
         photoUrlList: [],
         description: null,
         difficulty: 'среднее',
         sportsItems: ['штанга'],
         tags: ['бицепс', '12222', '22222', '22223', '42222', '522222222', '6', '7', '8', '0'],
-        units: ['повт', 'кг'],
+        unitsList: ['повторения', 'вес'],
         goal: {
           repetitions: 20,
-          weight: 20,
+          weightKg: 20,
         },
       },
       {
@@ -55,10 +56,10 @@ export default <Workout[]>[
         difficulty: 'сложное',
         sportsItems: ['гантели'],
         tags: ['спина'],
-        units: ['повт', 'кг'],
+        unitsList: ['повторения', 'вес'],
         goal: {
           repetitions: 2,
-          weight: 10,
+          weightKg: 10,
         },
       },
       {
@@ -66,7 +67,7 @@ export default <Workout[]>[
         name: 'Случай 4',
         video: {
           type: 'iframe',
-          url: 'https://www.youtube.com/embed/FqF11YdwxrQ',
+          url: 'https://rutube.ru/play/embed/348d394918bfe218476abc144918f909',
         },
         photoUrlList: [
           'https://fitnessclub24.ru/public/images/gallery/section/thumbs/0/2-3-shragi.jpg',
@@ -76,9 +77,11 @@ export default <Workout[]>[
         difficulty: 'простое',
         sportsItems: [],
         tags: [],
-        units: ['мин'],
+        unitsList: ['время'],
         goal: {
-          time: 3,
+          time: {
+            seconds: 3,
+          },
         },
       },
     ],
@@ -92,17 +95,17 @@ export default <Workout[]>[
         name: 'Упражнение 2',
         video: {
           type: 'iframe',
-          url: 'https://rutube.ru/play/embed/348d394918bfe218476abc144918f909',
+          url: 'https://www.youtube.com/embed/FqF11YdwxrQ',
         },
         photoUrlList: [],
         description: null,
         difficulty: 'среднее',
         sportsItems: ['штанга'],
         tags: ['бицепс', '12222', '22222', '22223', '42222', '522222222', '6', '7', '8', '0'],
-        units: ['повт', 'кг'],
+        unitsList: ['повторения', 'вес'],
         goal: {
           repetitions: 20,
-          weight: 100,
+          weightKg: 100,
         },
       },
       {
@@ -110,7 +113,7 @@ export default <Workout[]>[
         name: 'Случай 4',
         video: {
           type: 'iframe',
-          url: 'https://www.youtube.com/embed/FqF11YdwxrQ',
+          url: 'https://rutube.ru/play/embed/348d394918bfe218476abc144918f909',
         },
         photoUrlList: [
           'https://fitnessclub24.ru/public/images/gallery/section/thumbs/0/2-3-shragi.jpg',
@@ -120,9 +123,11 @@ export default <Workout[]>[
         difficulty: 'простое',
         sportsItems: [],
         tags: [],
-        units: ['мин'],
+        unitsList: ['время'],
         goal: {
-          time: 5,
+          time: {
+            seconds: 5,
+          },
         },
       },
     ],

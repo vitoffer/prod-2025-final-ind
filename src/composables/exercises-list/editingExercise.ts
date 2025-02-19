@@ -27,7 +27,7 @@ export function useEditingExercise() {
     difficulty: 'простое',
     sportsItems: [],
     tags: [],
-    units: [],
+    unitsList: [],
   }
 
   const getNextId = () => exercisesStore.list[exercisesStore.list.length - 1].id + 1
@@ -94,7 +94,7 @@ export function useEditingExercise() {
       difficulty: exercise.difficulty,
       sportsItems: exercise.sportsItems,
       tags: exercise.tags,
-      units: exercise.units,
+      unitsList: exercise.unitsList,
     }
   }
 

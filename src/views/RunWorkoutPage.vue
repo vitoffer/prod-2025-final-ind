@@ -61,16 +61,20 @@ const { formattedRemainingRestTime, increaseRemainingRestTime, decreaseRemaining
   useRestTimer(currentExercise, completeRest)
 const formattedUnitsToComplete = computed<string>(() => {
   if (!currentExercise.value) return ''
-  if (currentExercise.value.units.includes('кг') && currentExercise.value.units.includes('повт')) {
-    return `${currentExercise.value.goal.repetitions} повт по ${currentExercise.value.goal.weight} кг`
+  let formattedString = ''
+  if (currentExercise.value.unitsList.includes('подходы')) {
+    formattedString += `${currentExercise.value.goal.sets} подходов`
   }
-  if (currentExercise.value.units.includes('кг')) {
-    return `1 повт по ${currentExercise.value.goal.weight} кг`
+  if (currentExercise.value.unitsList.includes('повторения')) {
+    formattedString += ` по ${currentExercise.value.goal.repetitions} повторений`
   }
-  if (currentExercise.value.units.includes('повт')) {
-    return `${currentExercise.value.goal.repetitions} повт`
+  if (currentExercise.value.unitsList.includes('вес')) {
+    formattedString += ` по ${currentExercise.value.goal.weightKg} кг`
   }
-  return ''
+  if (currentExercise.value.unitsList.includes('время')) {
+    formattedString += ` по ${currentExercise.value.goal.time!.seconds} секунд`
+  }
+  return formattedString
 })
 
 const formattedWorkoutInfo = computed<string>(() => {
@@ -81,14 +85,14 @@ const formattedWorkoutInfo = computed<string>(() => {
     }) || []
 
   const completedTimeExercises = completedExercises.filter((exercise) =>
-    exercise.units.includes('мин'),
+    exercise.unitsList.includes('время'),
   )
   const completedRepetitionsExercises = completedExercises.filter((exercise) =>
-    exercise.units.includes('повт'),
+    exercise.unitsList.includes('повторения'),
   )
   const completedUnits = {
     time: completedTimeExercises.reduce((sum, exercise) => {
-      return sum + exercise.goal.time!
+      return sum + exercise.goal.time!.seconds
     }, 0),
     repetitions: completedRepetitionsExercises.reduce((sum, exercise) => {
       return sum + exercise.goal.repetitions!
@@ -109,7 +113,7 @@ const formattedWorkoutInfo = computed<string>(() => {
     <div class="wrapper h-[250px] w-[450px]">
       <ExerciseCardInfo :exercise="currentExercise" />
     </div>
-    <div v-if="currentExercise.units.includes('мин')" class="timer">
+    <div v-if="currentExercise.unitsList.includes('время')" class="timer">
       <Button v-if="!exerciseTimerId && remainingExerciseTime !== 0" @click="startExerciseTimer"
         >Начать упражнение: {{ currentExercise.goal.time }} секунд</Button
       >
@@ -118,7 +122,7 @@ const formattedWorkoutInfo = computed<string>(() => {
       >
       <p v-else>Осталось: {{ formattedRemainingExerciseTime }}</p>
     </div>
-    <div v-if="!currentExercise.units.includes('мин')">
+    <div v-if="!currentExercise.unitsList.includes('время')">
       {{ formattedUnitsToComplete }}
       <Button severity="success" @click="completeExercise">Готово</Button>
     </div>

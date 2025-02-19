@@ -30,14 +30,17 @@ const search = (event: AutoCompleteCompleteEvent) => {
 
 const addExerciseToList = () => {
   const newGoal: WorkoutExerciseGoal = {}
-  if (exerciseSearch.value!.units.includes('мин')) {
-    newGoal.time = 0
+  if (exerciseSearch.value!.unitsList.includes('время')) {
+    newGoal.time = { hours: 0, minutes: 0, seconds: 0 }
   }
-  if (exerciseSearch.value!.units.includes('повт')) {
+  if (exerciseSearch.value!.unitsList.includes('подходы')) {
+    newGoal.sets = 0
+  }
+  if (exerciseSearch.value!.unitsList.includes('повторения')) {
     newGoal.repetitions = 0
   }
-  if (exerciseSearch.value!.units.includes('кг')) {
-    newGoal.weight = 0
+  if (exerciseSearch.value!.unitsList.includes('вес')) {
+    newGoal.weightKg = 0
   }
   editingWorkout.value!.exercises.push({
     ...exerciseSearch.value,

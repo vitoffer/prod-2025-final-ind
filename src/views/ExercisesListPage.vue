@@ -7,7 +7,6 @@ import { computed } from 'vue'
 import ExercisesListFilters from '@/components/ExercisesListFilters.vue'
 import { useExercisesListSuggestions } from '@/composables/exercises-list/suggestions'
 import { useExercisesListFilter } from '@/composables/exercises-list/filter'
-
 import EditExerciseDialog from '@/components/EditExerciseDialog.vue'
 
 const confirm = useConfirm()

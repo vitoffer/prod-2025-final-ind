@@ -7,7 +7,7 @@ export interface Exercise {
   difficulty: ExerciseDifficulty
   sportsItems: string[]
   tags: string[]
-  units: ExerciseUnit[]
+  unitsList: ExerciseUnit[]
 }
 
 export interface ExerciseVideo {
@@ -17,7 +17,7 @@ export interface ExerciseVideo {
 
 export type ExerciseDifficulty = 'простое' | 'среднее' | 'сложное'
 
-export type ExerciseUnit = 'мин' | 'кг' | 'повт'
+export type ExerciseUnit = 'время' | 'подходы' | 'повторения' | 'вес'
 
 export interface Workout {
   id: number
@@ -30,9 +30,16 @@ export type ExerciseWithGoal = Exercise & {
 }
 
 export interface WorkoutExerciseGoal {
-  time?: number
+  time?: GoalTime
+  sets?: number
   repetitions?: number
-  weight?: number
+  weightKg?: number
+}
+
+export interface GoalTime {
+  hours: number
+  minutes: number
+  seconds: number
 }
 
 export type EditingEntity = Exercise | Workout
@@ -47,8 +54,8 @@ export interface FiltersObject {
 
 export interface User {
   age: number
-  height: number
-  weight: number
+  heightCm: number
+  weightKg: number
   level: number
   xp: number
   points: number

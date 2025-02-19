@@ -32,7 +32,8 @@ const infoComponentsList = computed<ExerciseInfoObject[]>(() => {
 const activeIndex = computed<number>(() => {
   if (
     infoComponentsList.value.length > 1 &&
-    infoComponentsList.value.find((elem) => elem.type === 'iframe') !== undefined
+    infoComponentsList.value.find((elem) => elem.type === 'iframe' || elem.type === 'video') !==
+      undefined
   )
     return 1
 

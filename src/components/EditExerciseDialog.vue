@@ -82,7 +82,7 @@ const {
         <label for="editingTags">Теги</label>
       </FloatLabel>
       <SelectButton
-        v-model="editingExercise!.units"
+        v-model="editingExercise!.unitsList"
         :options="unitsOptions"
         :invalid="unitsListInvalid"
         multiple
