@@ -61,7 +61,7 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
           size="small"
           :min="0.1"
           :max="999"
-          input-class="goal-number-input weight"
+          input-class="goal-number-input weight "
           :invalid="!exercise!.goal.weightKg"
         />
         кг</template
@@ -102,6 +102,7 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
   line-height: 1em;
   padding: 4px;
   margin-block: 2px;
+  border: none;
 
   &.repetitions {
     width: 3ch;
