@@ -39,10 +39,18 @@ defineProps<{ exercise: Exercise }>()
       </ul>
     </div>
     <div class="buttons mt-4 flex justify-around">
-      <Button @click="$emit('changeExercise', exercise.id)" severity="warn">
+      <Button
+        @click="$emit('changeExercise', exercise.id)"
+        severity="warn"
+        aria-label="Change exercise"
+      >
         <i class="pi pi-pencil" style="font-size: 1.25rem"></i>
       </Button>
-      <Button @click="$emit('removeExercise', exercise.id)" severity="danger">
+      <Button
+        @click="$emit('removeExercise', exercise.id)"
+        severity="danger"
+        aria-label="Remove exercise"
+      >
         <i class="pi pi-times-circle" style="font-size: 1.25rem"></i>
       </Button>
     </div>

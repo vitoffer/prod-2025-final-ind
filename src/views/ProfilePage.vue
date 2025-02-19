@@ -80,7 +80,7 @@ async function loadImages() {
         </div>
       </template>
       <template #footer>
-        <Button @click="saveUserData">Сохранить</Button>
+        <Button @click="saveUserData" aria-label="Save user info">Сохранить</Button>
       </template>
     </Dialog>
   </div>

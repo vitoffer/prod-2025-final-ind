@@ -16,18 +16,18 @@ defineModel('filtersObject')
   >
     <li class="w-full lg:col-span-2 lg:col-start-1 lg:row-span-1 lg:row-start-1">
       <FloatLabel variant="in">
-        <InputText id="filterName" v-model="filtersObject.name" class="w-full md:w-[250px]" />
         <label for="filterName">Название</label>
+        <InputText id="filterName" v-model="filtersObject.name" class="w-full md:w-[250px]" />
       </FloatLabel>
     </li>
     <li class="w-full lg:col-span-2 lg:col-start-3 lg:row-span-1 lg:row-start-1">
       <FloatLabel variant="in">
+        <label for="filterDesc">Описание</label>
         <InputText
           id="filterDesc"
           v-model="filtersObject.description"
           class="w-full md:w-[250px]"
         />
-        <label for="filterDesc">Описание</label>
       </FloatLabel>
     </li>
     <li
@@ -38,6 +38,7 @@ defineModel('filtersObject')
     </li>
     <li class="w-full lg:col-span-2 lg:col-start-2 lg:row-span-1 lg:row-start-2">
       <FloatLabel variant="in">
+        <label for="filterSportsItems">Инвентарь</label>
         <AutoComplete
           v-model="filtersObject.sportsItems"
           multiple
@@ -45,12 +46,13 @@ defineModel('filtersObject')
           @complete="$emit('searchSportsItemsSelect', $event)"
           id="filterSportsItems"
           class="w-full md:w-[250px]"
+          aria-labelledby="filterSportsItems"
         />
-        <label for="filterSportsItems">Инвентарь</label>
       </FloatLabel>
     </li>
     <li class="w-full lg:col-span-2 lg:col-start-4 lg:row-span-1 lg:row-start-2">
       <FloatLabel variant="in">
+        <label for="filterTags">Теги</label>
         <AutoComplete
           v-model="filtersObject.tags"
           multiple
@@ -58,8 +60,8 @@ defineModel('filtersObject')
           @complete="$emit('searchTagsSelect', $event)"
           id="filterTags"
           class="w-full md:w-[250px]"
+          aria-labelledby="filterTags"
         />
-        <label for="filterTags">Теги</label>
       </FloatLabel>
     </li>
   </ul>

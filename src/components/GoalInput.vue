@@ -12,6 +12,7 @@ const goal = defineModel<number>()
     button-layout="horizontal"
     decrement-button-class="!w-[1.5rem]"
     increment-button-class="!w-[1.5rem]"
+    aria-label="Goal input"
   />
 </template>
 

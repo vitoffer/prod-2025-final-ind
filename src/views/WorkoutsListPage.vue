@@ -65,10 +65,10 @@ const isNewWorkout = computed<boolean>(() => {
   <header class="flex flex-col items-center">
     <p>Фильтры</p>
     <FloatLabel variant="in">
-      <InputText v-model="filterName" id="filterName" />
       <label for="filterName">Название</label>
+      <InputText v-model="filterName" id="filterName" />
     </FloatLabel>
-    <Button @click="createWorkout"><i class="pi pi-plus"></i></Button>
+    <Button @click="createWorkout" aria-label="Create workout"><i class="pi pi-plus"></i></Button>
   </header>
   <main>
     <ConfirmDialog />
@@ -84,13 +84,21 @@ const isNewWorkout = computed<boolean>(() => {
     <ul class="workouts-list mt-6 mr-auto ml-auto flex w-fit flex-col gap-4">
       <li v-for="workout in filteredWorkoutsList" :key="workout.id">
         {{ workout.name }}
-        <Button aria-label="Run Workout" @click="() => runWorkout(workout)">
+        <Button @click="() => runWorkout(workout)" aria-label="Run workout">
           <i class="pi pi-play"></i>
         </Button>
-        <Button severity="warn" @click="() => changeWorkout(workout.id, findWorkout)">
+        <Button
+          severity="warn"
+          @click="() => changeWorkout(workout.id, findWorkout)"
+          aria-label="Change workout"
+        >
           <i class="pi pi-pencil"></i>
         </Button>
-        <Button severity="danger" @click="() => confirmRemove(workout.id)">
+        <Button
+          severity="danger"
+          @click="() => confirmRemove(workout.id)"
+          aria-label="Remove workout"
+        >
           <i class="pi pi-times-circle"></i>
         </Button>
       </li>
