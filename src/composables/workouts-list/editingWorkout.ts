@@ -1,7 +1,6 @@
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { Workout } from '@/types'
 import { useEditingEntity } from '../editingEntity'
-import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import type { Router } from 'vue-router'
 import { getInvalidExercisesList, isNameValid } from '@/utils/validation'
 import { useWorkoutValidation } from './workoutValidation'
@@ -12,7 +11,6 @@ export const useEditingWorkout = (
   showToast: (options: ToastMessageOptions) => void,
 ) => {
   const workoutsStore = useWorkoutsStore()
-  const runWorkoutStore = useRunWorkoutStore()
 
   const { nameInvalid } = useWorkoutValidation()
 
@@ -92,8 +90,12 @@ export const useEditingWorkout = (
   }
 
   const runWorkout = (workout: Workout) => {
-    runWorkoutStore.changeRunWorkout(workout)
-    router.push({ name: 'RunWorkoutPage' })
+    router.push({
+      name: 'RunWorkoutPage',
+      params: {
+        id: workout.id,
+      },
+    })
   }
 
   return {
