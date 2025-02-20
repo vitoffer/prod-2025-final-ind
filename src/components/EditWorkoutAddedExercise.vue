@@ -17,11 +17,9 @@ if (exercise.value?.goal.time) {
   timeInput.value = stringifyTime(exercise.value!.goal.time!)
 }
 
-function updateExerciseTime() {
-  handleTimeInput()
-}
-
 const setsOptions = [...Array(4).keys()].map((value) => value + 2)
+
+const timeInvalid = ref<boolean>(false)
 
 function handleRepetitionsInput() {
   if (!exercise.value?.goal.repetitions) {
@@ -45,6 +43,12 @@ function handleTimeInput() {
   exercise.value!.goal.time = time
 
   exercisesListInvalid.value = getInvalidExercisesList(props.editingWorkout)
+
+  if (time.seconds > 59) {
+    timeInvalid.value = true
+  } else {
+    timeInvalid.value = false
+  }
 }
 </script>
 
@@ -120,8 +124,9 @@ function handleTimeInput() {
           mask="99:99"
           placeholder="мин:сек"
           v-model="timeInput"
-          @value-change="updateExerciseTime"
+          @value-change="handleTimeInput"
           slotChar="00:00"
+          :invalid="timeInvalid"
           size="small"
           class="goal-number-input time not-last:mb-1"
         />

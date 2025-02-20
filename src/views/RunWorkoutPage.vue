@@ -37,10 +37,10 @@ function showToast(options: ToastMessageOptions) {
 
 const completeExercise = (type?: string) => {
   if (exerciseTimerId.value) {
-    clearInterval(exerciseTimerId.value)
+    stopExerciseTimer()
   }
   if (restTimerId.value) {
-    clearInterval(restTimerId.value)
+    stopRestTimer()
   }
 
   if (currentExerciseIndex.value === runWorkoutStore.selectedRunWorkout!.exercises.length - 1) {
@@ -80,6 +80,8 @@ const completeRest = () => {
 }
 
 function nextExercise() {
+  elapsedExerciseTime.value = 0
+  elapsedRestTime.value = 0
   currentExerciseIndex.value++
   currentExercise.value = runWorkoutStore.selectedRunWorkout!.exercises[currentExerciseIndex.value]
 }
@@ -108,6 +110,8 @@ const {
   exerciseTimerId,
   startExerciseTimer,
   remainingExerciseTime,
+  stopTimer: stopExerciseTimer,
+  elapsedExerciseTime,
 } = useExerciseTimer(currentExercise)
 
 const {
@@ -115,6 +119,8 @@ const {
   formattedRemainingRestTime,
   increaseRemainingRestTime,
   decreaseRemainingRestTime,
+  stopTimer: stopRestTimer,
+  elapsedRestTime,
 } = useRestTimer(currentExercise, completeRest)
 
 const formattedUnitsToComplete = computed<string>(() => {

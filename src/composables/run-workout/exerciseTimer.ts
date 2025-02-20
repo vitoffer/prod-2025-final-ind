@@ -45,5 +45,7 @@ export const useExerciseTimer = (currentExercise: Ref<ExerciseWithGoal | null>) 
     exerciseTimerId,
     startExerciseTimer: startTimer,
     remainingExerciseTime,
+    stopTimer,
+    elapsedExerciseTime,
   }
 }
