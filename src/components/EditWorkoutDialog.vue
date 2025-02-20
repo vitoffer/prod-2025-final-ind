@@ -75,6 +75,8 @@ function suggestExercises() {
     addExerciseToList(copy[randomIndex])
     copy.splice(randomIndex, 1)
   }
+
+  selectedTag.value = null
 }
 </script>
 

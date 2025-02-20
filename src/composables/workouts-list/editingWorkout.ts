@@ -62,6 +62,12 @@ export const useEditingWorkout = (
       return false
     }
 
+    if (editingWorkout.value.exercises.length === 0) {
+      showToast({ severity: 'error', summary: `Добавьте хотя бы одно упражнение`, life: 3000 })
+
+      return false
+    }
+
     return true
   }
 

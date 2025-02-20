@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ExerciseWithGoal, ExerciseWithGoalValidation, Workout } from '@/types'
+import type { ExerciseUnit, ExerciseWithGoal, ExerciseWithGoalValidation, Workout } from '@/types'
 import { formattedReps, formattedSets, parseTime, stringifyTime } from '@/utils/formatters'
 import { getInvalidExercisesList } from '@/utils/validation'
 import { ref } from 'vue'
@@ -77,7 +77,7 @@ function handleTimeInput() {
         {{ formattedSets(exercise!.goal.sets) }}
       </span>
       <template v-if="exercise!.unitsList.includes('повторения')">
-        по
+        {{ exercise!.unitsList.includes('подходы') ? ' по ' : '' }}
         <InputNumber
           v-model="exercise!.goal.repetitions"
           size="small"
@@ -90,7 +90,13 @@ function handleTimeInput() {
         {{ formattedReps(exercise!.goal.repetitions) }}</template
       >
       <template v-if="exercise!.unitsList.includes('вес')">
-        по
+        {{
+          ['повторения', 'подходы'].some((unit) =>
+            exercise!.unitsList.includes(unit as ExerciseUnit),
+          )
+            ? ' по '
+            : ''
+        }}
         <InputNumber
           v-model="exercise!.goal.weightKg"
           size="small"
@@ -103,7 +109,13 @@ function handleTimeInput() {
         кг</template
       >
       <template v-if="exercise!.unitsList.includes('время')">
-        по
+        {{
+          ['повторения', 'подходы', 'вес'].some((unit) =>
+            exercise!.unitsList.includes(unit as ExerciseUnit),
+          )
+            ? ' по '
+            : ''
+        }}
         <InputMask
           mask="99:99"
           placeholder="мин:сек"
