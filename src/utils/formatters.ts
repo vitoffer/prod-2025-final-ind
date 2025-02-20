@@ -71,3 +71,23 @@ export function formattedStringTime(minutes: number, seconds: number): string {
 
   return resultString
 }
+
+export function formattedWorkoutData(
+  elapsedTime: string,
+  completedReps: number,
+  maxWeightKg: number,
+) {
+  let resultString = ''
+
+  if (elapsedTime !== '') {
+    resultString += `На упражнения потрачено: ${elapsedTime}.\n`
+  }
+  if (completedReps !== 0) {
+    resultString += `Повторений сделано: ${completedReps}.\n`
+  }
+  if (maxWeightKg !== 0) {
+    resultString += `Максимальный вес: ${maxWeightKg} кг.\n`
+  }
+
+  return resultString
+}

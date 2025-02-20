@@ -8,8 +8,10 @@ import {
   formattedReps,
   formattedSets,
   formattedStringTime,
+  formattedWorkoutData,
   stringifyTime,
 } from '@/utils/formatters'
+import { getCompletedExercisesUnits } from '@/utils/functions'
 import { computed, ref } from 'vue'
 
 const runWorkoutStore = useRunWorkoutStore()
@@ -123,40 +125,8 @@ const formattedUnitsToComplete = computed<string>(() => {
 const formattedWorkoutInfo = computed<string>(() => {
   if (!workoutCompleted.value) return ''
 
-  const completedExercises =
-    runWorkoutStore.selectedRunWorkout?.exercises.filter((exercise, index) => {
-      return !skippedExercisesIndexes.value.includes(index)
-    }) || []
-
-  const completedSetsExercises = completedExercises.filter((exercise) =>
-    exercise.unitsList.includes('подходы'),
-  )
-
-  const completedRepsExercises = completedExercises.filter((exercise) =>
-    exercise.unitsList.includes('повторения'),
-  )
-
-  const completedWeightKgExercises = completedExercises.filter((exercise) =>
-    exercise.unitsList.includes('вес'),
-  )
-
-  const completedTimeExercises = completedExercises.filter((exercise) =>
-    exercise.unitsList.includes('время'),
-  )
-
-  let completedReps = 0
-
-  const completedSetsOnly = completedSetsExercises.reduce((sum, exercise) => {
-    return sum + exercise.goal.sets!
-  }, 0)
-
-  const completedRepsOnly = completedRepsExercises.reduce((sum, exercise) => {
-    return sum + exercise.goal.repetitions!
-  }, 0)
-
-  if (completedSetsOnly || completedRepsOnly) {
-    completedReps = (completedSetsOnly || 1) * (completedRepsOnly || 1)
-  }
+  const { completedReps, completedTimeExercises, completedWeightKgExercises } =
+    getCompletedExercisesUnits(runWorkoutStore.selectedRunWorkout!, skippedExercisesIndexes.value)
 
   let maxWeightKg = 0
   if (completedWeightKgExercises.length) {
@@ -175,17 +145,7 @@ const formattedWorkoutInfo = computed<string>(() => {
 
   const elapsedTime = formattedStringTime(elapsedMinutes, elapsedSeconds)
 
-  let resultString = ''
-  if (elapsedTime !== '') {
-    resultString += `На упражнения потрачено: ${elapsedTime}.\n`
-  }
-  if (completedReps !== 0) {
-    resultString += `Повторений сделано: ${completedReps}.\n`
-  }
-  if (maxWeightKg !== 0) {
-    resultString += `Максимальный вес: ${maxWeightKg} кг.\n`
-  }
-  return resultString
+  return formattedWorkoutData(elapsedTime, completedReps, maxWeightKg)
 })
 </script>
 
