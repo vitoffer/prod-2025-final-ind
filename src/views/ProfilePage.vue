@@ -12,13 +12,6 @@ if (userStore.isNewUser) {
   showDialog.value = true
 }
 
-const saveUserData = () => {
-  if (age.value === null || height.value === null || weight.value === null) return
-  userStore.updateUser({ age: age.value, heightCm: height.value, weightKg: weight.value })
-  showDialog.value = false
-  userStore.toggleIsNewUser()
-}
-
 const hatImage = ref<string | null>(null)
 const bodyImage = ref<string | null>(null)
 const necklaceImage = ref<string | null>(null)
@@ -28,41 +21,34 @@ const bootsImage = ref<string | null>(null)
 
 loadImages()
 
+function getImageUrl(folder: string, type: string, title: string): string {
+  return new URL(`../assets/${folder}/${type}/${title}.svg`, import.meta.url).href
+}
+
 async function loadImages() {
   if (userStore.user.character.hat) {
-    hatImage.value = new URL(
-      `../assets/character/hat/${userStore.user.character.hat}.svg`,
-      import.meta.url,
-    ).href
+    hatImage.value = getImageUrl('accessories', 'hat', userStore.user.character.hat)
   }
-  bodyImage.value = new URL(
-    `../assets/character/body/${userStore.user.character.body}.svg`,
-    import.meta.url,
-  ).href
+  bodyImage.value = getImageUrl('character', 'body', userStore.user.character.body)
   if (userStore.user.character.necklace) {
-    necklaceImage.value = new URL(
-      `../assets/character/necklace/${userStore.user.character.necklace}.svg`,
-      import.meta.url,
-    ).href
+    necklaceImage.value = getImageUrl('accessories', 'necklace', userStore.user.character.necklace)
   }
   if (userStore.user.character.bracelet) {
-    braceletImage.value = new URL(
-      `../assets/character/bracelet/${userStore.user.character.bracelet}.svg`,
-      import.meta.url,
-    ).href
+    braceletImage.value = getImageUrl('accessories', 'bracelet', userStore.user.character.bracelet)
   }
   if (userStore.user.character.pants) {
-    pantsImage.value = new URL(
-      `../assets/character/pants/${userStore.user.character.pants}.svg`,
-      import.meta.url,
-    ).href
+    pantsImage.value = getImageUrl('accessories', 'pants', userStore.user.character.pants)
   }
   if (userStore.user.character.boots) {
-    bootsImage.value = new URL(
-      `../assets/character/boots/${userStore.user.character.boots}.svg`,
-      import.meta.url,
-    ).href
+    bootsImage.value = getImageUrl('accessories', 'boots', userStore.user.character.boots)
   }
+}
+
+function saveUserData() {
+  if (age.value === null || height.value === null || weight.value === null) return
+  userStore.updateUser({ age: age.value, heightCm: height.value, weightKg: weight.value })
+  showDialog.value = false
+  userStore.toggleIsNewUser()
 }
 </script>
 
@@ -84,47 +70,51 @@ async function loadImages() {
       </template>
     </Dialog>
   </div>
-  <div v-else>
-    <p>Возраст: {{ userStore.user.age }} лет</p>
-    <p>Рост: {{ userStore.user.heightCm }} см</p>
-    <p>Вес: {{ userStore.user.weightKg }} кг</p>
-    <p>Уровень: {{ userStore.user.level }}</p>
-    <p>XP: {{ userStore.user.xp }}</p>
-    <p>Очки: {{ userStore.user.points }}</p>
+  <div v-else class="mt-4 mr-auto ml-auto w-fit text-lg font-semibold">
+    <div class="flex justify-between">
+      <p>Возраст: {{ userStore.user.age }} лет;</p>
+      <p>Рост: {{ userStore.user.heightCm }} см;</p>
+      <p>Вес: {{ userStore.user.weightKg }} кг;</p>
+    </div>
+    <div class="flex justify-between">
+      <p>Уровень: {{ userStore.user.level }};</p>
+      <p>XP: {{ userStore.user.xp }};</p>
+      <p>Очки: {{ userStore.user.points }};</p>
+    </div>
     <p>Доступные предметы кастомизации: {{ userStore.user.customizationItems }}</p>
     <p>Ачивки: {{ userStore.user.achievements }}</p>
-    <p>Персонаж:</p>
-    <div class="relative w-fit bg-gray-300 p-4">
+    <p class="mt-4 mb-2 text-center">Ваш персонаж:</p>
+    <div class="relative mr-auto ml-auto w-fit rounded-3xl bg-neutral-300 px-16 py-4">
       <img
         v-if="userStore.user.character.hat"
         :src="hatImage || ''"
         alt="Шапка"
-        class="absolute top-[0px] left-[50%] -translate-x-[50%]"
+        class="absolute top-[16px] left-[50%] -translate-x-[50%]"
       />
-      <img :src="bodyImage || ''" alt="Тело" class="" />
+      <img :src="bodyImage || ''" alt="Тело" class="mt-4" />
       <img
         v-if="userStore.user.character.necklace"
         :src="necklaceImage || ''"
         alt="Цепочка"
-        class="absolute top-[92px] left-[50%] -translate-x-[50%]"
+        class="absolute top-[108px] left-[50%] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.bracelet"
         :src="braceletImage || ''"
         alt="Браслет"
-        class="absolute top-[170px] left-[30.5px] -translate-x-[50%]"
+        class="absolute top-[186px] left-[78px] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.pants"
         :src="pantsImage || ''"
         alt="Штаны"
-        class="absolute top-[192px] left-[50%] -translate-x-[50%]"
+        class="absolute top-[208px] left-[50%] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.boots"
         :src="bootsImage || ''"
         alt="Ботинки"
-        class="absolute top-[261px] left-[50%] -translate-x-[50%]"
+        class="absolute top-[277px] left-[50%] -translate-x-[50%]"
       />
     </div>
   </div>

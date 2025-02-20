@@ -1,5 +1,5 @@
 import type { ExerciseWithGoal } from '@/types'
-import { computed, ref, watch, type Ref } from 'vue'
+import { computed, onUnmounted, ref, watch, type Ref } from 'vue'
 
 export const useRestTimer = (
   currentExercise: Ref<ExerciseWithGoal | null>,
@@ -50,5 +50,15 @@ export const useRestTimer = (
     },
     { immediate: true },
   )
-  return { formattedRemainingRestTime, increaseRemainingRestTime, decreaseRemainingRestTime }
+
+  onUnmounted(() => {
+    if (restTimerId.value) clearInterval(restTimerId.value)
+  })
+
+  return {
+    restTimerId,
+    formattedRemainingRestTime,
+    increaseRemainingRestTime,
+    decreaseRemainingRestTime,
+  }
 }

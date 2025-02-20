@@ -1,5 +1,5 @@
 import type { ExerciseWithGoal } from '@/types'
-import { computed, ref, type Ref } from 'vue'
+import { computed, onUnmounted, ref, type Ref } from 'vue'
 
 export const useExerciseTimer = (currentExercise: Ref<ExerciseWithGoal | null>) => {
   const exerciseTimerId = ref<number | null>(null)
@@ -13,7 +13,11 @@ export const useExerciseTimer = (currentExercise: Ref<ExerciseWithGoal | null>) 
     return totalExerciseTime.value - elapsedExerciseTime.value
   })
   const formattedRemainingExerciseTime = computed<string>(() => {
-    return `${remainingExerciseTime.value} секунд`
+    let resultString = ''
+    resultString += String(Math.floor(remainingExerciseTime.value / 60)).padStart(2, '0')
+    resultString += ':'
+    resultString += String(remainingExerciseTime.value % 60).padStart(2, '0')
+    return resultString
   })
 
   const startTimer = () => {
@@ -31,6 +35,10 @@ export const useExerciseTimer = (currentExercise: Ref<ExerciseWithGoal | null>) 
     clearInterval(exerciseTimerId.value!)
     exerciseTimerId.value = null
   }
+
+  onUnmounted(() => {
+    if (exerciseTimerId.value) clearInterval(exerciseTimerId.value)
+  })
 
   return {
     formattedRemainingExerciseTime,

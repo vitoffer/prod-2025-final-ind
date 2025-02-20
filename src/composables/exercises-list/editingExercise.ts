@@ -10,8 +10,9 @@ import {
   isUnitsListValid,
   isVideoUrlValid,
 } from '@/utils/validation'
+import type { ToastMessageOptions } from 'primevue'
 
-export function useEditingExercise() {
+export function useEditingExercise(showToast: (options: ToastMessageOptions) => void) {
   const exercisesStore = useExercisesStore()
   const { nameInvalid, difficultyInvalid, unitsListInvalid, photoUrlListInvalid, videoUrlInvalid } =
     useExerciseValidation()
@@ -41,22 +42,22 @@ export function useEditingExercise() {
     editingEntity: editingExercise,
   } = useEditingEntity<Exercise>(nullExercise, getNextId)
 
-  function createExercise(...args: Parameters<typeof createEntity>) {
+  function setAllFieldsValid() {
     nameInvalid.value = false
     difficultyInvalid.value = false
     unitsListInvalid.value = false
     photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
     videoUrlInvalid.value = false
+  }
+
+  function createExercise(...args: Parameters<typeof createEntity>) {
+    setAllFieldsValid()
 
     createEntity(...args)
   }
 
   function changeExercise(...args: Parameters<typeof changeEntity>) {
-    nameInvalid.value = false
-    difficultyInvalid.value = false
-    unitsListInvalid.value = false
-    photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
-    videoUrlInvalid.value = false
+    setAllFieldsValid()
 
     changeEntity(...args)
 
@@ -77,6 +78,8 @@ export function useEditingExercise() {
   }
 
   const removeExercisePhotoUrl = () => {
+    if (editingExercise.value.photoUrlList.length === 0) return
+
     editingExercise.value.photoUrlList = editingExercise.value.photoUrlList.slice(
       0,
       editingExercise.value.photoUrlList.length - 1,
@@ -112,6 +115,24 @@ export function useEditingExercise() {
       photoUrlListInvalid.value.includes(true) ||
       videoUrlInvalid.value
     ) {
+      showToast({
+        summary: 'Введены некорректные данные',
+        severity: 'error',
+        life: 3000,
+      })
+      return
+    }
+
+    if (
+      !editingExercise.value.description &&
+      editingExercise.value.photoUrlList.length === 0 &&
+      (!editingExercise.value.video || !editingExercise.value.video.url)
+    ) {
+      showToast({
+        summary: 'Введите хотя бы одно из элементов: описание, изображение(-я), видео',
+        severity: 'error',
+        life: 3000,
+      })
       return
     }
 

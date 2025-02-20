@@ -106,21 +106,17 @@ const {
           <i class="pi pi-plus"></i>
         </Button>
       </div>
-      <FloatLabel variant="in" class="w-[500px] max-w-full">
-        <InputText
-          v-model="editingExercise!.video!.url"
-          type="text"
-          :invalid="videoUrlInvalid"
-          @input="async () => (videoUrlInvalid = !(await isVideoUrlValid(editingExercise!)))"
-          id="editingVideoUrl"
-          class="w-full"
-        />
-        <label
-          for="editingVideoUrl"
-          class="w-full overflow-hidden pr-8 text-ellipsis whitespace-nowrap"
-          >Ссылка на видео-файл или на видео youtube или rutube</label
-        >
-      </FloatLabel>
+      <label for="editingVideoUrl" class="max-w-full text-[0.8rem]"
+        >Ссылка на видео-файл или на видео youtube или rutube:</label
+      >
+      <InputText
+        v-model="editingExercise!.video!.url"
+        type="text"
+        :invalid="videoUrlInvalid"
+        @input="async () => (videoUrlInvalid = !(await isVideoUrlValid(editingExercise!)))"
+        id="editingVideoUrl"
+        class="w-full"
+      />
       <div class="flex w-full justify-evenly">
         <Button @click="editExerciseDialogVisible = false" severity="danger">Отменить</Button>
         <Button @click="saveEditingExercise" severity="success">Сохранить</Button>

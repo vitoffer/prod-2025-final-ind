@@ -52,13 +52,13 @@ const activeIndex = computed<number>(() => {
     :active-index="activeIndex"
   >
     <template #item="slotProps">
-      <div class="flex h-[192px] w-[100%] items-center">
+      <div class="flex aspect-video w-[100%] items-center">
         <IframeLoader
           v-if="slotProps.item.type === 'iframe'"
-          class="w-[100%] rounded-xl"
+          class="aspect-video w-[100%] rounded-xl"
           :src="slotProps.item.src"
         />
-        <video v-else-if="slotProps.item.type === 'video'" controls>
+        <video v-else-if="slotProps.item.type === 'video'" controls class="h-full w-full">
           <source :src="slotProps.item.src" />
         </video>
         <img
@@ -67,7 +67,10 @@ const activeIndex = computed<number>(() => {
           alt="Картинка упражнения"
           class="h-full w-full object-contain"
         />
-        <p v-else-if="slotProps.item.type === 'text'" class="m-3 self-start text-center text-lg">
+        <p
+          v-else-if="slotProps.item.type === 'text'"
+          class="m-3 w-full self-start text-center text-lg"
+        >
           {{ slotProps.item.text }}
         </p>
       </div>
@@ -83,5 +86,12 @@ const activeIndex = computed<number>(() => {
 .p-galleria {
   width: 100%;
   height: fit-content;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--color-gray-500);
+}
+
+:deep(.p-galleria-indicator) {
+  line-height: 0;
 }
 </style>

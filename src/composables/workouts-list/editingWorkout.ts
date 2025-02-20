@@ -1,15 +1,18 @@
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { Workout } from '@/types'
 import { useEditingEntity } from '../editingEntity'
-import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import type { Router } from 'vue-router'
-import { ref } from 'vue'
-import { isNameValid } from '@/utils/validation'
+import { getInvalidExercisesList, isNameValid } from '@/utils/validation'
+import { useWorkoutValidation } from './workoutValidation'
+import type { ToastMessageOptions } from 'primevue'
 
-export const useEditingWorkout = (router: Router) => {
+export const useEditingWorkout = (
+  router: Router,
+  showToast: (options: ToastMessageOptions) => void,
+) => {
   const workoutsStore = useWorkoutsStore()
-  const runWorkoutStore = useRunWorkoutStore()
-  const nameInvalid = ref<boolean>()
+
+  const { nameInvalid } = useWorkoutValidation()
 
   const nullWorkout: Omit<Workout, 'id'> = {
     name: '',
@@ -27,24 +30,49 @@ export const useEditingWorkout = (router: Router) => {
     editingEntity: editingWorkout,
   } = useEditingEntity<Workout>(nullWorkout, getNextId)
 
-  function createWorkout(...args: Parameters<typeof createEntity>) {
+  function setAllFieldsValid() {
     nameInvalid.value = false
+  }
 
+  function createWorkout(...args: Parameters<typeof createEntity>) {
     createEntity(...args)
+
+    setAllFieldsValid()
   }
 
   function changeWorkout(...args: Parameters<typeof changeEntity>) {
-    nameInvalid.value = false
-
     changeEntity(...args)
+
+    setAllFieldsValid()
   }
 
-  const saveEditingWorkout = async () => {
+  function isWorkoutValid() {
     nameInvalid.value = !isNameValid(editingWorkout.value)
 
     if (nameInvalid.value) {
-      return
+      return false
     }
+
+    if (
+      getInvalidExercisesList(editingWorkout.value).some((exerciseInvalid) =>
+        Object.values(exerciseInvalid).includes(true),
+      )
+    ) {
+      showToast({ severity: 'error', summary: `Введите корректную цель упражнения`, life: 3000 })
+      return false
+    }
+
+    if (editingWorkout.value.exercises.length === 0) {
+      showToast({ severity: 'error', summary: `Добавьте хотя бы одно упражнение`, life: 3000 })
+
+      return false
+    }
+
+    return true
+  }
+
+  const saveEditingWorkout = async () => {
+    if (!isWorkoutValid()) return
 
     const existingWorkout = workoutsStore.list.find(
       (workout) => workout.id === editingWorkout.value.id,
@@ -60,11 +88,7 @@ export const useEditingWorkout = (router: Router) => {
   }
 
   const validateAndRunWorkout = async () => {
-    nameInvalid.value = !isNameValid(editingWorkout.value)
-
-    if (nameInvalid.value) {
-      return
-    }
+    if (!isWorkoutValid()) return
 
     editWorkoutDialogVisible.value = false
 
@@ -72,8 +96,12 @@ export const useEditingWorkout = (router: Router) => {
   }
 
   const runWorkout = (workout: Workout) => {
-    runWorkoutStore.changeRunWorkout(workout)
-    router.push({ name: 'RunWorkoutPage' })
+    router.push({
+      name: 'RunWorkoutPage',
+      params: {
+        id: workout.id,
+      },
+    })
   }
 
   return {
@@ -82,9 +110,9 @@ export const useEditingWorkout = (router: Router) => {
     createWorkout,
     changeWorkout,
     findWorkout,
-    nameInvalid,
     saveEditingWorkout,
     validateAndRunWorkout,
     runWorkout,
+    nameInvalid,
   }
 }

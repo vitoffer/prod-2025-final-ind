@@ -1,6 +1,16 @@
-import type { User } from '@/types'
+import {
+  baseBody,
+  baseLevel,
+  basePoints,
+  baseXP,
+  requiredLevelToFitBody,
+  requiredLevelToNormalBody,
+} from '@/constants'
+import type { User, Workout } from '@/types'
+import { XPForLevel } from '@/utils/gamification'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { type ToastMessageOptions } from 'primevue'
+import { ref, toValue } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
   const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
@@ -14,12 +24,12 @@ export const useUserStore = defineStore('user', () => {
     age: 20,
     heightCm: 180,
     weightKg: 75,
-    level: 1,
-    xp: 0,
-    points: 10,
+    level: baseLevel,
+    xp: baseXP,
+    points: basePoints,
     character: {
       hat: null,
-      body: 'normal',
+      body: baseBody,
       necklace: null,
       bracelet: null,
       pants: null,
@@ -27,19 +37,22 @@ export const useUserStore = defineStore('user', () => {
     },
     customizationItems: [],
     achievements: [],
+    history: {
+      lastCompletedWorkouts: [],
+    },
   }
 
   const user = ref<User>(baseUser)
   // const user = ref<User>({
   //   age: 20,
-  //   height: 180,
-  //   weight: 75,
-  //   level: 1,
-  //   xp: 0,
-  //   points: 10,
+  //   heightCm: 180,
+  //   weightKg: 75,
+  //   level: baseLevel,
+  //   xp: baseXP,
+  //   points: basePoints,
   //   character: {
   //     hat: '1',
-  //     body: 'fit',
+  //     body: baseBody,
   //     necklace: '1',
   //     bracelet: '1',
   //     pants: '3',
@@ -47,11 +60,14 @@ export const useUserStore = defineStore('user', () => {
   //   },
   //   customizationItems: [],
   //   achievements: [],
+  //   history: {
+  //     lastCompletedWorkouts: [],
+  //   },
   // })
 
-  if (localStorage.getItem('user')) {
-    user.value = JSON.parse(localStorage.getItem('user')!)
-  }
+  // if (localStorage.getItem('user')) {
+  //   user.value = JSON.parse(localStorage.getItem('user')!)
+  // }
 
   function updateUser(params: Partial<User>) {
     user.value = {
@@ -59,8 +75,78 @@ export const useUserStore = defineStore('user', () => {
       ...params,
     }
 
+    // updateUserInLS()
+  }
+
+  function updateUserInLS() {
     localStorage.setItem('user', JSON.stringify(user.value))
   }
 
-  return { isNewUser, toggleIsNewUser, user, updateUser }
+  function pushWorkoutToHistory(workout: Workout) {
+    if (user.value.history.lastCompletedWorkouts.length === 5) {
+      user.value.history.lastCompletedWorkouts.shift()
+    }
+
+    user.value.history.lastCompletedWorkouts.push(workout)
+
+    // updateUserInLS()
+  }
+
+  function checkLevelUp(showToast: (options: ToastMessageOptions) => void) {
+    let newLevel = user.value.level
+    let remainingXP = user.value.xp
+
+    while (remainingXP >= XPForLevel(newLevel + 1)) {
+      remainingXP -= XPForLevel(newLevel + 1)
+      newLevel++
+    }
+
+    if (newLevel > user.value.level) {
+      levelUp(newLevel, remainingXP, showToast)
+    }
+  }
+
+  function levelUp(
+    newLevel: number,
+    remainingXP: number,
+    showToast: (options: ToastMessageOptions) => void,
+  ) {
+    const startLevel = toValue(user.value.level)
+    user.value.level = newLevel
+    user.value.xp = remainingXP
+
+    showToast({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
+
+    if (startLevel < requiredLevelToFitBody && user.value.level >= requiredLevelToFitBody) {
+      user.value.character.body = 'fit'
+    }
+    if (startLevel < requiredLevelToNormalBody && user.value.level >= requiredLevelToNormalBody) {
+      user.value.character.body = 'normal'
+    }
+  }
+
+  function addXP(xpGained: number, showToast: (options: ToastMessageOptions) => void) {
+    user.value.xp += xpGained
+
+    checkLevelUp(showToast)
+
+    // updateUserInLS()
+  }
+
+  function addPoints(pointsCount: number) {
+    user.value.points += pointsCount
+
+    // updateUserInLS()
+  }
+
+  return {
+    isNewUser,
+    toggleIsNewUser,
+    user,
+    updateUser,
+    pushWorkoutToHistory,
+    checkLevelUp,
+    addXP,
+    addPoints,
+  }
 })

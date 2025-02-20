@@ -1,4 +1,4 @@
-import type { EditingEntity, Exercise } from '@/types'
+import type { EditingEntity, Exercise, ExerciseWithGoalValidation, Workout } from '@/types'
 import { correctVideoUrl, isCorrectImageUrl } from './media'
 
 export function isNameValid(editingEntity: EditingEntity) {
@@ -38,4 +38,23 @@ export async function isVideoUrlValid(editingExercise: Exercise) {
   }
   const { error } = await correctVideoUrl(editingExercise.video!.url)
   return error ? false : true
+}
+
+export function getInvalidExercisesList(editingWorkout: Workout): ExerciseWithGoalValidation[] {
+  const invalidList = editingWorkout.exercises.map((exercise): ExerciseWithGoalValidation => {
+    const repetitionsCountInvalid = 'repetitions' in exercise.goal && !exercise.goal.repetitions
+    const setsCountInvalid = 'sets' in exercise.goal && !exercise.goal.sets
+    const weightKgCountInvalid = 'weightKg' in exercise.goal && !exercise.goal.weightKg
+    const timeInvalid =
+      'time' in exercise.goal &&
+      exercise.goal.time!.minutes === 0 &&
+      exercise.goal.time!.seconds === 0
+    return {
+      repetitions: repetitionsCountInvalid,
+      sets: setsCountInvalid,
+      weightKg: weightKgCountInvalid,
+      time: timeInvalid,
+    }
+  })
+  return invalidList
 }
