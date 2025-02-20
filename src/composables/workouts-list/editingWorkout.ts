@@ -48,11 +48,11 @@ export const useEditingWorkout = (
     setAllFieldsValid()
   }
 
-  const saveEditingWorkout = async () => {
+  function isWorkoutValid() {
     nameInvalid.value = !isNameValid(editingWorkout.value)
 
     if (nameInvalid.value) {
-      return
+      return false
     }
 
     if (
@@ -61,8 +61,14 @@ export const useEditingWorkout = (
       )
     ) {
       showToast({ severity: 'error', summary: `Введите корректную цель упражнения`, life: 3000 })
-      return
+      return false
     }
+
+    return true
+  }
+
+  const saveEditingWorkout = async () => {
+    if (!isWorkoutValid()) return
 
     const existingWorkout = workoutsStore.list.find(
       (workout) => workout.id === editingWorkout.value.id,
@@ -78,11 +84,7 @@ export const useEditingWorkout = (
   }
 
   const validateAndRunWorkout = async () => {
-    nameInvalid.value = !isNameValid(editingWorkout.value)
-
-    if (nameInvalid.value) {
-      return
-    }
+    if (!isWorkoutValid()) return
 
     editWorkoutDialogVisible.value = false
 
