@@ -55,10 +55,10 @@ const activeIndex = computed<number>(() => {
       <div class="flex h-[192px] w-[100%] items-center">
         <IframeLoader
           v-if="slotProps.item.type === 'iframe'"
-          class="w-[100%] rounded-xl"
+          class="aspect-video w-[100%] rounded-xl"
           :src="slotProps.item.src"
         />
-        <video v-else-if="slotProps.item.type === 'video'" controls>
+        <video v-else-if="slotProps.item.type === 'video'" controls class="aspect-video">
           <source :src="slotProps.item.src" />
         </video>
         <img
@@ -83,5 +83,12 @@ const activeIndex = computed<number>(() => {
 .p-galleria {
   width: 100%;
   height: fit-content;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--color-gray-500);
+}
+
+:deep(.p-galleria-indicator) {
+  line-height: 0;
 }
 </style>
