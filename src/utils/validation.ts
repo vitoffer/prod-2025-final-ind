@@ -42,7 +42,9 @@ export async function isVideoUrlValid(editingExercise: Exercise) {
 
 export function getInvalidExercisesList(editingWorkout: Workout): ExerciseWithGoalValidation[] {
   const invalidList = editingWorkout.exercises.map((exercise): ExerciseWithGoalValidation => {
-    const repetitionsCountInvalid = 'repetitions' in exercise.goal && !exercise.goal.repetitions
+    const repetitionsCountInvalid =
+      'repetitions' in exercise.goal &&
+      (!Number.isInteger(exercise.goal.repetitions) || !exercise.goal.repetitions)
     const setsCountInvalid = 'sets' in exercise.goal && !exercise.goal.sets
     const weightKgCountInvalid = 'weightKg' in exercise.goal && !exercise.goal.weightKg
     const timeInvalid =

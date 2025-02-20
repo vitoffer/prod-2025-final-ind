@@ -106,6 +106,7 @@ function handleTimeInput() {
           size="small"
           :min="0.1"
           :max="999"
+          :max-fraction-digits="2"
           input-class="goal-number-input weight"
           class="not-last:mb-1"
           @input="handleWeightKgInput"
