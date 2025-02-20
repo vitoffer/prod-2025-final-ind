@@ -35,7 +35,7 @@ const {
 function handleBlur(event: Event, type: 'sportsItems' | 'tags') {
   const target = event.target as HTMLInputElement
   const value = target.value
-  if (value !== '') {
+  if (value !== '' && !editingExercise.value![type].includes(value)) {
     editingExercise.value![type].push(value)
   }
   target.value = ''
