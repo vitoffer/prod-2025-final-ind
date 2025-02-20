@@ -60,5 +60,7 @@ export const useRestTimer = (
     formattedRemainingRestTime,
     increaseRemainingRestTime,
     decreaseRemainingRestTime,
+    stopTimer,
+    elapsedRestTime,
   }
 }
