@@ -1,9 +1,16 @@
-import { baseBody, baseLevel, basePoints, baseXP } from '@/constants'
+import {
+  baseBody,
+  baseLevel,
+  basePoints,
+  baseXP,
+  requiredLevelToFitBody,
+  requiredLevelToNormalBody,
+} from '@/constants'
 import type { User, Workout } from '@/types'
 import { XPForLevel } from '@/utils/gamification'
 import { defineStore } from 'pinia'
-import { useToast, type ToastMessageOptions } from 'primevue'
-import { ref, watch } from 'vue'
+import { type ToastMessageOptions } from 'primevue'
+import { ref, toValue } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
   const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
@@ -30,41 +37,37 @@ export const useUserStore = defineStore('user', () => {
     },
     customizationItems: [],
     achievements: [],
-  }
-
-  // const user = ref<User>(baseUser)
-  const user = ref<User>({
-    age: 20,
-    heightCm: 180,
-    weightKg: 75,
-    level: baseLevel,
-    xp: baseXP,
-    points: basePoints,
-    character: {
-      hat: '1',
-      body: baseBody,
-      necklace: '1',
-      bracelet: '1',
-      pants: '3',
-      boots: '1',
-    },
-    customizationItems: [],
-    achievements: [],
     history: {
       lastCompletedWorkouts: [],
     },
-  })
+  }
+
+  const user = ref<User>(baseUser)
+  // const user = ref<User>({
+  //   age: 20,
+  //   heightCm: 180,
+  //   weightKg: 75,
+  //   level: baseLevel,
+  //   xp: baseXP,
+  //   points: basePoints,
+  //   character: {
+  //     hat: '1',
+  //     body: baseBody,
+  //     necklace: '1',
+  //     bracelet: '1',
+  //     pants: '3',
+  //     boots: '1',
+  //   },
+  //   customizationItems: [],
+  //   achievements: [],
+  //   history: {
+  //     lastCompletedWorkouts: [],
+  //   },
+  // })
 
   // if (localStorage.getItem('user')) {
   //   user.value = JSON.parse(localStorage.getItem('user')!)
   // }
-
-  watch(
-    () => user.value,
-    () => {
-      // updateUserInLS()
-    },
-  )
 
   function updateUser(params: Partial<User>) {
     user.value = {
@@ -72,7 +75,7 @@ export const useUserStore = defineStore('user', () => {
       ...params,
     }
 
-    updateUserInLS()
+    // updateUserInLS()
   }
 
   function updateUserInLS() {
@@ -86,13 +89,10 @@ export const useUserStore = defineStore('user', () => {
 
     user.value.history.lastCompletedWorkouts.push(workout)
 
-    console.log(user.value.history)
+    // updateUserInLS()
   }
 
-  function checkLevelUp(): {
-    newLevel: number
-    remainingXP: number
-  } {
+  function checkLevelUp(showToast: (options: ToastMessageOptions) => void) {
     let newLevel = user.value.level
     let remainingXP = user.value.xp
 
@@ -101,23 +101,42 @@ export const useUserStore = defineStore('user', () => {
       newLevel++
     }
 
-    return { newLevel, remainingXP }
+    if (newLevel > user.value.level) {
+      levelUp(newLevel, remainingXP, showToast)
+    }
+  }
+
+  function levelUp(
+    newLevel: number,
+    remainingXP: number,
+    showToast: (options: ToastMessageOptions) => void,
+  ) {
+    const startLevel = toValue(user.value.level)
+    user.value.level = newLevel
+    user.value.xp = remainingXP
+
+    showToast({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
+
+    if (startLevel < requiredLevelToFitBody && user.value.level >= requiredLevelToFitBody) {
+      user.value.character.body = 'fit'
+    }
+    if (startLevel < requiredLevelToNormalBody && user.value.level >= requiredLevelToNormalBody) {
+      user.value.character.body = 'normal'
+    }
   }
 
   function addXP(xpGained: number, showToast: (options: ToastMessageOptions) => void) {
     user.value.xp += xpGained
 
-    const { newLevel, remainingXP } = checkLevelUp()
+    checkLevelUp(showToast)
 
-    if (user.value.level < newLevel) {
-      showToast({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
-    }
-    user.value.level = newLevel
-    user.value.xp = remainingXP
+    // updateUserInLS()
   }
 
   function addPoints(pointsCount: number) {
     user.value.points += pointsCount
+
+    // updateUserInLS()
   }
 
   return {
