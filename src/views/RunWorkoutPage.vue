@@ -133,13 +133,19 @@ const formattedWorkoutInfo = computed<string>(() => {
     exercise.unitsList.includes('время'),
   )
 
-  const completedReps =
-    completedRepsExercises.reduce((sum, exercise) => {
-      return sum + exercise.goal.repetitions!
-    }, 0) *
-    completedSetsExercises.reduce((sum, exercise) => {
-      return sum + exercise.goal.sets!
-    }, 0)
+  let completedReps = 0
+
+  const completedSetsOnly = completedSetsExercises.reduce((sum, exercise) => {
+    return sum + exercise.goal.sets!
+  }, 0)
+
+  const completedRepsOnly = completedRepsExercises.reduce((sum, exercise) => {
+    return sum + exercise.goal.repetitions!
+  }, 0)
+
+  if (completedSetsOnly || completedRepsOnly) {
+    completedReps = (completedSetsOnly || 1) * (completedRepsOnly || 1)
+  }
 
   let maxWeightKg = 0
   if (completedWeightKgExercises.length) {
@@ -178,9 +184,11 @@ const formattedWorkoutInfo = computed<string>(() => {
       {{ runWorkoutStore.selectedRunWorkout?.name }}
     </h1>
     <div v-if="workoutCompleted" class="flex flex-col items-center">
-      <p class="mb-2">Тренировка закончена. Она длилась: {{ formattedElapsedWorkoutTime }}</p>
-      <p class="mb-2">Информация о тренировке:</p>
-      <p>{{ formattedWorkoutInfo }}</p>
+      <p class="mb-2 text-lg font-semibold">
+        Тренировка закончена. Она длилась: {{ formattedElapsedWorkoutTime }}
+      </p>
+      <p class="mb-2 text-lg font-semibold">Информация о тренировке:</p>
+      <p class="text-center whitespace-pre">{{ formattedWorkoutInfo }}</p>
     </div>
     <div v-else-if="currentExercise" class="exercise-container flex flex-col items-center">
       <h2 class="mt-2 mb-2 text-center text-xl font-semibold sm:mt-0">
