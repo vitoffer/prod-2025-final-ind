@@ -3,6 +3,7 @@ import ExerciseCardInfo from '@/components/ExerciseCardInfo.vue'
 import { useExerciseTimer } from '@/composables/run-workout/exerciseTimer'
 import { useRestTimer } from '@/composables/run-workout/restTimer'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
+import { useUserStore } from '@/stores/userStore'
 import type { ExerciseWithGoal } from '@/types'
 import {
   formattedReps,
@@ -11,10 +12,11 @@ import {
   formattedWorkoutData,
   stringifyTime,
 } from '@/utils/formatters'
-import { getCompletedExercisesUnits } from '@/utils/functions'
+import { getCompletedExercises, getCompletedExercisesUnits } from '@/utils/functions'
 import { computed, ref } from 'vue'
 
 const runWorkoutStore = useRunWorkoutStore()
+const userStore = useUserStore()
 
 const currentExerciseIndex = ref<number>(0)
 const currentExercise = ref<ExerciseWithGoal | null>(
@@ -36,6 +38,14 @@ const completeExercise = (type?: string) => {
   if (currentExerciseIndex.value === runWorkoutStore.selectedRunWorkout!.exercises.length - 1) {
     elapsedWorkoutTime.value = new Date().getTime() - startWorkoutTime
     workoutCompleted.value = true
+
+    userStore.pushWorkoutToHistory({
+      ...runWorkoutStore.selectedRunWorkout!,
+      exercises: getCompletedExercises(
+        runWorkoutStore.selectedRunWorkout!,
+        skippedExercisesIndexes.value,
+      ),
+    })
     return
   }
 

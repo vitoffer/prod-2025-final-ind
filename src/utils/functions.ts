@@ -1,10 +1,15 @@
 import type { Workout } from '@/types'
 
-export function getCompletedExercisesUnits(runningWorkout: Workout, skippedIndexes: number[]) {
-  const completedExercises =
+export function getCompletedExercises(runningWorkout: Workout, skippedIndexes: number[]) {
+  return (
     runningWorkout.exercises.filter((_, index) => {
       return !skippedIndexes.includes(index)
     }) || []
+  )
+}
+
+export function getCompletedExercisesUnits(runningWorkout: Workout, skippedIndexes: number[]) {
+  const completedExercises = getCompletedExercises(runningWorkout, skippedIndexes)
 
   const completedSetsExercises = completedExercises.filter((exercise) =>
     exercise.unitsList.includes('подходы'),

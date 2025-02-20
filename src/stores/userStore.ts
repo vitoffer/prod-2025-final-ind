@@ -1,4 +1,4 @@
-import type { User } from '@/types'
+import type { User, Workout } from '@/types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -29,29 +29,32 @@ export const useUserStore = defineStore('user', () => {
     achievements: [],
   }
 
-  const user = ref<User>(baseUser)
-  // const user = ref<User>({
-  //   age: 20,
-  //   height: 180,
-  //   weight: 75,
-  //   level: 1,
-  //   xp: 0,
-  //   points: 10,
-  //   character: {
-  //     hat: '1',
-  //     body: 'fit',
-  //     necklace: '1',
-  //     bracelet: '1',
-  //     pants: '3',
-  //     boots: '1',
-  //   },
-  //   customizationItems: [],
-  //   achievements: [],
-  // })
+  // const user = ref<User>(baseUser)
+  const user = ref<User>({
+    age: 20,
+    heightCm: 180,
+    weightKg: 75,
+    level: 1,
+    xp: 0,
+    points: 10,
+    character: {
+      hat: '1',
+      body: 'fit',
+      necklace: '1',
+      bracelet: '1',
+      pants: '3',
+      boots: '1',
+    },
+    customizationItems: [],
+    achievements: [],
+    history: {
+      lastCompletedWorkouts: [],
+    },
+  })
 
-  if (localStorage.getItem('user')) {
-    user.value = JSON.parse(localStorage.getItem('user')!)
-  }
+  // if (localStorage.getItem('user')) {
+  //   user.value = JSON.parse(localStorage.getItem('user')!)
+  // }
 
   function updateUser(params: Partial<User>) {
     user.value = {
@@ -59,8 +62,24 @@ export const useUserStore = defineStore('user', () => {
       ...params,
     }
 
+    updateUserInLS()
+  }
+
+  function updateUserInLS() {
     localStorage.setItem('user', JSON.stringify(user.value))
   }
 
-  return { isNewUser, toggleIsNewUser, user, updateUser }
+  function pushWorkoutToHistory(workout: Workout) {
+    if (user.value.history.lastCompletedWorkouts.length === 5) {
+      user.value.history.lastCompletedWorkouts.shift()
+    }
+
+    user.value.history.lastCompletedWorkouts.push(workout)
+
+    console.log(user.value.history)
+
+    // updateUserInLS()
+  }
+
+  return { isNewUser, toggleIsNewUser, user, updateUser, pushWorkoutToHistory }
 })

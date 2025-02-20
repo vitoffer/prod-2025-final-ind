@@ -68,6 +68,11 @@ export interface User {
   character: Character
   customizationItems: string[]
   achievements: string[]
+  history: UserHistory
+}
+
+export interface UserHistory {
+  lastCompletedWorkouts: Workout[]
 }
 
 export interface Character {
