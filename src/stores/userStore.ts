@@ -119,8 +119,10 @@ export const useUserStore = defineStore('user', () => {
 
     if (startLevel < requiredLevelToFitBody && user.value.level >= requiredLevelToFitBody) {
       user.value.character.body = 'fit'
-    }
-    if (startLevel < requiredLevelToNormalBody && user.value.level >= requiredLevelToNormalBody) {
+    } else if (
+      startLevel < requiredLevelToNormalBody &&
+      user.value.level >= requiredLevelToNormalBody
+    ) {
       user.value.character.body = 'normal'
     }
   }
