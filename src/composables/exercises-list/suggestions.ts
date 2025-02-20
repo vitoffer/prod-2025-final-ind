@@ -16,7 +16,7 @@ export function useExercisesListSuggestions(type: 'filter' | 'editing') {
   ) {
     const suggestions = getFilteredSelectSuggestions(options, field, query)
     if (type === 'editing' && suggestions.length === 0) {
-      suggestions.push(query)
+      if (query.trim().length) suggestions.push(query)
     }
     return suggestions
   }
