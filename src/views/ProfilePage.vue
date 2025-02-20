@@ -89,32 +89,32 @@ function saveUserData() {
         v-if="userStore.user.character.hat"
         :src="hatImage || ''"
         alt="Шапка"
-        class="absolute top-[0px] left-[50%] -translate-x-[50%]"
+        class="absolute top-[16px] left-[50%] -translate-x-[50%]"
       />
-      <img :src="bodyImage || ''" alt="Тело" class="" />
+      <img :src="bodyImage || ''" alt="Тело" class="mt-4" />
       <img
         v-if="userStore.user.character.necklace"
         :src="necklaceImage || ''"
         alt="Цепочка"
-        class="absolute top-[92px] left-[50%] -translate-x-[50%]"
+        class="absolute top-[108px] left-[50%] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.bracelet"
         :src="braceletImage || ''"
         alt="Браслет"
-        class="absolute top-[170px] left-[78px] -translate-x-[50%]"
+        class="absolute top-[186px] left-[78px] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.pants"
         :src="pantsImage || ''"
         alt="Штаны"
-        class="absolute top-[192px] left-[50%] -translate-x-[50%]"
+        class="absolute top-[208px] left-[50%] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.boots"
         :src="bootsImage || ''"
         alt="Ботинки"
-        class="absolute top-[261px] left-[50%] -translate-x-[50%]"
+        class="absolute top-[277px] left-[50%] -translate-x-[50%]"
       />
     </div>
   </div>
