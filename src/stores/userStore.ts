@@ -1,6 +1,7 @@
+import { baseBody, baseLevel, basePoints, baseXP } from '@/constants'
 import type { User, Workout } from '@/types'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
   const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
@@ -14,12 +15,12 @@ export const useUserStore = defineStore('user', () => {
     age: 20,
     heightCm: 180,
     weightKg: 75,
-    level: 1,
-    xp: 0,
-    points: 10,
+    level: baseLevel,
+    xp: baseXP,
+    points: basePoints,
     character: {
       hat: null,
-      body: 'normal',
+      body: baseBody,
       necklace: null,
       bracelet: null,
       pants: null,
@@ -34,12 +35,12 @@ export const useUserStore = defineStore('user', () => {
     age: 20,
     heightCm: 180,
     weightKg: 75,
-    level: 1,
-    xp: 0,
-    points: 10,
+    level: baseLevel,
+    xp: baseXP,
+    points: basePoints,
     character: {
       hat: '1',
-      body: 'fit',
+      body: baseBody,
       necklace: '1',
       bracelet: '1',
       pants: '3',
@@ -55,6 +56,13 @@ export const useUserStore = defineStore('user', () => {
   // if (localStorage.getItem('user')) {
   //   user.value = JSON.parse(localStorage.getItem('user')!)
   // }
+
+  watch(
+    () => user.value.xp,
+    () => {
+      setLevel()
+    },
+  )
 
   function updateUser(params: Partial<User>) {
     user.value = {
@@ -81,5 +89,17 @@ export const useUserStore = defineStore('user', () => {
     // updateUserInLS()
   }
 
-  return { isNewUser, toggleIsNewUser, user, updateUser, pushWorkoutToHistory }
+  function addXP(count) {
+    user.value.xp += count
+  }
+
+  function setLevel() {
+    const XPForCurrentLevel = getXPForLevel(user.value.level)
+  }
+
+  function getXPForLevel(level: number) {
+    return 1.01 ** level * 100
+  }
+
+  return { isNewUser, toggleIsNewUser, user, updateUser, pushWorkoutToHistory, addXP }
 })

@@ -21,26 +21,26 @@ const bootsImage = ref<string | null>(null)
 
 loadImages()
 
-function getImageUrl(type: string, title: string): string {
-  return new URL(`../assets/character/${type}/${title}.svg`, import.meta.url).href
+function getImageUrl(folder: string, type: string, title: string): string {
+  return new URL(`../assets/${folder}/${type}/${title}.svg`, import.meta.url).href
 }
 
 async function loadImages() {
   if (userStore.user.character.hat) {
-    hatImage.value = getImageUrl('hat', userStore.user.character.hat)
+    hatImage.value = getImageUrl('accessories', 'hat', userStore.user.character.hat)
   }
-  bodyImage.value = getImageUrl('body', userStore.user.character.body)
+  bodyImage.value = getImageUrl('character', 'body', userStore.user.character.body)
   if (userStore.user.character.necklace) {
-    necklaceImage.value = getImageUrl('necklace', userStore.user.character.necklace)
+    necklaceImage.value = getImageUrl('accessories', 'necklace', userStore.user.character.necklace)
   }
   if (userStore.user.character.bracelet) {
-    braceletImage.value = getImageUrl('bracelet', userStore.user.character.bracelet)
+    braceletImage.value = getImageUrl('accessories', 'bracelet', userStore.user.character.bracelet)
   }
   if (userStore.user.character.pants) {
-    pantsImage.value = getImageUrl('pants', userStore.user.character.pants)
+    pantsImage.value = getImageUrl('accessories', 'pants', userStore.user.character.pants)
   }
   if (userStore.user.character.boots) {
-    bootsImage.value = getImageUrl('boots', userStore.user.character.boots)
+    bootsImage.value = getImageUrl('accessories', 'boots', userStore.user.character.boots)
   }
 }
 
