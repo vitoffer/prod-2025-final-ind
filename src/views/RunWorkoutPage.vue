@@ -108,10 +108,13 @@ const formattedWorkoutInfo = computed<string>(() => {
     <p>Информация о тренировке:</p>
     <p>{{ formattedWorkoutInfo }}</p>
   </div>
-  <div v-else-if="currentExercise" class="exercise-container">
-    <p>{{ currentExercise.name }}</p>
-    <div class="wrapper h-[250px] w-[450px]">
-      <ExerciseCardInfo :exercise="currentExercise" />
+  <div
+    v-else-if="currentExercise"
+    class="exercise-container mr-auto ml-auto flex w-fit flex-col items-center"
+  >
+    <p class="mt-2 mb-2 sm:mt-0">{{ currentExercise.name }}</p>
+    <div class="wrapper mb-auto flex h-auto w-[50vw] justify-stretch">
+      <ExerciseCardInfo :exercise="currentExercise"></ExerciseCardInfo>
     </div>
     <div v-if="currentExercise.unitsList.includes('время')" class="timer">
       <Button v-if="!exerciseTimerId && remainingExerciseTime !== 0" @click="startExerciseTimer"
@@ -122,11 +125,16 @@ const formattedWorkoutInfo = computed<string>(() => {
       >
       <p v-else>Осталось: {{ formattedRemainingExerciseTime }}</p>
     </div>
-    <div v-if="!currentExercise.unitsList.includes('время')">
-      {{ formattedUnitsToComplete }}
-      <Button severity="success" @click="completeExercise">Готово</Button>
+    {{ formattedUnitsToComplete }}
+    <div class="mt-2 flex gap-4">
+      <Button @click="skipExercise" severity="warn">Пропустить упражнение</Button>
+      <Button
+        severity="success"
+        @click="completeExercise"
+        v-if="!currentExercise.unitsList.includes('время')"
+        >Готово</Button
+      >
     </div>
-    <Button @click="skipExercise">Пропустить упражнение</Button>
   </div>
   <div v-else class="rest-container">
     <p>Отдых {{ formattedRemainingRestTime }}</p>

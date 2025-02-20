@@ -11,7 +11,7 @@ defineProps<{ exercise: Exercise }>()
   >
     <div class="mb-2 text-center text-2xl font-semibold">{{ exercise.name }}</div>
     <div class="wrapper mb-auto flex h-[250px] w-[100%] justify-stretch">
-      <ExerciseCardInfo :exercise="exercise"></ExerciseCardInfo>
+      <ExerciseCardInfo height="200px" :exercise="exercise"></ExerciseCardInfo>
     </div>
     <div class="mt-3">
       <div class="tags-container">
