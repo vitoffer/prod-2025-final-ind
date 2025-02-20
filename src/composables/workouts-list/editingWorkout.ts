@@ -3,13 +3,14 @@ import type { Workout } from '@/types'
 import { useEditingEntity } from '../editingEntity'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import type { Router } from 'vue-router'
-import { ref } from 'vue'
-import { isNameValid } from '@/utils/validation'
+import { getInvalidExercisesList, isNameValid } from '@/utils/validation'
+import { useWorkoutValidation } from './workoutValidation'
 
 export const useEditingWorkout = (router: Router) => {
   const workoutsStore = useWorkoutsStore()
   const runWorkoutStore = useRunWorkoutStore()
-  const nameInvalid = ref<boolean>()
+
+  const { nameInvalid, exercisesListInvalid } = useWorkoutValidation()
 
   const nullWorkout: Omit<Workout, 'id'> = {
     name: '',
@@ -27,22 +28,38 @@ export const useEditingWorkout = (router: Router) => {
     editingEntity: editingWorkout,
   } = useEditingEntity<Workout>(nullWorkout, getNextId)
 
-  function createWorkout(...args: Parameters<typeof createEntity>) {
+  function setAllFieldsValid() {
     nameInvalid.value = false
+    exercisesListInvalid.value = new Array(editingWorkout.value.exercises.length).fill({
+      time: false,
+      sets: false,
+      repetitions: false,
+      weightKg: false,
+    })
+  }
 
+  function createWorkout(...args: Parameters<typeof createEntity>) {
     createEntity(...args)
+
+    setAllFieldsValid()
   }
 
   function changeWorkout(...args: Parameters<typeof changeEntity>) {
-    nameInvalid.value = false
-
     changeEntity(...args)
+
+    setAllFieldsValid()
   }
 
   const saveEditingWorkout = async () => {
     nameInvalid.value = !isNameValid(editingWorkout.value)
+    exercisesListInvalid.value = getInvalidExercisesList(editingWorkout.value)
 
-    if (nameInvalid.value) {
+    if (
+      nameInvalid.value ||
+      exercisesListInvalid.value.some((exerciseInvalid) =>
+        Object.values(exerciseInvalid).includes(true),
+      )
+    ) {
       return
     }
 
@@ -82,9 +99,10 @@ export const useEditingWorkout = (router: Router) => {
     createWorkout,
     changeWorkout,
     findWorkout,
-    nameInvalid,
     saveEditingWorkout,
     validateAndRunWorkout,
     runWorkout,
+    nameInvalid,
+    exercisesListInvalid,
   }
 }

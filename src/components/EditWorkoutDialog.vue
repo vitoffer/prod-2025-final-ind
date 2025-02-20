@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { useExercisesStore } from '@/stores/exercisesStore'
-import type { Exercise, ExerciseWithGoal, Workout, WorkoutExerciseGoal } from '@/types'
+import type {
+  Exercise,
+  ExerciseWithGoal,
+  ExerciseWithGoalValidation,
+  Workout,
+  WorkoutExerciseGoal,
+} from '@/types'
 import type { AutoCompleteCompleteEvent } from 'primevue'
 import { ref } from 'vue'
 import EditWorkoutAddedExercise from './EditWorkoutAddedExercise.vue'
@@ -17,6 +23,7 @@ defineProps<{
 const editWorkoutDialogVisible = defineModel<boolean>('editWorkoutDialogVisible')
 const editingWorkout = defineModel<Workout>('editingWorkout')
 const nameInvalid = defineModel<boolean>('nameInvalid')
+const exercisesListInvalid = defineModel<ExerciseWithGoalValidation[]>('exercisesListInvalid')
 
 const exercisesStore = useExercisesStore()
 
@@ -121,19 +128,18 @@ function suggestExercises() {
         />
         <label for="exerciseSearch">Поиск упражнения по названию</label>
       </FloatLabel>
-      <VirtualScroller
-        :items="[...editingWorkout!.exercises]"
-        class="h-[300px] w-full rounded border border-gray-500"
-        :item-size="50"
-      >
-        <template v-slot:item="{ options }">
-          <EditWorkoutAddedExercise
-            :options="options"
-            v-model:exercise="editingWorkout!.exercises[options.index]"
-            @remove-added-exercise="() => removeAddedExercise(options.index)"
-          />
-        </template>
-      </VirtualScroller>
+      <ScrollPanel class="!h-[300px] w-full rounded border border-gray-500">
+        <EditWorkoutAddedExercise
+          v-for="(exercise, index) in editingWorkout?.exercises"
+          :key="exercise.id"
+          :index="index"
+          :editing-workout="editingWorkout!"
+          v-model:exercise="editingWorkout!.exercises[index]"
+          v-model:exercises-list-invalid="exercisesListInvalid"
+          @remove-added-exercise="() => removeAddedExercise(index)"
+        />
+      </ScrollPanel>
+
       <div class="flex w-full justify-evenly">
         <Button
           @click="editWorkoutDialogVisible = false"

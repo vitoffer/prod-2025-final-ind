@@ -18,10 +18,11 @@ const {
   createWorkout,
   changeWorkout,
   findWorkout,
-  nameInvalid,
   saveEditingWorkout,
   validateAndRunWorkout,
   runWorkout,
+  nameInvalid,
+  exercisesListInvalid,
 } = useEditingWorkout(router)
 
 const confirmRemove = (id: number) => {
@@ -77,6 +78,7 @@ const isNewWorkout = computed<boolean>(() => {
       v-model:edit-workout-dialog-visible="editWorkoutDialogVisible"
       v-model:editing-workout="editingWorkout"
       v-model:name-invalid="nameInvalid"
+      v-model:exercises-list-invalid="exercisesListInvalid"
       :dialog-header="dialogHeader"
       :save-editing-workout="saveEditingWorkout"
       :run-workout="validateAndRunWorkout"

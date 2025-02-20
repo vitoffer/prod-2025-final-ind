@@ -1,21 +1,51 @@
 <script setup lang="ts">
-import type { ExerciseWithGoal } from '@/types'
-import type { VirtualScrollerItemOptions } from 'primevue'
-import { ref } from 'vue'
+import type { ExerciseWithGoal, ExerciseWithGoalValidation, GoalTime, Workout } from '@/types'
+import { getInvalidExercisesList } from '@/utils/validation'
+import { computed, ref } from 'vue'
 
-defineProps<{ options: VirtualScrollerItemOptions }>()
+const props = defineProps<{ index: number; editingWorkout: Workout }>()
 
 defineEmits<{ (e: 'removeAddedExercise'): void }>()
 
 const exercise = defineModel<ExerciseWithGoal>('exercise')
-const time = ref('00:00')
+const exercisesListInvalid = defineModel<ExerciseWithGoalValidation[]>('exercisesListInvalid')
+
+const timeInput = ref('00:00')
+
+if (exercise.value?.goal.time) {
+  timeInput.value = stringifyTime(exercise.value!.goal.time!)
+}
+
+function stringifyTime(timeObject: GoalTime) {
+  const minutes = String(timeObject.minutes || 0).padStart(2, '0')
+  const seconds = String(timeObject.seconds || 0).padStart(2, '0')
+  return `${minutes}:${seconds}`
+}
+
+function parseTime(input: string) {
+  if (input.length === 0) return { minutes: 0, seconds: 0 }
+  const [minutes, seconds] = input.split(':').map(Number)
+  return { minutes, seconds }
+}
+
+function updateExerciseTime() {
+  const time = parseTime(timeInput.value)
+  exercise.value!.goal.time = time
+
+  exercisesListInvalid.value = getInvalidExercisesList(props.editingWorkout)
+}
 
 const setsOptions = [...Array(4).keys()].map((value) => value + 2)
+
+const exerciseSetsInvalid = computed(() => {
+  console.log(exercisesListInvalid)
+  return exercisesListInvalid.value![props.index].sets
+})
 </script>
 
 <template>
   <div class="flex flex-col border-b-gray-500 p-2 not-last:border-b">
-    <div class="flex w-full items-center justify-between">
+    <div class="mb-1 flex w-full items-center justify-between">
       <p>
         {{ exercise!.name }}
       </p>
@@ -25,14 +55,15 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
       </Button>
     </div>
     <div>
-      <template v-if="exercise!.unitsList.includes('подходы')">
+      <span v-show="exercise!.unitsList.includes('подходы')">
         <Select
           v-model="exercise!.goal.sets"
           size="small"
           :options="setsOptions"
           label-class="!p-0"
           class="!border-none !p-1 not-last:mb-1"
-          :invalid="!exercise!.goal.sets"
+          :invalid="exerciseSetsInvalid"
+          @change="() => (exercisesListInvalid = getInvalidExercisesList(editingWorkout))"
         >
           <template #value="slotProps">
             <div class="p-1 leading-normal">
@@ -40,8 +71,8 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
             </div>
           </template>
         </Select>
-        подходов</template
-      >
+      </span>
+      <template v-if="exercise!.unitsList.includes('подходы')"> подходов</template>
       <template v-if="exercise!.unitsList.includes('повторения')">
         по
         <InputNumber
@@ -51,7 +82,8 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
           :max="999"
           input-class="goal-number-input repetitions"
           class="not-last:mb-1"
-          :invalid="!exercise!.goal.repetitions"
+          :invalid="exercisesListInvalid![index].repetitions"
+          @input="() => (exercisesListInvalid = getInvalidExercisesList(editingWorkout))"
         />
         повторений</template
       >
@@ -64,7 +96,8 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
           :max="999"
           input-class="goal-number-input weight"
           class="not-last:mb-1"
-          :invalid="!exercise!.goal.weightKg"
+          :invalid="exercisesListInvalid![index].weightKg"
+          @input="() => (exercisesListInvalid = getInvalidExercisesList(editingWorkout))"
         />
         кг</template
       >
@@ -73,10 +106,12 @@ const setsOptions = [...Array(4).keys()].map((value) => value + 2)
         <InputMask
           mask="99:99"
           placeholder="мин:сек"
-          v-model="time"
+          v-model="timeInput"
+          @value-change="updateExerciseTime"
           slotChar="00:00"
           size="small"
           class="goal-number-input time not-last:mb-1"
+          :invalid="exercisesListInvalid![index].time"
         />
       </template>
     </div>

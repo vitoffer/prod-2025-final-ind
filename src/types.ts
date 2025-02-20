@@ -41,6 +41,13 @@ export interface GoalTime {
   seconds: number
 }
 
+export interface ExerciseWithGoalValidation {
+  time: boolean
+  sets: boolean
+  repetitions: boolean
+  weightKg: boolean
+}
+
 export type EditingEntity = Exercise | Workout
 
 export interface FiltersObject {

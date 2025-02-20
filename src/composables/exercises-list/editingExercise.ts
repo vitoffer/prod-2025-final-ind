@@ -41,22 +41,22 @@ export function useEditingExercise() {
     editingEntity: editingExercise,
   } = useEditingEntity<Exercise>(nullExercise, getNextId)
 
-  function createExercise(...args: Parameters<typeof createEntity>) {
+  function setAllFieldsValid() {
     nameInvalid.value = false
     difficultyInvalid.value = false
     unitsListInvalid.value = false
     photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
     videoUrlInvalid.value = false
+  }
+
+  function createExercise(...args: Parameters<typeof createEntity>) {
+    setAllFieldsValid()
 
     createEntity(...args)
   }
 
   function changeExercise(...args: Parameters<typeof changeEntity>) {
-    nameInvalid.value = false
-    difficultyInvalid.value = false
-    unitsListInvalid.value = false
-    photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
-    videoUrlInvalid.value = false
+    setAllFieldsValid()
 
     changeEntity(...args)
 
