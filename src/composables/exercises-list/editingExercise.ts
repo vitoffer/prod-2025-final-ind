@@ -10,8 +10,9 @@ import {
   isUnitsListValid,
   isVideoUrlValid,
 } from '@/utils/validation'
+import type { ToastMessageOptions } from 'primevue'
 
-export function useEditingExercise() {
+export function useEditingExercise(showToast: (options: ToastMessageOptions) => void) {
   const exercisesStore = useExercisesStore()
   const { nameInvalid, difficultyInvalid, unitsListInvalid, photoUrlListInvalid, videoUrlInvalid } =
     useExerciseValidation()
@@ -114,6 +115,24 @@ export function useEditingExercise() {
       photoUrlListInvalid.value.includes(true) ||
       videoUrlInvalid.value
     ) {
+      showToast({
+        summary: 'Введены некорректные данные',
+        severity: 'error',
+        life: 3000,
+      })
+      return
+    }
+
+    if (
+      !editingExercise.value.description &&
+      editingExercise.value.photoUrlList.length === 0 &&
+      (!editingExercise.value.video || !editingExercise.value.video.url)
+    ) {
+      showToast({
+        summary: 'Введите хотя бы одно из элементов: описание, изображение(-я), видео',
+        severity: 'error',
+        life: 3000,
+      })
       return
     }
 

@@ -113,7 +113,7 @@ const formattedWorkoutInfo = computed<string>(() => {
     class="exercise-container mr-auto ml-auto flex w-fit flex-col items-center"
   >
     <p class="mt-2 mb-2 sm:mt-0">{{ currentExercise.name }}</p>
-    <div class="wrapper mb-auto flex h-auto w-[50vw] justify-stretch">
+    <div class="wrapper mb-3 flex h-auto w-[50vw] justify-stretch">
       <ExerciseCardInfo :exercise="currentExercise"></ExerciseCardInfo>
     </div>
     <div v-if="currentExercise.unitsList.includes('время')" class="timer">
@@ -125,7 +125,9 @@ const formattedWorkoutInfo = computed<string>(() => {
       >
       <p v-else>Осталось: {{ formattedRemainingExerciseTime }}</p>
     </div>
-    {{ formattedUnitsToComplete }}
+    <p>
+      {{ formattedUnitsToComplete }}
+    </p>
     <div class="mt-2 flex gap-4">
       <Button @click="skipExercise" severity="warn">Пропустить упражнение</Button>
       <Button

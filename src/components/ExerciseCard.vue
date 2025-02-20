@@ -9,8 +9,8 @@ defineProps<{ exercise: Exercise }>()
   <article
     class="exercise-card flex h-full w-full flex-col rounded-2xl border-3 border-gray-500 pt-3 pr-4 pb-3 pl-4"
   >
-    <div class="mb-2 text-center text-2xl font-semibold">{{ exercise.name }}</div>
-    <div class="wrapper mb-auto flex h-[250px] w-[100%] justify-stretch">
+    <div class="exercise-name mb-2 text-center text-2xl font-semibold">{{ exercise.name }}</div>
+    <div class="wrapper mb-auto flex w-[100%] justify-stretch">
       <ExerciseCardInfo height="200px" :exercise="exercise"></ExerciseCardInfo>
     </div>
     <div class="mt-3">
@@ -58,6 +58,15 @@ defineProps<{ exercise: Exercise }>()
 </template>
 
 <style scoped lang="scss">
+.exercise-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .tags-list,
 .sports-items-list {
   scrollbar-width: 3px;
