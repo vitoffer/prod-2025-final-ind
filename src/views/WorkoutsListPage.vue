@@ -15,6 +15,10 @@ const toast = useToast()
 
 function showToast(options: ToastMessageOptions) {
   toast.add(options)
+
+  setTimeout(() => {
+    debugger
+  }, 1000)
 }
 
 const {
@@ -67,7 +71,7 @@ const isNewWorkout = computed<boolean>(() => {
 </script>
 
 <template>
-  <Toast />
+  <Toast class="!right-0 !max-w-[100vw] sm:!right-[20px] sm:!max-w-none" />
   <header class="flex flex-col items-center">
     <FloatLabel variant="in" class="mt-4 mb-3 w-[80vw] sm:mt-2 sm:w-[400px]">
       <InputText v-model="filterName" id="filterName" class="w-full" />

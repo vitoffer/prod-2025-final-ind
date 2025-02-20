@@ -77,6 +77,8 @@ export function useEditingExercise() {
   }
 
   const removeExercisePhotoUrl = () => {
+    if (editingExercise.value.photoUrlList.length === 0) return
+
     editingExercise.value.photoUrlList = editingExercise.value.photoUrlList.slice(
       0,
       editingExercise.value.photoUrlList.length - 1,
