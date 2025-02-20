@@ -15,10 +15,6 @@ const toast = useToast()
 
 function showToast(options: ToastMessageOptions) {
   toast.add(options)
-
-  setTimeout(() => {
-    debugger
-  }, 1000)
 }
 
 const {
