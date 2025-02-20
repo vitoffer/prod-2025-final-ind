@@ -23,18 +23,25 @@ const restTime = ref<boolean>(false)
 
 const workoutCompleted = ref<boolean>(false)
 
-const completeExercise = () => {
+const completeExercise = (type?: string) => {
   if (exerciseTimerId.value) {
     clearInterval(exerciseTimerId.value)
   }
   if (restTimerId.value) {
     clearInterval(restTimerId.value)
   }
+
   if (currentExerciseIndex.value === runWorkoutStore.selectedRunWorkout!.exercises.length - 1) {
     elapsedWorkoutTime.value = new Date().getTime() - startWorkoutTime
     workoutCompleted.value = true
     return
   }
+
+  if (type === 'skip') {
+    nextExercise()
+    return
+  }
+
   if (!restTime.value) {
     restTime.value = true
     currentExercise.value = null
@@ -43,9 +50,13 @@ const completeExercise = () => {
 }
 
 const completeRest = () => {
+  nextExercise()
+  restTime.value = false
+}
+
+function nextExercise() {
   currentExerciseIndex.value++
   currentExercise.value = runWorkoutStore.selectedRunWorkout!.exercises[currentExerciseIndex.value]
-  restTime.value = false
 }
 
 const startWorkoutTime = new Date().getTime()
@@ -64,7 +75,7 @@ const skippedExercisesIndexes = ref<number[]>([])
 
 const skipExercise = () => {
   skippedExercisesIndexes.value.push(currentExerciseIndex.value)
-  completeExercise()
+  completeExercise('skip')
 }
 
 const {
@@ -203,7 +214,7 @@ const formattedWorkoutInfo = computed<string>(() => {
         >
         <Button
           v-else-if="!exerciseTimerId && remainingExerciseTime === 0"
-          @click="completeExercise"
+          @click="() => completeExercise()"
           >Далее</Button
         >
         <p v-else>Осталось: {{ formattedRemainingExerciseTime }}</p>
@@ -232,14 +243,14 @@ const formattedWorkoutInfo = computed<string>(() => {
         >
         <Button
           severity="success"
-          @click="completeExercise"
+          @click="() => completeExercise()"
           v-if="!currentExercise.unitsList.includes('время')"
           >Готово</Button
         >
       </div>
     </div>
     <div v-else class="rest-container flex flex-col items-center">
-      <p class="mb-2">Отдых {{ formattedRemainingRestTime }}</p>
+      <p class="mt-[calc(50vw/16*9)] mb-2">Отдых {{ formattedRemainingRestTime }}</p>
       <Button @click="increaseRemainingRestTime" class="mb-2" severity="success">+10 сек</Button>
       <Button @click="decreaseRemainingRestTime" severity="danger">-10 сек</Button>
     </div>
