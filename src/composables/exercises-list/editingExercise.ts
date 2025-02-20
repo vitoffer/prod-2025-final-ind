@@ -1,6 +1,5 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseVideo } from '@/types'
-import { useEditingEntity } from '../editingEntity'
 import { useExerciseValidation } from './exerciseValidation'
 import { correctVideoUrl } from '@/utils/media'
 import {
@@ -11,6 +10,7 @@ import {
   isVideoUrlValid,
 } from '@/utils/validation'
 import type { ToastMessageOptions } from 'primevue'
+import { ref } from 'vue'
 
 export function useEditingExercise(showToast: (options: ToastMessageOptions) => void) {
   const exercisesStore = useExercisesStore()
@@ -35,31 +35,31 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
   const findExercise = (id: number) =>
     JSON.parse(JSON.stringify(exercisesStore.list.find((exercise) => exercise.id === id)))
 
-  const {
-    changeEntity,
-    createEntity,
-    editDialogVisible: editExerciseDialogVisible,
-    editingEntity: editingExercise,
-  } = useEditingEntity<Exercise>(nullExercise, getNextId)
+  const editingExercise = ref<Exercise>({
+    ...nullExercise,
+    id: getNextId(),
+  })
 
-  function setAllFieldsValid() {
-    nameInvalid.value = false
-    difficultyInvalid.value = false
-    unitsListInvalid.value = false
-    photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
-    videoUrlInvalid.value = false
+  const editExerciseDialogVisible = ref<boolean>(false)
+
+  const createExercise = () => {
+    editExerciseDialogVisible.value = true
+    editingExercise.value = {
+      ...nullExercise,
+      id: getNextId(),
+    }
+
+    setAllFieldsValid()
   }
 
-  function createExercise(...args: Parameters<typeof createEntity>) {
-    setAllFieldsValid()
+  const changeExercise = (id: number) => {
+    editExerciseDialogVisible.value = true
 
-    createEntity(...args)
-  }
-
-  function changeExercise(...args: Parameters<typeof changeEntity>) {
-    setAllFieldsValid()
-
-    changeEntity(...args)
+    const foundExercise = findExercise(id)
+    editingExercise.value = foundExercise || {
+      ...nullExercise,
+      id: getNextId(),
+    }
 
     editingExercise.value = {
       ...editingExercise.value,
@@ -70,6 +70,16 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
       description:
         editingExercise.value.description === null ? '' : editingExercise.value.description,
     }
+
+    setAllFieldsValid()
+  }
+
+  function setAllFieldsValid() {
+    nameInvalid.value = false
+    difficultyInvalid.value = false
+    unitsListInvalid.value = false
+    photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
+    videoUrlInvalid.value = false
   }
 
   const addExercisePhotoUrl = () => {
@@ -154,7 +164,6 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
   return {
     editingExercise,
     editExerciseDialogVisible,
-    findExercise,
     changeExercise,
     createExercise,
     addExercisePhotoUrl,

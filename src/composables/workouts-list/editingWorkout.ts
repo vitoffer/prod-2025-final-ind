@@ -1,16 +1,18 @@
 import { useWorkoutsStore } from '@/stores/workoutsStore'
-import type { Workout } from '@/types'
-import { useEditingEntity } from '../editingEntity'
+import type { ExerciseWithGoal, Workout } from '@/types'
 import type { Router } from 'vue-router'
 import { getInvalidExercisesList, isNameValid } from '@/utils/validation'
 import { useWorkoutValidation } from './workoutValidation'
 import type { ToastMessageOptions } from 'primevue'
+import { ref } from 'vue'
+import { useExercisesStore } from '@/stores/exercisesStore'
 
 export const useEditingWorkout = (
   router: Router,
   showToast: (options: ToastMessageOptions) => void,
 ) => {
   const workoutsStore = useWorkoutsStore()
+  const exercisesStore = useExercisesStore()
 
   const { nameInvalid } = useWorkoutValidation()
 
@@ -20,30 +22,50 @@ export const useEditingWorkout = (
   }
 
   const getNextId = () => workoutsStore.list[workoutsStore.list.length - 1].id + 1
-  const findWorkout = (id: number) =>
+  const findWorkout = (id: number): Workout =>
     JSON.parse(JSON.stringify(workoutsStore.list.find((workout) => workout.id === id)))
 
-  const {
-    changeEntity,
-    createEntity,
-    editDialogVisible: editWorkoutDialogVisible,
-    editingEntity: editingWorkout,
-  } = useEditingEntity<Workout>(nullWorkout, getNextId)
+  const editWorkoutDialogVisible = ref<boolean>(false)
+
+  const editingWorkout = ref<Workout>({
+    ...nullWorkout,
+    id: getNextId(),
+  })
+
+  const editDialogVisible = ref<boolean>(false)
+
+  const createWorkout = () => {
+    editDialogVisible.value = true
+    editingWorkout.value = {
+      ...nullWorkout,
+      id: getNextId(),
+    }
+
+    setAllFieldsValid()
+  }
+
+  const changeWorkout = (id: number) => {
+    editDialogVisible.value = true
+    const foundWorkout = findWorkout(id)
+    if (foundWorkout) {
+      const exercises = foundWorkout.exercises.map((workoutExercise: ExerciseWithGoal) => ({
+        ...workoutExercise,
+        ...exercisesStore.list.find((fullExercise) => fullExercise.id === workoutExercise.id),
+      }))
+      foundWorkout.exercises = exercises
+      editingWorkout.value = foundWorkout
+    } else {
+      editingWorkout.value = {
+        ...nullWorkout,
+        id: getNextId(),
+      }
+    }
+
+    setAllFieldsValid()
+  }
 
   function setAllFieldsValid() {
     nameInvalid.value = false
-  }
-
-  function createWorkout(...args: Parameters<typeof createEntity>) {
-    createEntity(...args)
-
-    setAllFieldsValid()
-  }
-
-  function changeWorkout(...args: Parameters<typeof changeEntity>) {
-    changeEntity(...args)
-
-    setAllFieldsValid()
   }
 
   function isWorkoutValid() {
@@ -109,7 +131,6 @@ export const useEditingWorkout = (
     editWorkoutDialogVisible,
     createWorkout,
     changeWorkout,
-    findWorkout,
     saveEditingWorkout,
     validateAndRunWorkout,
     runWorkout,

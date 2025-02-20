@@ -22,7 +22,6 @@ const {
   editWorkoutDialogVisible,
   createWorkout,
   changeWorkout,
-  findWorkout,
   saveEditingWorkout,
   validateAndRunWorkout,
   runWorkout,
@@ -109,7 +108,7 @@ const isNewWorkout = computed<boolean>(() => {
           </Button>
           <Button
             severity="warn"
-            @click="() => changeWorkout(workout.id, findWorkout)"
+            @click="() => changeWorkout(workout.id)"
             aria-label="Change workout"
             class="!p-[10px]"
           >

@@ -22,7 +22,6 @@ function showToast(options: ToastMessageOptions) {
 const {
   editingExercise,
   editExerciseDialogVisible,
-  findExercise,
   changeExercise,
   createExercise,
   addExercisePhotoUrl,
@@ -112,7 +111,7 @@ const dialogHeader = computed<string>(() => {
         <ExerciseCard
           :exercise="exercise"
           @remove-exercise="confirmRemove"
-          @change-exercise="(id) => changeExercise(id, findExercise)"
+          @change-exercise="(id) => changeExercise(id)"
         />
       </li>
     </ul>

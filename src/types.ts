@@ -25,7 +25,8 @@ export interface Workout {
   exercises: ExerciseWithGoal[]
 }
 
-export type ExerciseWithGoal = Exercise & {
+export interface ExerciseWithGoal {
+  id: number
   goal: WorkoutExerciseGoal
 }
 
