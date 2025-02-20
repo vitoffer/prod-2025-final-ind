@@ -59,7 +59,12 @@ const filteredWorkoutsList = computed<Workout[]>(() => {
   })
 })
 
-const dialogHeader = ref<string>('Редактирование тренировки')
+const dialogHeader = computed<string>(() => {
+  if (workoutsStore.list.find((workout) => workout.id === editingWorkout.value.id)) {
+    return 'Редактирование тренировки'
+  }
+  return 'Создание тренировки'
+})
 
 const isNewWorkout = computed<boolean>(() => {
   return workoutsStore.list.find((workout) => workout.id === editingWorkout.value.id) === undefined
