@@ -155,8 +155,9 @@ const formattedWorkoutInfo = computed<string>(() => {
       {{ runWorkoutStore.selectedRunWorkout?.name }}
     </h1>
     <div v-if="workoutCompleted" class="flex flex-col items-center">
-      <p class="mb-2 text-lg font-semibold">
-        Тренировка закончена. Она длилась: {{ formattedElapsedWorkoutTime }}
+      <p class="mb-2 text-center text-lg font-semibold">
+        Тренировка закончена. <br />
+        Она длилась: {{ formattedElapsedWorkoutTime }}
       </p>
       <p class="mb-2 text-lg font-semibold">Информация о тренировке:</p>
       <p class="text-center whitespace-pre">{{ formattedWorkoutInfo }}</p>
@@ -165,7 +166,9 @@ const formattedWorkoutInfo = computed<string>(() => {
       <h2 class="mt-2 mb-2 text-center text-xl font-semibold sm:mt-0">
         {{ currentExercise.name }}
       </h2>
-      <div class="wrapper mb-3 flex h-auto w-[50vw] justify-stretch">
+      <div
+        class="wrapper mb-3 flex h-auto w-[95vw] justify-stretch sm:w-[80vw] md:w-[70vw] lg:w-[60vw] xl:w-[50vw]"
+      >
         <ExerciseCardInfo :exercise="currentExercise"></ExerciseCardInfo>
       </div>
       <div v-if="currentExercise.unitsList.includes('время')" class="timer">
@@ -210,7 +213,11 @@ const formattedWorkoutInfo = computed<string>(() => {
       </div>
     </div>
     <div v-else class="rest-container flex flex-col items-center">
-      <p class="mt-[calc(50vw/16*9)] mb-2">Отдых {{ formattedRemainingRestTime }}</p>
+      <p
+        class="mt-[calc(95vw/16*9)] mb-2 sm:mt-[calc(80vw/16*9)] md:mt-[calc(70vw/16*9)] lg:mt-[calc(60vw/16*9)] xl:mt-[calc(50vw/16*9)]"
+      >
+        Отдых {{ formattedRemainingRestTime }}
+      </p>
       <Button @click="increaseRemainingRestTime" class="mb-2" severity="success">+10 сек</Button>
       <Button @click="decreaseRemainingRestTime" severity="danger">-10 сек</Button>
     </div>

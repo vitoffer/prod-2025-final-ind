@@ -102,7 +102,7 @@ function saveUserData() {
         v-if="userStore.user.character.bracelet"
         :src="braceletImage || ''"
         alt="Браслет"
-        class="absolute top-[170px] left-[30.5px] -translate-x-[50%]"
+        class="absolute top-[170px] left-[78px] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.pants"
