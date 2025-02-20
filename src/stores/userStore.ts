@@ -1,6 +1,8 @@
 import { baseBody, baseLevel, basePoints, baseXP } from '@/constants'
 import type { User, Workout } from '@/types'
+import { XPForLevel } from '@/utils/gamification'
 import { defineStore } from 'pinia'
+import { useToast, type ToastMessageOptions } from 'primevue'
 import { ref, watch } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
@@ -58,9 +60,9 @@ export const useUserStore = defineStore('user', () => {
   // }
 
   watch(
-    () => user.value.xp,
+    () => user.value,
     () => {
-      setLevel()
+      // updateUserInLS()
     },
   )
 
@@ -85,21 +87,47 @@ export const useUserStore = defineStore('user', () => {
     user.value.history.lastCompletedWorkouts.push(workout)
 
     console.log(user.value.history)
-
-    // updateUserInLS()
   }
 
-  function addXP(count) {
-    user.value.xp += count
+  function checkLevelUp(): {
+    newLevel: number
+    remainingXP: number
+  } {
+    let newLevel = user.value.level
+    let remainingXP = user.value.xp
+
+    while (remainingXP >= XPForLevel(newLevel + 1)) {
+      remainingXP -= XPForLevel(newLevel + 1)
+      newLevel++
+    }
+
+    return { newLevel, remainingXP }
   }
 
-  function setLevel() {
-    const XPForCurrentLevel = getXPForLevel(user.value.level)
+  function addXP(xpGained: number, showToast: (options: ToastMessageOptions) => void) {
+    user.value.xp += xpGained
+
+    const { newLevel, remainingXP } = checkLevelUp()
+
+    if (user.value.level < newLevel) {
+      showToast({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
+    }
+    user.value.level = newLevel
+    user.value.xp = remainingXP
   }
 
-  function getXPForLevel(level: number) {
-    return 1.01 ** level * 100
+  function addPoints(pointsCount: number) {
+    user.value.points += pointsCount
   }
 
-  return { isNewUser, toggleIsNewUser, user, updateUser, pushWorkoutToHistory, addXP }
+  return {
+    isNewUser,
+    toggleIsNewUser,
+    user,
+    updateUser,
+    pushWorkoutToHistory,
+    checkLevelUp,
+    addXP,
+    addPoints,
+  }
 })

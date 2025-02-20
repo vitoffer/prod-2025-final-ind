@@ -5,7 +5,7 @@ export const difficultyOptions: ExerciseDifficulty[] = ['простое', 'ср�
 export const unitsOptions: ExerciseUnit[] = ['время', 'подходы', 'повторения', 'вес']
 
 export const baseXP = 10
-export const XPGrowthRate = 1.01
+export const XPGrowthRate = 1.1
 export const baseLevel = 1
 export const basePoints = 10
 export const baseBody = 'skinny'

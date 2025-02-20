@@ -4,7 +4,7 @@ import { useExerciseTimer } from '@/composables/run-workout/exerciseTimer'
 import { useRestTimer } from '@/composables/run-workout/restTimer'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useUserStore } from '@/stores/userStore'
-import type { ExerciseWithGoal } from '@/types'
+import type { ExerciseWithGoal, Workout } from '@/types'
 import {
   formattedReps,
   formattedSets,
@@ -13,6 +13,8 @@ import {
   stringifyTime,
 } from '@/utils/formatters'
 import { getCompletedExercises, getCompletedExercisesUnits } from '@/utils/functions'
+import { XPForCompletedWorkout } from '@/utils/gamification'
+import { useToast, type ToastMessageOptions } from 'primevue'
 import { computed, ref } from 'vue'
 
 const runWorkoutStore = useRunWorkoutStore()
@@ -27,6 +29,12 @@ const restTime = ref<boolean>(false)
 
 const workoutCompleted = ref<boolean>(false)
 
+const toast = useToast()
+
+function showToast(options: ToastMessageOptions) {
+  toast.add(options)
+}
+
 const completeExercise = (type?: string) => {
   if (exerciseTimerId.value) {
     clearInterval(exerciseTimerId.value)
@@ -39,13 +47,18 @@ const completeExercise = (type?: string) => {
     elapsedWorkoutTime.value = new Date().getTime() - startWorkoutTime
     workoutCompleted.value = true
 
-    userStore.pushWorkoutToHistory({
+    const completedWorkout: Workout = {
       ...runWorkoutStore.selectedRunWorkout!,
       exercises: getCompletedExercises(
         runWorkoutStore.selectedRunWorkout!,
         skippedExercisesIndexes.value,
       ),
-    })
+    }
+
+    userStore.pushWorkoutToHistory(completedWorkout)
+
+    userStore.addXP(XPForCompletedWorkout(completedWorkout), showToast)
+
     return
   }
 
@@ -160,6 +173,7 @@ const formattedWorkoutInfo = computed<string>(() => {
 </script>
 
 <template>
+  <Toast />
   <div class="mr-auto mb-4 ml-auto w-fit">
     <h1 class="mb-3 text-center text-3xl font-bold">
       {{ runWorkoutStore.selectedRunWorkout?.name }}
