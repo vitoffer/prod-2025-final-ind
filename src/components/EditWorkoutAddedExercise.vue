@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ExerciseWithGoal, ExerciseWithGoalValidation, GoalTime, Workout } from '@/types'
+import type { ExerciseWithGoal, ExerciseWithGoalValidation, Workout } from '@/types'
+import { formattedReps, formattedSets, parseTime, stringifyTime } from '@/utils/formatters'
 import { getInvalidExercisesList } from '@/utils/validation'
 import { ref } from 'vue'
 
@@ -14,18 +15,6 @@ const timeInput = ref('00:00')
 
 if (exercise.value?.goal.time) {
   timeInput.value = stringifyTime(exercise.value!.goal.time!)
-}
-
-function stringifyTime(timeObject: GoalTime) {
-  const minutes = String(timeObject.minutes || 0).padStart(2, '0')
-  const seconds = String(timeObject.seconds || 0).padStart(2, '0')
-  return `${minutes}:${seconds}`
-}
-
-function parseTime(input: string) {
-  if (input.length === 0) return { minutes: 0, seconds: 0 }
-  const [minutes, seconds] = input.split(':').map(Number)
-  return { minutes, seconds }
 }
 
 function updateExerciseTime() {
@@ -71,7 +60,7 @@ function handleTimeInput() {
       </Button>
     </div>
     <div>
-      <span v-show="exercise!.unitsList.includes('подходы')">
+      <span v-if="exercise!.unitsList.includes('подходы')">
         <Select
           v-model="exercise!.goal.sets"
           size="small"
@@ -85,8 +74,8 @@ function handleTimeInput() {
             </div>
           </template>
         </Select>
+        {{ formattedSets(exercise!.goal.sets) }}
       </span>
-      <template v-if="exercise!.unitsList.includes('подходы')"> подходов</template>
       <template v-if="exercise!.unitsList.includes('повторения')">
         по
         <InputNumber
@@ -98,7 +87,7 @@ function handleTimeInput() {
           class="not-last:mb-1"
           @input="handleRepetitionsInput"
         />
-        повторений</template
+        {{ formattedReps(exercise!.goal.repetitions) }}</template
       >
       <template v-if="exercise!.unitsList.includes('вес')">
         по

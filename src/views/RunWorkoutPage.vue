@@ -4,23 +4,35 @@ import { useExerciseTimer } from '@/composables/run-workout/exerciseTimer'
 import { useRestTimer } from '@/composables/run-workout/restTimer'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import type { ExerciseWithGoal } from '@/types'
+import {
+  formattedReps,
+  formattedSets,
+  formattedStringTime,
+  stringifyTime,
+} from '@/utils/formatters'
 import { computed, ref } from 'vue'
 
 const runWorkoutStore = useRunWorkoutStore()
 
 const currentExerciseIndex = ref<number>(0)
-
 const currentExercise = ref<ExerciseWithGoal | null>(
   runWorkoutStore.selectedRunWorkout!.exercises[currentExerciseIndex.value],
 )
+
 const restTime = ref<boolean>(false)
 
 const workoutCompleted = ref<boolean>(false)
 
 const completeExercise = () => {
+  if (exerciseTimerId.value) {
+    clearInterval(exerciseTimerId.value)
+  }
+  if (restTimerId.value) {
+    clearInterval(restTimerId.value)
+  }
   if (currentExerciseIndex.value === runWorkoutStore.selectedRunWorkout!.exercises.length - 1) {
-    workoutCompleted.value = true
     elapsedWorkoutTime.value = new Date().getTime() - startWorkoutTime
+    workoutCompleted.value = true
     return
   }
   if (!restTime.value) {
@@ -39,8 +51,12 @@ const completeRest = () => {
 const startWorkoutTime = new Date().getTime()
 const elapsedWorkoutTime = ref<number | null>(null)
 const formattedElapsedWorkoutTime = computed<string>(() => {
+  if (elapsedWorkoutTime.value === null) return ''
   return workoutCompleted.value
-    ? `${Math.trunc(elapsedWorkoutTime.value! / 1000 / 60)} мин, ${Math.ceil((elapsedWorkoutTime.value! / 1000) % 60)} сек`
+    ? formattedStringTime(
+        Math.floor(elapsedWorkoutTime.value / 1000 / 60),
+        Math.ceil((elapsedWorkoutTime.value / 1000) % 60),
+      )
     : ''
 })
 
@@ -57,91 +73,168 @@ const {
   startExerciseTimer,
   remainingExerciseTime,
 } = useExerciseTimer(currentExercise)
-const { formattedRemainingRestTime, increaseRemainingRestTime, decreaseRemainingRestTime } =
-  useRestTimer(currentExercise, completeRest)
+
+const {
+  restTimerId,
+  formattedRemainingRestTime,
+  increaseRemainingRestTime,
+  decreaseRemainingRestTime,
+} = useRestTimer(currentExercise, completeRest)
+
 const formattedUnitsToComplete = computed<string>(() => {
   if (!currentExercise.value) return ''
+
   let formattedString = ''
+  let numUnits = 0
+
   if (currentExercise.value.unitsList.includes('подходы')) {
-    formattedString += `${currentExercise.value.goal.sets} подходов`
+    formattedString += `${currentExercise.value.goal.sets} ${formattedSets(currentExercise.value.goal.sets)}`
+    numUnits++
   }
   if (currentExercise.value.unitsList.includes('повторения')) {
-    formattedString += ` по ${currentExercise.value.goal.repetitions} повторений`
+    formattedString += `${numUnits ? ' по ' : ''}`
+    formattedString += `${currentExercise.value.goal.repetitions} ${formattedReps(currentExercise.value.goal.repetitions)}`
+    numUnits++
   }
   if (currentExercise.value.unitsList.includes('вес')) {
-    formattedString += ` по ${currentExercise.value.goal.weightKg} кг`
+    formattedString += `${numUnits ? ' по ' : ''}`
+    formattedString += `${currentExercise.value.goal.weightKg} кг`
+    numUnits++
   }
   if (currentExercise.value.unitsList.includes('время')) {
-    formattedString += ` по ${currentExercise.value.goal.time!.seconds} секунд`
+    formattedString += `${numUnits ? ' по ' : ''}`
+    formattedString += stringifyTime(currentExercise.value.goal.time)
   }
+
   return formattedString
 })
 
 const formattedWorkoutInfo = computed<string>(() => {
   if (!workoutCompleted.value) return ''
+
   const completedExercises =
     runWorkoutStore.selectedRunWorkout?.exercises.filter((exercise, index) => {
       return !skippedExercisesIndexes.value.includes(index)
     }) || []
 
+  const completedSetsExercises = completedExercises.filter((exercise) =>
+    exercise.unitsList.includes('подходы'),
+  )
+
+  const completedRepsExercises = completedExercises.filter((exercise) =>
+    exercise.unitsList.includes('повторения'),
+  )
+
+  const completedWeightKgExercises = completedExercises.filter((exercise) =>
+    exercise.unitsList.includes('вес'),
+  )
+
   const completedTimeExercises = completedExercises.filter((exercise) =>
     exercise.unitsList.includes('время'),
   )
-  const completedRepetitionsExercises = completedExercises.filter((exercise) =>
-    exercise.unitsList.includes('повторения'),
-  )
-  const completedUnits = {
-    time: completedTimeExercises.reduce((sum, exercise) => {
-      return sum + exercise.goal.time!.seconds
-    }, 0),
-    repetitions: completedRepetitionsExercises.reduce((sum, exercise) => {
+
+  const completedReps =
+    completedRepsExercises.reduce((sum, exercise) => {
       return sum + exercise.goal.repetitions!
-    }, 0),
+    }, 0) *
+    completedSetsExercises.reduce((sum, exercise) => {
+      return sum + exercise.goal.sets!
+    }, 0)
+
+  let maxWeightKg = 0
+  if (completedWeightKgExercises.length) {
+    maxWeightKg = Math.max(
+      ...completedWeightKgExercises.map((exercise) => exercise.goal.weightKg || 0),
+    )
   }
-  return `На упражнения потрачено: ${completedUnits.time} секунд.\n Повторений сделано: ${completedUnits.repetitions}`
+
+  const elapsedMinutes = completedTimeExercises.reduce((sum, exercise) => {
+    return sum + exercise.goal.time!.minutes
+  }, 0)
+
+  const elapsedSeconds = completedTimeExercises.reduce((sum, exercise) => {
+    return sum + exercise.goal.time!.seconds
+  }, 0)
+
+  const elapsedTime = formattedStringTime(elapsedMinutes, elapsedSeconds)
+
+  let resultString = ''
+  if (elapsedTime !== '') {
+    resultString += `На упражнения потрачено: ${elapsedTime}.\n`
+  }
+  if (completedReps !== 0) {
+    resultString += `Повторений сделано: ${completedReps}.\n`
+  }
+  if (maxWeightKg !== 0) {
+    resultString += `Максимальный вес: ${maxWeightKg} кг.\n`
+  }
+  return resultString
 })
 </script>
 
 <template>
-  <div v-if="workoutCompleted">
-    <p>Тренировка закончена. Она длилась: {{ formattedElapsedWorkoutTime }}</p>
-    <p>Информация о тренировке:</p>
-    <p>{{ formattedWorkoutInfo }}</p>
-  </div>
-  <div
-    v-else-if="currentExercise"
-    class="exercise-container mr-auto ml-auto flex w-fit flex-col items-center"
-  >
-    <p class="mt-2 mb-2 sm:mt-0">{{ currentExercise.name }}</p>
-    <div class="wrapper mb-3 flex h-auto w-[50vw] justify-stretch">
-      <ExerciseCardInfo :exercise="currentExercise"></ExerciseCardInfo>
+  <div class="mr-auto mb-4 ml-auto w-fit">
+    <h1 class="mb-3 text-center text-3xl font-bold">
+      {{ runWorkoutStore.selectedRunWorkout?.name }}
+    </h1>
+    <div v-if="workoutCompleted" class="flex flex-col items-center">
+      <p class="mb-2">Тренировка закончена. Она длилась: {{ formattedElapsedWorkoutTime }}</p>
+      <p class="mb-2">Информация о тренировке:</p>
+      <p>{{ formattedWorkoutInfo }}</p>
     </div>
-    <div v-if="currentExercise.unitsList.includes('время')" class="timer">
-      <Button v-if="!exerciseTimerId && remainingExerciseTime !== 0" @click="startExerciseTimer"
-        >Начать упражнение: {{ currentExercise.goal.time }} секунд</Button
+    <div v-else-if="currentExercise" class="exercise-container flex flex-col items-center">
+      <h2 class="mt-2 mb-2 text-center text-xl font-semibold sm:mt-0">
+        {{ currentExercise.name }}
+      </h2>
+      <div class="wrapper mb-3 flex h-auto w-[50vw] justify-stretch">
+        <ExerciseCardInfo :exercise="currentExercise"></ExerciseCardInfo>
+      </div>
+      <div v-if="currentExercise.unitsList.includes('время')" class="timer">
+        <Button v-if="!exerciseTimerId && remainingExerciseTime !== 0" @click="startExerciseTimer"
+          >Запустить таймер</Button
+        >
+        <Button
+          v-else-if="!exerciseTimerId && remainingExerciseTime === 0"
+          @click="completeExercise"
+          >Далее</Button
+        >
+        <p v-else>Осталось: {{ formattedRemainingExerciseTime }}</p>
+      </div>
+      <p
+        v-if="
+          !currentExercise.unitsList.includes('время') ||
+          exerciseTimerId ||
+          (!exerciseTimerId && remainingExerciseTime !== 0)
+        "
+        class="mt-1"
       >
-      <Button v-else-if="!exerciseTimerId && remainingExerciseTime === 0" @click="completeExercise"
-        >Далее</Button
-      >
-      <p v-else>Осталось: {{ formattedRemainingExerciseTime }}</p>
+        {{ exerciseTimerId ? 'из' : '' }}
+        {{ formattedUnitsToComplete }}
+      </p>
+      <div class="mt-2 flex gap-4">
+        <Button
+          @click="skipExercise"
+          severity="warn"
+          v-if="
+            !currentExercise.unitsList.includes('время') ||
+            exerciseTimerId ||
+            remainingExerciseTime !== 0
+          "
+          >Пропустить упражнение</Button
+        >
+        <Button
+          severity="success"
+          @click="completeExercise"
+          v-if="!currentExercise.unitsList.includes('время')"
+          >Готово</Button
+        >
+      </div>
     </div>
-    <p>
-      {{ formattedUnitsToComplete }}
-    </p>
-    <div class="mt-2 flex gap-4">
-      <Button @click="skipExercise" severity="warn">Пропустить упражнение</Button>
-      <Button
-        severity="success"
-        @click="completeExercise"
-        v-if="!currentExercise.unitsList.includes('время')"
-        >Готово</Button
-      >
+    <div v-else class="rest-container flex flex-col items-center">
+      <p class="mb-2">Отдых {{ formattedRemainingRestTime }}</p>
+      <Button @click="increaseRemainingRestTime" class="mb-2" severity="success">+10 сек</Button>
+      <Button @click="decreaseRemainingRestTime" severity="danger">-10 сек</Button>
     </div>
-  </div>
-  <div v-else class="rest-container">
-    <p>Отдых {{ formattedRemainingRestTime }}</p>
-    <Button @click="increaseRemainingRestTime">+10 сек</Button>
-    <Button @click="decreaseRemainingRestTime">-10 сек</Button>
   </div>
 </template>
 

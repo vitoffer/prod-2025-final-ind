@@ -13,7 +13,11 @@ export const useExerciseTimer = (currentExercise: Ref<ExerciseWithGoal | null>) 
     return totalExerciseTime.value - elapsedExerciseTime.value
   })
   const formattedRemainingExerciseTime = computed<string>(() => {
-    return `${remainingExerciseTime.value} секунд`
+    let resultString = ''
+    resultString += String(Math.floor(remainingExerciseTime.value / 60)).padStart(2, '0')
+    resultString += ':'
+    resultString += String(remainingExerciseTime.value % 60).padStart(2, '0')
+    return resultString
   })
 
   const startTimer = () => {

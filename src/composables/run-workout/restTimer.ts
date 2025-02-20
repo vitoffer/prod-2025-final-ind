@@ -55,5 +55,10 @@ export const useRestTimer = (
     if (restTimerId.value) clearInterval(restTimerId.value)
   })
 
-  return { formattedRemainingRestTime, increaseRemainingRestTime, decreaseRemainingRestTime }
+  return {
+    restTimerId,
+    formattedRemainingRestTime,
+    increaseRemainingRestTime,
+    decreaseRemainingRestTime,
+  }
 }
