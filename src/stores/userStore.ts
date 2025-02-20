@@ -13,8 +13,8 @@ import { type ToastMessageOptions } from 'primevue'
 import { ref, toValue } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
-  const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
-  // const isNewUser = ref<boolean>(false)
+  // const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
+  const isNewUser = ref<boolean>(false)
 
   function toggleIsNewUser() {
     isNewUser.value = !isNewUser.value

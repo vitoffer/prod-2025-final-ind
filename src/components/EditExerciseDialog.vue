@@ -31,6 +31,15 @@ const {
   sportsItemsSuggestions: sportsItemsSuggestions,
   tagsSuggestions: tagsSuggestions,
 } = useExercisesListSuggestions('editing')
+
+function handleBlur(event: Event, type: 'sportsItems' | 'tags') {
+  const target = event.target as HTMLInputElement // Приведение типа
+  const value = target.value
+  if (value !== '') {
+    editingExercise.value![type].push(value)
+  }
+  target.value = ''
+}
 </script>
 
 <template>
@@ -67,6 +76,7 @@ const {
           @complete="showSportsItemsSuggestions"
           id="editingSportsItems"
           class="w-full"
+          @blur="handleBlur($event, 'sportsItems')"
         />
         <label for="editingSportsItems">Инвентарь</label>
       </FloatLabel>
@@ -78,6 +88,7 @@ const {
           @complete="showTagsSuggestions"
           id="editingTags"
           class="w-full"
+          @blur="handleBlur($event, 'tags')"
         />
         <label for="editingTags">Теги</label>
       </FloatLabel>

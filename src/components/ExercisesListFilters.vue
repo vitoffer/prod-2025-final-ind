@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { difficultyOptions } from '@/constants'
+import type { FiltersObject } from '@/types'
 import type { AutoCompleteCompleteEvent } from 'primevue'
 
 defineProps<{ sportsItemsSelectSuggestions: string[]; tagsSelectSuggestions: string[] }>()
@@ -7,7 +8,13 @@ defineEmits<{
   searchSportsItemsSelect: [event: AutoCompleteCompleteEvent]
   searchTagsSelect: [event: AutoCompleteCompleteEvent]
 }>()
-defineModel('filtersObject')
+defineModel<FiltersObject>('filtersObject')
+
+function handleBlur(event: Event) {
+  const target = event.target as HTMLInputElement
+
+  target.value = ''
+}
 </script>
 
 <template>
@@ -16,7 +23,7 @@ defineModel('filtersObject')
   >
     <li class="w-full lg:col-span-2 lg:col-start-1 lg:row-span-1 lg:row-start-1">
       <FloatLabel variant="in">
-        <InputText id="filterName" v-model="filtersObject.name" class="w-full md:w-[250px]" />
+        <InputText id="filterName" v-model="filtersObject!.name" class="w-full md:w-[250px]" />
         <label for="filterName">Название</label>
       </FloatLabel>
     </li>
@@ -24,7 +31,7 @@ defineModel('filtersObject')
       <FloatLabel variant="in">
         <InputText
           id="filterDesc"
-          v-model="filtersObject.description"
+          v-model="filtersObject!.description"
           class="w-full md:w-[250px]"
         />
         <label for="filterDesc">Описание</label>
@@ -34,17 +41,18 @@ defineModel('filtersObject')
       class="flex w-full flex-col items-center justify-center gap-1 md:col-span-2 lg:col-span-2 lg:col-start-5 lg:row-span-1 lg:row-start-1"
     >
       <p>Сложность</p>
-      <SelectButton v-model="filtersObject.difficulty" :options="difficultyOptions" />
+      <SelectButton v-model="filtersObject!.difficulty" :options="difficultyOptions" />
     </li>
     <li class="w-full lg:col-span-2 lg:col-start-2 lg:row-span-1 lg:row-start-2">
       <FloatLabel variant="in">
         <AutoComplete
-          v-model="filtersObject.sportsItems"
+          v-model="filtersObject!.sportsItems"
           multiple
           :suggestions="sportsItemsSelectSuggestions"
           @complete="$emit('searchSportsItemsSelect', $event)"
           id="filterSportsItems"
           class="w-full md:w-[250px]"
+          @blur="handleBlur"
         />
         <label for="filterSportsItems">Инвентарь</label>
       </FloatLabel>
@@ -52,13 +60,14 @@ defineModel('filtersObject')
     <li class="w-full lg:col-span-2 lg:col-start-4 lg:row-span-1 lg:row-start-2">
       <FloatLabel variant="in">
         <AutoComplete
-          v-model="filtersObject.tags"
+          v-model="filtersObject!.tags"
           multiple
           :suggestions="tagsSelectSuggestions"
           @complete="$emit('searchTagsSelect', $event)"
           id="filterTags"
           class="w-full md:w-[250px]"
           aria-labelledby="filterTags"
+          @blur="handleBlur"
         />
         <label for="filterTags">Теги</label>
       </FloatLabel>
