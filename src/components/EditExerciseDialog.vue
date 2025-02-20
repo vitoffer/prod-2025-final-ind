@@ -33,7 +33,7 @@ const {
 } = useExercisesListSuggestions('editing')
 
 function handleBlur(event: Event, type: 'sportsItems' | 'tags') {
-  const target = event.target as HTMLInputElement // Приведение типа
+  const target = event.target as HTMLInputElement
   const value = target.value
   if (value !== '') {
     editingExercise.value![type].push(value)

@@ -47,8 +47,8 @@ export function getInvalidExercisesList(editingWorkout: Workout): ExerciseWithGo
     const weightKgCountInvalid = 'weightKg' in exercise.goal && !exercise.goal.weightKg
     const timeInvalid =
       'time' in exercise.goal &&
-      exercise.goal.time!.minutes === 0 &&
-      exercise.goal.time!.seconds === 0
+      ((exercise.goal.time!.minutes === 0 && exercise.goal.time!.seconds === 0) ||
+        exercise.goal.time!.seconds > 59)
     return {
       repetitions: repetitionsCountInvalid,
       sets: setsCountInvalid,
