@@ -5,12 +5,16 @@ import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import type { Router } from 'vue-router'
 import { getInvalidExercisesList, isNameValid } from '@/utils/validation'
 import { useWorkoutValidation } from './workoutValidation'
+import type { ToastMessageOptions } from 'primevue'
 
-export const useEditingWorkout = (router: Router) => {
+export const useEditingWorkout = (
+  router: Router,
+  showToast: (options: ToastMessageOptions) => void,
+) => {
   const workoutsStore = useWorkoutsStore()
   const runWorkoutStore = useRunWorkoutStore()
 
-  const { nameInvalid, exercisesListInvalid } = useWorkoutValidation()
+  const { nameInvalid } = useWorkoutValidation()
 
   const nullWorkout: Omit<Workout, 'id'> = {
     name: '',
@@ -30,12 +34,6 @@ export const useEditingWorkout = (router: Router) => {
 
   function setAllFieldsValid() {
     nameInvalid.value = false
-    exercisesListInvalid.value = new Array(editingWorkout.value.exercises.length).fill({
-      time: false,
-      sets: false,
-      repetitions: false,
-      weightKg: false,
-    })
   }
 
   function createWorkout(...args: Parameters<typeof createEntity>) {
@@ -52,14 +50,17 @@ export const useEditingWorkout = (router: Router) => {
 
   const saveEditingWorkout = async () => {
     nameInvalid.value = !isNameValid(editingWorkout.value)
-    exercisesListInvalid.value = getInvalidExercisesList(editingWorkout.value)
+
+    if (nameInvalid.value) {
+      return
+    }
 
     if (
-      nameInvalid.value ||
-      exercisesListInvalid.value.some((exerciseInvalid) =>
+      getInvalidExercisesList(editingWorkout.value).some((exerciseInvalid) =>
         Object.values(exerciseInvalid).includes(true),
       )
     ) {
+      showToast({ severity: 'error', summary: `Введите корректную цель упражнения`, life: 3000 })
       return
     }
 
@@ -103,6 +104,5 @@ export const useEditingWorkout = (router: Router) => {
     validateAndRunWorkout,
     runWorkout,
     nameInvalid,
-    exercisesListInvalid,
   }
 }

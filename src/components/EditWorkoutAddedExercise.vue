@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ExerciseWithGoal, ExerciseWithGoalValidation, GoalTime, Workout } from '@/types'
 import { getInvalidExercisesList } from '@/utils/validation'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps<{ index: number; editingWorkout: Workout }>()
 
@@ -29,18 +29,34 @@ function parseTime(input: string) {
 }
 
 function updateExerciseTime() {
+  handleTimeInput()
+}
+
+const setsOptions = [...Array(4).keys()].map((value) => value + 2)
+
+function handleRepetitionsInput() {
+  if (!exercise.value?.goal.repetitions) {
+    exercise.value!.goal.repetitions = 1
+  }
+}
+
+function handleWeightKgInput() {
+  if (!exercise.value?.goal.weightKg) {
+    exercise.value!.goal.weightKg = 0.1
+  }
+}
+
+function handleTimeInput() {
+  if (!exercise.value?.goal.time) {
+    exercise.value!.goal.time = { minutes: 0, seconds: 0 }
+    return
+  }
+
   const time = parseTime(timeInput.value)
   exercise.value!.goal.time = time
 
   exercisesListInvalid.value = getInvalidExercisesList(props.editingWorkout)
 }
-
-const setsOptions = [...Array(4).keys()].map((value) => value + 2)
-
-const exerciseSetsInvalid = computed(() => {
-  console.log(exercisesListInvalid)
-  return exercisesListInvalid.value![props.index].sets
-})
 </script>
 
 <template>
@@ -62,8 +78,6 @@ const exerciseSetsInvalid = computed(() => {
           :options="setsOptions"
           label-class="!p-0"
           class="!border-none !p-1 not-last:mb-1"
-          :invalid="exerciseSetsInvalid"
-          @change="() => (exercisesListInvalid = getInvalidExercisesList(editingWorkout))"
         >
           <template #value="slotProps">
             <div class="p-1 leading-normal">
@@ -82,8 +96,7 @@ const exerciseSetsInvalid = computed(() => {
           :max="999"
           input-class="goal-number-input repetitions"
           class="not-last:mb-1"
-          :invalid="exercisesListInvalid![index].repetitions"
-          @input="() => (exercisesListInvalid = getInvalidExercisesList(editingWorkout))"
+          @input="handleRepetitionsInput"
         />
         повторений</template
       >
@@ -96,8 +109,7 @@ const exerciseSetsInvalid = computed(() => {
           :max="999"
           input-class="goal-number-input weight"
           class="not-last:mb-1"
-          :invalid="exercisesListInvalid![index].weightKg"
-          @input="() => (exercisesListInvalid = getInvalidExercisesList(editingWorkout))"
+          @input="handleWeightKgInput"
         />
         кг</template
       >
@@ -111,7 +123,6 @@ const exerciseSetsInvalid = computed(() => {
           slotChar="00:00"
           size="small"
           class="goal-number-input time not-last:mb-1"
-          :invalid="exercisesListInvalid![index].time"
         />
       </template>
     </div>

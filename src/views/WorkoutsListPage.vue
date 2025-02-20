@@ -3,7 +3,7 @@ import EditWorkoutDialog from '@/components/EditWorkoutDialog.vue'
 import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { Workout } from '@/types'
-import { useConfirm } from 'primevue'
+import { useConfirm, useToast, type ToastMessageOptions } from 'primevue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -11,6 +11,11 @@ const confirm = useConfirm()
 
 const workoutsStore = useWorkoutsStore()
 const router = useRouter()
+const toast = useToast()
+
+function showToast(options: ToastMessageOptions) {
+  toast.add(options)
+}
 
 const {
   editingWorkout,
@@ -22,8 +27,7 @@ const {
   validateAndRunWorkout,
   runWorkout,
   nameInvalid,
-  exercisesListInvalid,
-} = useEditingWorkout(router)
+} = useEditingWorkout(router, showToast)
 
 const confirmRemove = (id: number) => {
   confirm.require({
@@ -63,6 +67,7 @@ const isNewWorkout = computed<boolean>(() => {
 </script>
 
 <template>
+  <Toast />
   <header class="flex flex-col items-center">
     <FloatLabel variant="in" class="mt-4 mb-3 w-[80vw] sm:mt-2 sm:w-[400px]">
       <InputText v-model="filterName" id="filterName" class="w-full" />
@@ -78,7 +83,6 @@ const isNewWorkout = computed<boolean>(() => {
       v-model:edit-workout-dialog-visible="editWorkoutDialogVisible"
       v-model:editing-workout="editingWorkout"
       v-model:name-invalid="nameInvalid"
-      v-model:exercises-list-invalid="exercisesListInvalid"
       :dialog-header="dialogHeader"
       :save-editing-workout="saveEditingWorkout"
       :run-workout="validateAndRunWorkout"
