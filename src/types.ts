@@ -93,3 +93,31 @@ export interface Character {
 }
 
 export type BodyType = 'skinny' | 'normal' | 'fit'
+
+export interface Achievement {
+  name: string
+  description: string
+  requirements: AchievementRequirements
+}
+
+export interface AchievementRequirements {
+  xp?: number
+  level?: number
+  workouts?: WorkoutRequirement[]
+  repetitions?: number
+  timeInSeconds?: number
+	weightKg?: number
+}
+
+export interface WorkoutRequirement {
+  count: number
+  difficulty?: ExerciseDifficulty
+  sportsItem?: string
+  tag?: string
+}
+
+export interface CustomItem {
+  name: string
+  imageUrl: string
+  price: number
+}
