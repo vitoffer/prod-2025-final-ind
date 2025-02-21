@@ -109,16 +109,16 @@ function saveUserData() {
         class="absolute top-[277px] left-[50%] -translate-x-[50%]"
       />
     </div>
-    <p>Доступные предметы кастомизации:</p>
-    <UserCustomItemBlock
-      v-for="(item, index) in userStore.user.customizationItems"
-      :key="index"
-      :item="item"
-    />
+    <p class="text-center">Доступные предметы кастомизации:</p>
+    <ul class="flex flex-wrap gap-2">
+      <li v-for="(item, index) in userStore.user.customizationItems" :key="index">
+        <UserCustomItemBlock :item="item" />
+      </li>
+    </ul>
     <RouterLink :to="{ name: 'ShopPage' }" class="p-button mx-auto my-2 !block w-fit"
       >В магазин</RouterLink
     >
-    <p>Ачивки:</p>
+    <p class="text-center">Ачивки:</p>
     <p v-for="(achievement, index) in userStore.user.achievements" :key="index">
       {{ achievement }}
     </p>

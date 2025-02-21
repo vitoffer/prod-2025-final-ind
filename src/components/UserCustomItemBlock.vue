@@ -13,8 +13,8 @@ const isItemWorn = computed<boolean>(() =>
 </script>
 
 <template>
-  <div class="flex flex-col items-center">
-    <img :src="item.imageUrl" alt="Картинка предмета кастомизации" />
+  <div class="flex w-fit flex-col items-center gap-2 rounded-lg bg-neutral-300 p-4">
+    <img :src="item.imageUrl" alt="Картинка предмета кастомизации" class="w-[50px]" />
     <Button size="small" v-if="isItemWorn" @click="() => userStore.unWearItem(item)">Снять</Button>
     <Button size="small" v-else @click="() => userStore.wearItem(item)">Надеть</Button>
   </div>

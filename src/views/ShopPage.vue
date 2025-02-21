@@ -9,7 +9,8 @@ const types = [...new Set(customItems.map((item) => item.type))]
 </script>
 
 <template>
-  <h1 class="mt-4 text-center text-3xl font-semibold">Ваши очки: {{ userStore.user.points }}</h1>
+  <h1 class="mt-3 text-center text-3xl font-semibold">Магазин</h1>
+  <h2 class="mt-2 text-center text-xl font-semibold">Ваши очки: {{ userStore.user.points }}</h2>
   <div class="flex flex-col gap-4 p-4 !pt-0 sm:p-6 md:p-8">
     <ShopItemTypedList v-for="(type, index) in types" :key="index" :type="type" />
   </div>
