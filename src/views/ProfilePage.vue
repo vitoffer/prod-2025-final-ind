@@ -56,7 +56,7 @@ function saveUserData() {
   </Dialog>
   <div v-if="userStore.isNewUser"></div>
   <div v-else class="mt-4 mr-auto ml-auto w-fit text-lg font-semibold">
-    <div class="flex justify-between">
+    <div class="flex justify-between gap-3">
       <p>Возраст: {{ userStore.user.age }} лет;</p>
       <p>Рост: {{ userStore.user.heightCm }} см;</p>
       <p>Вес: {{ userStore.user.weightKg }} кг;</p>
@@ -111,7 +111,11 @@ function saveUserData() {
     </div>
     <p class="text-center">Доступные предметы кастомизации:</p>
     <ul class="flex flex-wrap gap-2">
-      <li v-for="(item, index) in userStore.user.customizationItems" :key="index">
+      <li
+        v-for="(item, index) in userStore.user.customizationItems"
+        :key="index"
+        class="flex items-center"
+      >
         <UserCustomItemBlock :item="item" />
       </li>
     </ul>
