@@ -1,98 +1,165 @@
+import { ref } from 'vue'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
+import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
+import { useUserStore } from '@/stores/userStore'
+import { useWorkoutValidation } from './workoutValidation'
+import { getInvalidExercisesList, isNameValid } from '@/utils/validation'
+import { getMaxGoal } from '@/utils/recommendations'
 import type {
   FilledExercisesWorkout,
   FilledExercisesWorkoutValidation,
-  FilledExerciseWithGoal,
   InvalidWorkoutField,
   Workout,
 } from '@/types'
 import type { Router } from 'vue-router'
-import { getInvalidExercisesList, isNameValid } from '@/utils/validation'
-import { useWorkoutValidation } from './workoutValidation'
 import type { ToastMessageOptions } from 'primevue'
-import { ref } from 'vue'
-import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 
 export const useEditingWorkout = (
   router: Router,
   showToast: (options: ToastMessageOptions) => void,
 ) => {
   const workoutsStore = useWorkoutsStore()
-
+  const userStore = useUserStore()
   const { nameInvalid } = useWorkoutValidation()
 
-  const nullWorkout: Omit<FilledExercisesWorkout, 'id'> = {
+  const editWorkoutDialogVisible = ref(false)
+  const editingWorkout = ref<FilledExercisesWorkout>({
     name: '',
     exercises: [],
-  }
-
-  const getNextId: () => number = () => workoutsStore.list[workoutsStore.list.length - 1].id + 1
-  const findWorkout = (id: number): Workout =>
-    JSON.parse(JSON.stringify(workoutsStore.list.find((workout: Workout) => workout.id === id)))
-
-  const editingWorkout = ref<FilledExercisesWorkout>({
-    ...nullWorkout,
     id: getNextId(),
   })
 
-  const editWorkoutDialogVisible = ref<boolean>(false)
-
-  const createWorkout = () => {
-    editWorkoutDialogVisible.value = true
-    editingWorkout.value = {
-      name: nullWorkout.name,
-      exercises: nullWorkout.exercises,
-      id: getNextId(),
-    }
-
-    setAllFieldsValid()
+  function getNextId() {
+    return (workoutsStore.list.slice(-1)[0]?.id || 0) + 1
   }
 
-  const changeWorkout = (id: number) => {
+  function findWorkout(id: number): Workout | null {
+    return workoutsStore.list.find((workout) => workout.id === id) || null
+  }
+
+  function createWorkout() {
+    editingWorkout.value = { name: '', exercises: [], id: getNextId() }
+    openEditDialog()
+  }
+
+  function changeWorkout(id: number) {
     const foundWorkout = findWorkout(id)
-    if (foundWorkout) {
-      const filledExercisesWorkout = workoutsStore.getFilledExercisesWorkout(id)
+    editingWorkout.value = foundWorkout
+      ? workoutsStore.getFilledExercisesWorkout(id)
+      : { name: '', exercises: [], id: getNextId() }
+    openEditDialog()
+  }
 
-      editingWorkout.value = filledExercisesWorkout
-    } else {
-      editingWorkout.value = {
-        ...nullWorkout,
-        id: getNextId(),
-      }
-    }
-
-    setAllFieldsValid()
+  function openEditDialog() {
+    nameInvalid.value = false
     editWorkoutDialogVisible.value = true
   }
 
-  function setAllFieldsValid() {
-    nameInvalid.value = false
+  function getExceededMaxGoals(workout: FilledExercisesWorkout): string[] {
+    const user = userStore.user
+    return workout.exercises.flatMap((exercise) => {
+      const maxGoal = getMaxGoal(user, exercise)
+      const exceededMessages: string[] = []
+
+      const isExceeded = (value: number, max: number, type: string) =>
+        value > max
+          ? exceededMessages.push(`${type} для "${exercise.name}" превышает максимальное (${max})`)
+          : null
+
+      if (exercise.goal.time && maxGoal.time) {
+        const time = exercise.goal.time.minutes * 60 + exercise.goal.time.seconds
+        const maxTime = maxGoal.time.minutes * 60 + maxGoal.time.seconds
+        isExceeded(time, maxTime, 'Время')
+      }
+      if (exercise.goal.weightKg && maxGoal.weightKg)
+        isExceeded(exercise.goal.weightKg, maxGoal.weightKg, 'Вес')
+      if (exercise.goal.repetitions && maxGoal.repetitions)
+        isExceeded(exercise.goal.repetitions, maxGoal.repetitions, 'Повторения')
+      if (exercise.goal.sets && maxGoal.sets)
+        isExceeded(exercise.goal.sets, maxGoal.sets, 'Подходы')
+
+      return exceededMessages
+    })
   }
 
-  const saveEditingWorkout = () => {
-    const invalidatedWorkout = getInvalidatedWorkout(editingWorkout.value)
+  function getInvalidWorkoutField(
+    invalidatedWorkout: FilledExercisesWorkoutValidation,
+  ): InvalidWorkoutField | null {
+    if (invalidatedWorkout.name) return { field: 'name', detail: 'пустое значение' }
+    if (!invalidatedWorkout.exercises.length)
+      return { field: 'exercises', detail: 'пустое значение' }
+    if (invalidatedWorkout.exercises.some((ex) => Object.values(ex.goal).includes(true)))
+      return { field: 'exercises', detail: 'некорректное значение' }
+    return null
+  }
+
+  function getInvalidatedWorkout(
+    workout: FilledExercisesWorkout,
+  ): FilledExercisesWorkoutValidation {
+    return {
+      name: !isNameValid(workout),
+      exercises: getInvalidExercisesList(workout),
+    }
+  }
+
+  function isWorkoutValid(workout: FilledExercisesWorkout, isEditing: boolean): boolean {
+    const exceededMessages = getExceededMaxGoals(workout)
+
+    if (exceededMessages.length > 0) {
+      showToast({
+        severity: 'warn',
+        summary: 'Превышены максимальные значения:',
+        detail: exceededMessages.join('\n'),
+        life: 5000,
+      })
+      return false
+    }
+
+    const invalidatedWorkout = getInvalidatedWorkout(workout)
     const invalidWorkoutField = getInvalidWorkoutField(invalidatedWorkout)
 
     if (invalidWorkoutField) {
-      validateWorkout(invalidWorkoutField)
-      return
+      if (isEditing) {
+        showValidationErrors(invalidWorkoutField)
+      } else {
+        showToast({
+          severity: 'error',
+          summary: 'Ошибка в тренировке',
+          detail: 'Проверьте введённые данные.',
+          life: 3000,
+        })
+      }
+      return false
     }
 
-    const formattedExercises = editingWorkout.value.exercises.map(
-      (exercise: FilledExerciseWithGoal) => {
-        const { id, goal } = exercise
-        return { id, goal }
-      },
-    )
+    return true
+  }
+
+  function showValidationErrors(invalidWorkoutField: InvalidWorkoutField) {
+    if (invalidWorkoutField.field === 'name') {
+      nameInvalid.value = true
+      showToast({ severity: 'error', summary: 'Введите название тренировки', life: 3000 })
+    } else if (invalidWorkoutField.field === 'exercises') {
+      showToast({
+        severity: 'error',
+        summary:
+          invalidWorkoutField.detail === 'пустое значение'
+            ? 'Добавьте хотя бы одно упражнение'
+            : 'Введите корректную цель упражнения',
+        life: 3000,
+      })
+    }
+  }
+
+  function saveEditingWorkout() {
+    if (!isWorkoutValid(editingWorkout.value, true)) return
 
     const formattedWorkout = {
       ...editingWorkout.value,
-      exercises: formattedExercises,
+      exercises: editingWorkout.value.exercises.map(({ id, goal }) => ({ id, goal })),
     }
 
-    const existingWorkout = workoutsStore.list.find(
-      (workout: Workout) => workout.id === formattedWorkout.id,
-    )
+    const existingWorkout = workoutsStore.list.find((w) => w.id === formattedWorkout.id)
 
     if (existingWorkout) {
       workoutsStore.updateWorkout(existingWorkout.id, formattedWorkout)
@@ -103,85 +170,12 @@ export const useEditingWorkout = (
     editWorkoutDialogVisible.value = false
   }
 
-  function getInvalidWorkoutField(
-    invalidatedWorkout: FilledExercisesWorkoutValidation,
-  ): InvalidWorkoutField | null {
-    if (invalidatedWorkout.name) {
-      return { field: 'name', detail: 'пустое значение' }
-    }
-
-    if (invalidatedWorkout.exercises.length === 0) {
-      return { field: 'exercises', detail: 'пустое значение' }
-    }
-
-    if (
-      invalidatedWorkout.exercises.some((exercise) => Object.values(exercise.goal).includes(true))
-    ) {
-      return { field: 'exercises', detail: 'некорректное значение' }
-    }
-
-    return null
-  }
-
-  function getInvalidatedWorkout(
-    workout: FilledExercisesWorkout,
-  ): FilledExercisesWorkoutValidation {
-    const invalidatedWorkout: FilledExercisesWorkoutValidation = {
-      name: !isNameValid(workout),
-      exercises: getInvalidExercisesList(workout),
-    }
-
-    return invalidatedWorkout
-  }
-
-  function validateWorkout(invalidWorkoutField: InvalidWorkoutField) {
-    if (invalidWorkoutField.field === 'name') {
-      nameInvalid.value = true
-      showToast({ severity: 'error', summary: `Введите название тренировки`, life: 3000 })
-    }
-
-    if (
-      invalidWorkoutField.field === 'exercises' &&
-      invalidWorkoutField.detail === 'пустое значение'
-    ) {
-      showToast({ severity: 'error', summary: `Добавьте хотя бы одно упражнение`, life: 3000 })
-    }
-
-    if (
-      invalidWorkoutField.field === 'exercises' &&
-      invalidWorkoutField.detail === 'некорректное значение'
-    ) {
-      showToast({ severity: 'error', summary: `Введите корректную цель упражнения`, life: 3000 })
-    }
-  }
-
-  const validateAndRunWorkout = (workout: FilledExercisesWorkout) => {
-    const invalidatedWorkout = getInvalidatedWorkout(workout)
-    const invalidWorkoutField = getInvalidWorkoutField(invalidatedWorkout)
-
-    if (invalidWorkoutField && editWorkoutDialogVisible.value) {
-      validateWorkout(invalidWorkoutField)
-      return
-    }
-    if (invalidWorkoutField && !editWorkoutDialogVisible.value) {
-      showToast({
-        severity: 'error',
-        summary: `Что-то пошло не так. Проверьте данные тренировки`,
-        life: 3000,
-      })
-      return
-    }
+  function validateAndRunWorkout(workout: FilledExercisesWorkout) {
+    if (!isWorkoutValid(workout, false)) return
 
     editWorkoutDialogVisible.value = false
-
-    const runWorkoutStore = useRunWorkoutStore()
-    runWorkoutStore.updateWorkout(workout)
-    router.push({
-      name: 'RunWorkoutPage',
-      params: {
-        id: workout.id,
-      },
-    })
+    useRunWorkoutStore().updateWorkout(workout)
+    router.push({ name: 'RunWorkoutPage', params: { id: workout.id } })
   }
 
   return {
@@ -192,5 +186,6 @@ export const useEditingWorkout = (
     saveEditingWorkout,
     validateAndRunWorkout,
     nameInvalid,
+    getExceededMaxGoals,
   }
 }

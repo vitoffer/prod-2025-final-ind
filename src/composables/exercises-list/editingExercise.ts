@@ -10,7 +10,7 @@ import {
   isVideoUrlValid,
 } from '@/utils/validation'
 import type { ToastMessageOptions } from 'primevue'
-import { ref, toValue } from 'vue'
+import { ref } from 'vue'
 import { nullExercise } from '@/constants'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 
