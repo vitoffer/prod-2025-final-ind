@@ -134,23 +134,26 @@ const formattedUnitsToComplete = computed<string>(() => {
   let formattedString = ''
   let numUnits = 0
 
+  if ('time' in currentExercise.value.goal) {
+    formattedString += `${numUnits ? ' по ' : ''}`
+    formattedString += stringifyTime(currentExercise.value.goal.time)
+    numUnits++
+  }
+
   if ('sets' in currentExercise.value.goal) {
+    formattedString += `${numUnits ? ', ' : ''}`
     formattedString += `${currentExercise.value.goal.sets} ${formattedSets(currentExercise.value.goal.sets)}`
     numUnits++
   }
   if ('repetitions' in currentExercise.value.goal) {
-    formattedString += `${numUnits ? ' по ' : ''}`
+    formattedString += `${numUnits ? ', ' : ''}`
     formattedString += `${currentExercise.value.goal.repetitions} ${formattedReps(currentExercise.value.goal.repetitions)}`
     numUnits++
   }
   if ('weightKg' in currentExercise.value.goal) {
-    formattedString += `${numUnits ? ' по ' : ''}`
+    formattedString += `${numUnits ? ', ' : ''}`
     formattedString += `${currentExercise.value.goal.weightKg} кг`
     numUnits++
-  }
-  if ('time' in currentExercise.value.goal) {
-    formattedString += `${numUnits ? ' по ' : ''}`
-    formattedString += stringifyTime(currentExercise.value.goal.time)
   }
 
   return formattedString
@@ -202,7 +205,7 @@ const formattedWorkoutInfo = computed<string>(() => {
         {{ currentExercise.name }}
       </h2>
       <div
-        class="wrapper mb-3 flex h-auto w-[95vw] justify-stretch sm:w-[80vw] md:w-[70vw] lg:w-[60vw] xl:w-[50vw]"
+        class="wrapper mb-3 flex h-auto w-[95vw] justify-stretch sm:w-[80vw] md:w-[70vw] lg:w-[60vw] xl:w-[1000px]"
       >
         <ExerciseCardInfo :exercise="currentExercise"></ExerciseCardInfo>
       </div>
@@ -249,7 +252,7 @@ const formattedWorkoutInfo = computed<string>(() => {
     </div>
     <div v-else class="rest-container flex flex-col items-center">
       <p
-        class="mt-[calc(95vw/16*9)] mb-2 sm:mt-[calc(80vw/16*9)] md:mt-[calc(70vw/16*9)] lg:mt-[calc(60vw/16*9)] xl:mt-[calc(50vw/16*9)]"
+        class="mt-[calc(95vw/16*9)] mb-2 sm:mt-[calc(80vw/16*9)] md:mt-[calc(70vw/16*9)] lg:mt-[calc(60vw/16*9)] xl:mt-[calc(1000px/16*9)]"
       >
         Отдых {{ formattedRemainingRestTime }}
       </p>
