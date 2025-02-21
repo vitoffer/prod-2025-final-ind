@@ -52,10 +52,12 @@ export function getInvalidExercisesList(editingWorkout: Workout): ExerciseWithGo
       ((exercise.goal.time!.minutes === 0 && exercise.goal.time!.seconds === 0) ||
         exercise.goal.time!.seconds > 59)
     return {
-      repetitions: repetitionsCountInvalid,
-      sets: setsCountInvalid,
-      weightKg: weightKgCountInvalid,
-      time: timeInvalid,
+      goal: {
+        repetitions: repetitionsCountInvalid,
+        sets: setsCountInvalid,
+        weightKg: weightKgCountInvalid,
+        time: timeInvalid,
+      },
     }
   })
   return invalidList

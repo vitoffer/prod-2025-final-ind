@@ -15,7 +15,7 @@ import { useExercisesListSuggestions } from '@/composables/exercises-list/sugges
 defineProps<{
   dialogHeader: string
   saveEditingWorkout: () => void
-  runWorkout: () => void
+  validateAndRunWorkout: (workout: FilledExercisesWorkout) => void
   newWorkout: boolean
 }>()
 
@@ -149,7 +149,10 @@ function suggestExercises() {
         <Button @click="saveEditingWorkout" severity="success" aria-label="Save workout"
           >Сохранить</Button
         >
-        <Button v-if="newWorkout" @click="() => runWorkout()" aria-label="Run workout"
+        <Button
+          v-if="newWorkout"
+          @click="() => validateAndRunWorkout(editingWorkout!)"
+          aria-label="Run workout"
           >Запустить</Button
         >
       </div>

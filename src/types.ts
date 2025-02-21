@@ -49,7 +49,21 @@ export interface GoalTime {
   seconds: number
 }
 
+export interface FilledExercisesWorkoutValidation {
+  name: boolean
+  exercises: ExerciseWithGoalValidation[]
+}
+
 export interface ExerciseWithGoalValidation {
+  goal: ExerciseGoalValidation
+}
+
+export interface InvalidWorkoutField {
+  field: 'name' | 'exercises'
+  detail: 'пустое значение' | 'некорректное значение'
+}
+
+export interface ExerciseGoalValidation {
   time: boolean
   sets: boolean
   repetitions: boolean
@@ -106,7 +120,7 @@ export interface AchievementRequirements {
   workouts?: WorkoutRequirement[]
   repetitions?: number
   timeInSeconds?: number
-	weightKg?: number
+  weightKg?: number
 }
 
 export interface WorkoutRequirement {

@@ -24,7 +24,6 @@ const {
   changeWorkout,
   saveEditingWorkout,
   validateAndRunWorkout,
-  runWorkout,
   nameInvalid,
 } = useEditingWorkout(router, showToast)
 
@@ -92,7 +91,7 @@ const isNewWorkout = computed<boolean>(() => {
       v-model:name-invalid="nameInvalid"
       :dialog-header="dialogHeader"
       :save-editing-workout="saveEditingWorkout"
-      :run-workout="validateAndRunWorkout"
+      :validate-and-run-workout="validateAndRunWorkout"
       :new-workout="isNewWorkout"
       class="!max-h-[95%] max-w-full"
     />
@@ -106,7 +105,11 @@ const isNewWorkout = computed<boolean>(() => {
           {{ workout.name }}
         </span>
         <div class="flex gap-2">
-          <Button @click="() => runWorkout(workout)" aria-label="Run workout" class="!p-[10px]">
+          <Button
+            @click="() => validateAndRunWorkout(workout)"
+            aria-label="Run workout"
+            class="!p-[10px]"
+          >
             <i class="pi pi-play !text-[1.25rem]"></i>
           </Button>
           <Button
