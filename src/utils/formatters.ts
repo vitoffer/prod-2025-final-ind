@@ -89,5 +89,5 @@ export function formattedWorkoutData(
     resultString += `Максимальный вес: ${maxWeightKg} кг.\n`
   }
 
-  return resultString
+  return resultString || 'Нет информации. Скорее всего, вы пропустили каждое упражнение'
 }
