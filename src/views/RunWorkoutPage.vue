@@ -15,7 +15,6 @@ import {
   stringifyTime,
 } from '@/utils/formatters'
 import { getCompletedExercises, getCompletedExercisesUnits } from '@/utils/functions'
-import { useToast, type ToastMessageOptions } from 'primevue'
 import { computed, ref } from 'vue'
 
 const runWorkoutStore = useRunWorkoutStore()
@@ -31,12 +30,6 @@ const currentExercise = ref<FilledExerciseWithGoal | null>(
 const restTime = ref<boolean>(false)
 
 const workoutCompleted = ref<boolean>(false)
-
-const toast = useToast()
-
-function showToast(options: ToastMessageOptions) {
-  toast.add(options)
-}
 
 const completeExercise = (type?: string) => {
   if (exerciseTimerId.value) {
@@ -60,7 +53,7 @@ const completeExercise = (type?: string) => {
 
     userStore.pushWorkoutToHistory(completedWorkout)
 
-    userStore.addXP(XPForCompletedWorkout(completedWorkout), showToast)
+    userStore.addXP(XPForCompletedWorkout(completedWorkout))
 
     return
   }
@@ -187,7 +180,6 @@ const formattedWorkoutInfo = computed<string>(() => {
 </script>
 
 <template>
-  <Toast />
   <div class="mr-auto mb-4 ml-auto w-fit">
     <h1 class="mb-3 text-center text-3xl font-bold">
       {{ runWorkoutStore.selectedRunWorkout?.name }}

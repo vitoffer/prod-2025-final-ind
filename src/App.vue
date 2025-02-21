@@ -13,7 +13,7 @@ provide('showToast', showToast)
 </script>
 
 <template>
-  <Toast />
+  <Toast class="!right-0 !max-w-[100vw] sm:!right-[20px] sm:!max-w-none" />
   <div class="relative flex flex-col">
     <AppNav />
 

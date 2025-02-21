@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useUserStore } from '@/stores/userStore'
@@ -14,13 +14,11 @@ import type {
 import type { Router } from 'vue-router'
 import type { ToastMessageOptions } from 'primevue'
 
-export const useEditingWorkout = (
-  router: Router,
-  showToast: (options: ToastMessageOptions) => void,
-) => {
+export const useEditingWorkout = (router: Router) => {
   const workoutsStore = useWorkoutsStore()
   const userStore = useUserStore()
   const { nameInvalid } = useWorkoutValidation()
+  const showToast = inject<(options: ToastMessageOptions) => void>('showToast')
 
   const editWorkoutDialogVisible = ref(false)
   const editingWorkout = ref<FilledExercisesWorkout>({
@@ -126,7 +124,7 @@ export const useEditingWorkout = (
       if (isEditing) {
         showValidationErrors(invalidWorkoutField)
       } else {
-        showToast({
+        showToast!({
           severity: 'error',
           summary: 'Ошибка в тренировке',
           detail: 'Проверьте введённые данные.',
@@ -142,9 +140,9 @@ export const useEditingWorkout = (
   function showValidationErrors(invalidWorkoutField: InvalidWorkoutField) {
     if (invalidWorkoutField.field === 'name') {
       nameInvalid.value = true
-      showToast({ severity: 'error', summary: 'Введите название тренировки', life: 3000 })
+      showToast!({ severity: 'error', summary: 'Введите название тренировки', life: 3000 })
     } else if (invalidWorkoutField.field === 'exercises') {
-      showToast({
+      showToast!({
         severity: 'error',
         summary:
           invalidWorkoutField.detail === 'пустое значение'

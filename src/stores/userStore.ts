@@ -10,11 +10,12 @@ import { XPForLevel } from '@/gamification/xp'
 import type { CustomItem, User, Workout } from '@/types'
 import { defineStore } from 'pinia'
 import { type ToastMessageOptions } from 'primevue'
-import { ref, toValue } from 'vue'
+import { inject, ref, toValue } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
   // const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
   const isNewUser = ref<boolean>(false)
+  const showToast = inject<(options: ToastMessageOptions) => void>('showToast')
 
   function toggleIsNewUser() {
     isNewUser.value = !isNewUser.value
@@ -107,7 +108,7 @@ export const useUserStore = defineStore('user', () => {
     // updateUserInLS()
   }
 
-  function checkLevelUp(showToast: (options: ToastMessageOptions) => void) {
+  function checkLevelUp() {
     let newLevel = user.value.level
     let remainingXP = user.value.xp
 
@@ -117,20 +118,16 @@ export const useUserStore = defineStore('user', () => {
     }
 
     if (newLevel > user.value.level) {
-      levelUp(newLevel, remainingXP, showToast)
+      levelUp(newLevel, remainingXP)
     }
   }
 
-  function levelUp(
-    newLevel: number,
-    remainingXP: number,
-    showToast: (options: ToastMessageOptions) => void,
-  ) {
+  function levelUp(newLevel: number, remainingXP: number) {
     const startLevel = toValue(user.value.level)
     user.value.level = newLevel
     user.value.xp = remainingXP
 
-    showToast({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
+    showToast!({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
 
     if (startLevel < requiredLevelToFitBody && user.value.level >= requiredLevelToFitBody) {
       user.value.character.body = 'fit'
@@ -142,10 +139,10 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  function addXP(xpGained: number, showToast: (options: ToastMessageOptions) => void) {
+  function addXP(xpGained: number) {
     user.value.xp += xpGained
 
-    checkLevelUp(showToast)
+    checkLevelUp()
 
     // updateUserInLS()
   }

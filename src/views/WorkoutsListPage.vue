@@ -3,15 +3,14 @@ import EditWorkoutDialog from '@/components/EditWorkoutDialog.vue'
 import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { FilledExercisesWorkout } from '@/types'
-import { useConfirm, useToast, type ToastMessageOptions } from 'primevue'
-import { computed, ref, watch } from 'vue'
+import { useConfirm, type ToastMessageOptions } from 'primevue'
+import { computed, inject, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const confirm = useConfirm()
 
 const workoutsStore = useWorkoutsStore()
 const router = useRouter()
-const toast = useToast()
 
 const isFirstSave = ref(true)
 const isFirstRun = ref(true)
@@ -28,9 +27,7 @@ function hasRunWorkoutChanged(workout: FilledExercisesWorkout): boolean {
   return JSON.stringify(workout) !== lastRunWorkout.value
 }
 
-function showToast(options: ToastMessageOptions) {
-  toast.add(options)
-}
+const showToast = inject<(options: ToastMessageOptions) => void>('showToast')
 
 const {
   editingWorkout,
@@ -41,7 +38,7 @@ const {
   validateAndRunWorkout: originalValidateAndRunWorkout,
   nameInvalid,
   getExceededMaxGoals,
-} = useEditingWorkout(router, showToast)
+} = useEditingWorkout(router)
 
 watch(
   () => editWorkoutDialogVisible.value,
@@ -57,7 +54,7 @@ const saveEditingWorkout = () => {
     exceededMessages.length > 0 &&
     (isFirstSave.value || (!isFirstSave.value && hasSavedWorkoutChanged(editingWorkout.value)))
   ) {
-    showToast({
+    showToast!({
       severity: 'warn',
       summary: 'Превышены максимальные значения:',
       detail: exceededMessages.join('\n'),
@@ -73,7 +70,7 @@ const saveEditingWorkout = () => {
 
   originalSaveEditingWorkout()
   isFirstSave.value = true
-  showToast({
+  showToast!({
     severity: 'success',
     summary: 'Тренировка успешно сохранена',
     life: 3000,
@@ -88,7 +85,7 @@ const validateAndRunWorkout = (workout: FilledExercisesWorkout) => {
     exceededMessages.length > 0 &&
     (isFirstRun.value || (!isFirstRun.value && hasRunWorkoutChanged(workout)))
   ) {
-    showToast({
+    showToast!({
       severity: 'warn',
       summary: 'Превышены максимальные значения:',
       detail: exceededMessages.join('\n'),
@@ -153,7 +150,6 @@ const isNewWorkout = computed<boolean>(() => {
 </script>
 
 <template>
-  <Toast class="!right-0 !max-w-[100vw] sm:!right-[20px] sm:!max-w-none" />
   <header class="flex flex-col items-center">
     <FloatLabel variant="in" class="mt-4 mb-3 w-[80vw] sm:mt-2 sm:w-[400px]">
       <InputText v-model="filterName" id="filterName" class="w-full" />

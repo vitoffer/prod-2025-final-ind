@@ -8,16 +8,10 @@ import ExercisesListFilters from '@/components/ExercisesListFilters.vue'
 import { useExercisesListSuggestions } from '@/composables/exercises-list/suggestions'
 import { useExercisesListFilter } from '@/composables/exercises-list/filter'
 import EditExerciseDialog from '@/components/EditExerciseDialog.vue'
-import { useToast, type ToastMessageOptions } from 'primevue'
 
 const confirm = useConfirm()
 
 const exercisesStore = useExercisesStore()
-const toast = useToast()
-
-function showToast(options: ToastMessageOptions) {
-  toast.add(options)
-}
 
 const {
   editingExercise,
@@ -32,7 +26,7 @@ const {
   unitsListInvalid,
   photoUrlListInvalid,
   videoUrlInvalid,
-} = useEditingExercise(showToast)
+} = useEditingExercise()
 
 const { filteredExercisesList, filtersObject } = useExercisesListFilter()
 
@@ -72,7 +66,6 @@ const dialogHeader = computed<string>(() => {
 </script>
 
 <template>
-  <Toast class="!right-0 !max-w-[100vw] sm:!right-[20px] sm:!max-w-none" />
   <header class="header flex flex-col items-center justify-center p-3 lg:flex-row lg:items-center">
     <p class="mb-1 lg:mr-8">Фильтры:</p>
     <ExercisesListFilters
