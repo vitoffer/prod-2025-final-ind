@@ -92,6 +92,11 @@ export const useUserStore = defineStore('user', () => {
     user.value.character[item.type] = null
   }
 
+  function buyItem(item: CustomItem) {
+    user.value.points -= item.price
+    user.value.customizationItems.push(item)
+  }
+
   function pushWorkoutToHistory(workout: Workout) {
     if (user.value.history.lastCompletedWorkouts.length === 5) {
       user.value.history.lastCompletedWorkouts.shift()
@@ -162,5 +167,6 @@ export const useUserStore = defineStore('user', () => {
     addPoints,
     wearItem,
     unWearItem,
+    buyItem,
   }
 })

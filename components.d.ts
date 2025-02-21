@@ -30,6 +30,7 @@ declare module 'vue' {
     ScrollPanel: typeof import('primevue/scrollpanel')['default']
     Select: typeof import('primevue/select')['default']
     SelectButton: typeof import('primevue/selectbutton')['default']
+    ShopItem: typeof import('./src/components/ShopItem.vue')['default']
     ShopItemTypedList: typeof import('./src/components/ShopItemTypedList.vue')['default']
     Textarea: typeof import('primevue/textarea')['default']
     Toast: typeof import('primevue/toast')['default']
