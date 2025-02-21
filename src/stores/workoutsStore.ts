@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, toRaw } from 'vue'
 import { defineStore } from 'pinia'
 import type {
   Exercise,
@@ -10,11 +10,14 @@ import type {
 import baseWorkoutsList from '@/base-data/workouts'
 import { useExercisesStore } from './exercisesStore'
 import { nullExercise } from '@/constants'
+import { getRecommendedGoal } from '@/utils/recommendations'
+import { useUserStore } from './userStore'
 
 export const useWorkoutsStore = defineStore('workouts', () => {
   const list = ref<Workout[]>([])
 
   const exercisesStore = useExercisesStore()
+  const userStore = useUserStore()
 
   if (localStorage.getItem('workoutsList') === null) {
     list.value = baseWorkoutsList
@@ -86,6 +89,29 @@ export const useWorkoutsStore = defineStore('workouts', () => {
       if (fullExercise.unitsList.includes('вес')) {
         updatedExercise.goal.weightKg = workoutExercise.goal.weightKg || 0
       }
+
+      const recommendedGoal = getRecommendedGoal(userStore.user, updatedExercise)
+
+      console.log(toRaw(updatedExercise.goal))
+
+      if (
+        'time' in updatedExercise.goal &&
+        updatedExercise.goal.time!.minutes === 0 &&
+        updatedExercise.goal.time!.seconds === 0
+      ) {
+        updatedExercise.goal.time = recommendedGoal.time
+      }
+      if ('sets' in updatedExercise.goal && updatedExercise.goal.sets === 0) {
+        updatedExercise.goal.sets = recommendedGoal.sets
+      }
+      if ('repetitions' in updatedExercise.goal && updatedExercise.goal.repetitions === 0) {
+        updatedExercise.goal.repetitions = recommendedGoal.repetitions
+      }
+      if ('weightKg' in updatedExercise.goal && updatedExercise.goal.weightKg === 0) {
+        updatedExercise.goal.weightKg = recommendedGoal.weightKg
+      }
+
+      console.log(toRaw(updatedExercise.goal))
 
       if (!fullExercise.unitsList.includes('время')) {
         delete updatedExercise.goal.time

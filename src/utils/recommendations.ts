@@ -12,10 +12,8 @@ function calculateGoal(
   const getReps = type === 'max' ? getMaxReps : getRecommendedReps
   const getSets = type === 'max' ? getMaxSets : getRecommendedSets
 
-  if ('time' in exercise.goal) {
-    const seconds = getTime(user, exercise)
-    return { time: { minutes: Math.floor(seconds / 60), seconds: Math.ceil(seconds % 60) } }
-  }
+  const seconds = getTime(user, exercise)
+  const time = { minutes: Math.floor(seconds / 60), seconds: Math.ceil(seconds % 60) }
 
   const liftWeight = getLiftWeight(user, exercise)
   const reps = getReps(user, exercise, liftWeight, getLiftWeight(user, exercise))
@@ -24,7 +22,7 @@ function calculateGoal(
   return Object.fromEntries(
     (Object.keys(exercise.goal) as GoalType[]).map((key) => [
       key,
-      ({ weightKg: liftWeight, repetitions: reps, sets } as WorkoutExerciseGoal)[key],
+      ({ weightKg: liftWeight, repetitions: reps, sets, time } as WorkoutExerciseGoal)[key],
     ]),
   )
 }

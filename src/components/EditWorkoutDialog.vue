@@ -11,6 +11,8 @@ import { ref } from 'vue'
 import EditWorkoutAddedExercise from './EditWorkoutAddedExercise.vue'
 import { isNameValid } from '@/utils/validation'
 import { useExercisesListSuggestions } from '@/composables/exercises-list/suggestions'
+import { useUserStore } from '@/stores/userStore'
+import { getRecommendedGoal } from '@/utils/recommendations'
 
 defineProps<{
   dialogHeader: string
@@ -24,6 +26,7 @@ const editingWorkout = defineModel<FilledExercisesWorkout>('editingWorkout')
 const nameInvalid = defineModel<boolean>('nameInvalid')
 
 const exercisesStore = useExercisesStore()
+const userStore = useUserStore()
 
 const exerciseSearch = ref<Exercise | null>(null)
 const searchExercisesList = ref<Exercise[]>([])
@@ -52,6 +55,9 @@ function addExerciseToList(exercise: Exercise) {
     ...exercise,
     goal: newGoal,
   } as FilledExerciseWithGoal)
+
+  const lastExercise = editingWorkout.value!.exercises[editingWorkout.value!.exercises.length - 1]
+  lastExercise.goal = getRecommendedGoal(userStore.user, lastExercise)
 }
 
 function addNamedExerciseToList() {
