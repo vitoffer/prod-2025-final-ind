@@ -1,8 +1,8 @@
-import type { ExerciseWithGoal } from '@/types'
+import type { FilledExerciseWithGoal } from '@/types'
 import { computed, onUnmounted, ref, watch, type Ref } from 'vue'
 
 export const useRestTimer = (
-  currentExercise: Ref<ExerciseWithGoal | null>,
+  currentExercise: Ref<FilledExerciseWithGoal | null>,
   completeRest: () => void,
 ) => {
   const restTimerId = ref<number | null>(null)

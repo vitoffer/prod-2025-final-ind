@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { ExerciseUnit, ExerciseWithGoal, ExerciseWithGoalValidation, Workout } from '@/types'
+import type {
+  ExerciseUnit,
+  ExerciseWithGoalValidation,
+  FilledExerciseWithGoal,
+  Workout,
+} from '@/types'
 import { formattedReps, formattedSets, parseTime, stringifyTime } from '@/utils/formatters'
 import { getInvalidExercisesList } from '@/utils/validation'
 import { ref } from 'vue'
@@ -8,7 +13,7 @@ const props = defineProps<{ index: number; editingWorkout: Workout }>()
 
 defineEmits<{ (e: 'removeAddedExercise'): void }>()
 
-const exercise = defineModel<ExerciseWithGoal>('exercise')
+const exercise = defineModel<FilledExerciseWithGoal>('exercise')
 const exercisesListInvalid = defineModel<ExerciseWithGoalValidation[]>('exercisesListInvalid')
 
 const timeInput = ref('00:00')

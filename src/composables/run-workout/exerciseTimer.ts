@@ -1,7 +1,7 @@
-import type { ExerciseWithGoal } from '@/types'
+import type { FilledExerciseWithGoal } from '@/types'
 import { computed, onUnmounted, ref, type Ref } from 'vue'
 
-export const useExerciseTimer = (currentExercise: Ref<ExerciseWithGoal | null>) => {
+export const useExerciseTimer = (currentExercise: Ref<FilledExerciseWithGoal | null>) => {
   const exerciseTimerId = ref<number | null>(null)
   const elapsedExerciseTime = ref<number>(0)
   const totalExerciseTime = computed<number | null>(() => {

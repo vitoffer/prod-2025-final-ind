@@ -91,7 +91,7 @@ export const useEditingWorkout = (
     return true
   }
 
-  const saveEditingWorkout = async () => {
+  const saveEditingWorkout = () => {
     if (!isWorkoutValid()) return
 
     const formattedExercises = editingWorkout.value.exercises.map(

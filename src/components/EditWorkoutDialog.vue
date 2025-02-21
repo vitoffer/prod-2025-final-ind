@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { useExercisesStore } from '@/stores/exercisesStore'
-import type { Exercise, ExerciseWithGoal, Workout, WorkoutExerciseGoal } from '@/types'
+import type {
+  Exercise,
+  FilledExercisesWorkout,
+  FilledExerciseWithGoal,
+  WorkoutExerciseGoal,
+} from '@/types'
 import type { AutoCompleteCompleteEvent } from 'primevue'
 import { ref } from 'vue'
 import EditWorkoutAddedExercise from './EditWorkoutAddedExercise.vue'
@@ -15,7 +20,7 @@ defineProps<{
 }>()
 
 const editWorkoutDialogVisible = defineModel<boolean>('editWorkoutDialogVisible')
-const editingWorkout = defineModel<Workout>('editingWorkout')
+const editingWorkout = defineModel<FilledExercisesWorkout>('editingWorkout')
 const nameInvalid = defineModel<boolean>('nameInvalid')
 
 const exercisesStore = useExercisesStore()
@@ -46,7 +51,7 @@ function addExerciseToList(exercise: Exercise) {
   editingWorkout.value!.exercises.push({
     ...exercise,
     goal: newGoal,
-  } as ExerciseWithGoal)
+  } as FilledExerciseWithGoal)
 }
 
 function addNamedExerciseToList() {

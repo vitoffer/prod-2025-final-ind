@@ -1,12 +1,12 @@
 import { baseXP, XPGrowthRate } from '@/constants'
-import type { ExerciseWithGoal, Workout } from '@/types'
+import type { FilledExercisesWorkout, FilledExerciseWithGoal } from '@/types'
 
 export function XPForLevel(currentLevel: number) {
   return Math.ceil(baseXP * XPGrowthRate ** (currentLevel - 1))
 }
 
-export function XPForCompletedWorkout(completedWorkout: Workout) {
-  return completedWorkout.exercises.reduce((prev, exercise: ExerciseWithGoal) => {
+export function XPForCompletedWorkout(completedWorkout: FilledExercisesWorkout) {
+  return completedWorkout.exercises.reduce((prev, exercise: FilledExerciseWithGoal) => {
     let computedXP = 0
 
     if (exercise.goal.repetitions) {

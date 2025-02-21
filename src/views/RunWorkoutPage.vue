@@ -4,7 +4,8 @@ import { useExerciseTimer } from '@/composables/run-workout/exerciseTimer'
 import { useRestTimer } from '@/composables/run-workout/restTimer'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useUserStore } from '@/stores/userStore'
-import type { ExerciseWithGoal, Workout } from '@/types'
+import { useWorkoutsStore } from '@/stores/workoutsStore'
+import type { FilledExercisesWorkout, FilledExerciseWithGoal } from '@/types'
 import {
   formattedReps,
   formattedSets,
@@ -19,10 +20,13 @@ import { computed, ref } from 'vue'
 
 const runWorkoutStore = useRunWorkoutStore()
 const userStore = useUserStore()
+const workoutsStore = useWorkoutsStore()
 
 const currentExerciseIndex = ref<number>(0)
-const currentExercise = ref<ExerciseWithGoal | null>(
-  runWorkoutStore.selectedRunWorkout!.exercises[currentExerciseIndex.value],
+const currentExercise = ref<FilledExerciseWithGoal | null>(
+  workoutsStore.getClearedWorkoutExercises(runWorkoutStore.selectedRunWorkout!)[
+    currentExerciseIndex.value
+  ],
 )
 
 const restTime = ref<boolean>(false)
@@ -47,12 +51,16 @@ const completeExercise = (type?: string) => {
     elapsedWorkoutTime.value = new Date().getTime() - startWorkoutTime
     workoutCompleted.value = true
 
-    const completedWorkout: Workout = {
-      ...runWorkoutStore.selectedRunWorkout!,
-      exercises: getCompletedExercises(
-        runWorkoutStore.selectedRunWorkout!,
-        skippedExercisesIndexes.value,
-      ),
+    const foundWorkout = workoutsStore.findWorkout(runWorkoutStore.selectedRunWorkout!.id)
+    const clearedWorkoutExercises = workoutsStore.getClearedWorkoutExercises(foundWorkout)
+    const filledExercisesWorkout: FilledExercisesWorkout = {
+      ...foundWorkout,
+      exercises: clearedWorkoutExercises,
+    }
+
+    const completedWorkout: FilledExercisesWorkout = {
+      ...filledExercisesWorkout,
+      exercises: getCompletedExercises(filledExercisesWorkout, skippedExercisesIndexes.value),
     }
 
     userStore.pushWorkoutToHistory(completedWorkout)
@@ -83,7 +91,9 @@ function nextExercise() {
   elapsedExerciseTime.value = 0
   elapsedRestTime.value = 0
   currentExerciseIndex.value++
-  currentExercise.value = runWorkoutStore.selectedRunWorkout!.exercises[currentExerciseIndex.value]
+  currentExercise.value = workoutsStore.getClearedWorkoutExercises(
+    runWorkoutStore.selectedRunWorkout!,
+  )[currentExerciseIndex.value]
 }
 
 const startWorkoutTime = new Date().getTime()
@@ -129,21 +139,21 @@ const formattedUnitsToComplete = computed<string>(() => {
   let formattedString = ''
   let numUnits = 0
 
-  if (currentExercise.value.unitsList.includes('подходы')) {
+  if ('sets' in currentExercise.value.goal) {
     formattedString += `${currentExercise.value.goal.sets} ${formattedSets(currentExercise.value.goal.sets)}`
     numUnits++
   }
-  if (currentExercise.value.unitsList.includes('повторения')) {
+  if ('repetitions' in currentExercise.value.goal) {
     formattedString += `${numUnits ? ' по ' : ''}`
     formattedString += `${currentExercise.value.goal.repetitions} ${formattedReps(currentExercise.value.goal.repetitions)}`
     numUnits++
   }
-  if (currentExercise.value.unitsList.includes('вес')) {
+  if ('weightKg' in currentExercise.value.goal) {
     formattedString += `${numUnits ? ' по ' : ''}`
     formattedString += `${currentExercise.value.goal.weightKg} кг`
     numUnits++
   }
-  if (currentExercise.value.unitsList.includes('время')) {
+  if ('time' in currentExercise.value.goal) {
     formattedString += `${numUnits ? ' по ' : ''}`
     formattedString += stringifyTime(currentExercise.value.goal.time)
   }
@@ -154,8 +164,15 @@ const formattedUnitsToComplete = computed<string>(() => {
 const formattedWorkoutInfo = computed<string>(() => {
   if (!workoutCompleted.value) return ''
 
+  const foundWorkout = workoutsStore.findWorkout(runWorkoutStore.selectedRunWorkout!.id)
+  const clearedWorkoutExercises = workoutsStore.getClearedWorkoutExercises(foundWorkout)
+  const filledExercisesWorkout: FilledExercisesWorkout = {
+    ...foundWorkout,
+    exercises: clearedWorkoutExercises,
+  }
+
   const { completedReps, completedTimeExercises, completedWeightKgExercises } =
-    getCompletedExercisesUnits(runWorkoutStore.selectedRunWorkout!, skippedExercisesIndexes.value)
+    getCompletedExercisesUnits(filledExercisesWorkout, skippedExercisesIndexes.value)
 
   let maxWeightKg = 0
   if (completedWeightKgExercises.length) {
