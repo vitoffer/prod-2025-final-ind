@@ -131,7 +131,11 @@ export interface WorkoutRequirement {
 }
 
 export interface CustomItem {
+  id: number
   name: string
+  type: CustomItemType
   imageUrl: string
   price: number
 }
+
+export type CustomItemType = 'hat' | 'necklace' | 'bracelet' | 'pants' | 'boots'

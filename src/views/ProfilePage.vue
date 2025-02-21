@@ -21,8 +21,8 @@ const bootsImage = ref<string | null>(null)
 
 loadImages()
 
-function getImageUrl(folder: string, type: string, title: string): string {
-  return new URL(`../assets/${folder}/${type}/${title}.svg`, import.meta.url).href
+function getImageUrl(group: string, type: string, title: string): string {
+  return `/${group}/${type}/${title}.svg`
 }
 
 function loadImages() {
@@ -82,6 +82,9 @@ function saveUserData() {
       <p>Очки: {{ userStore.user.points }};</p>
     </div>
     <p>Доступные предметы кастомизации: {{ userStore.user.customizationItems }}</p>
+    <RouterLink :to="{ name: 'ShopPage' }" class="p-button mx-auto my-2 !block w-fit"
+      >В магазин</RouterLink
+    >
     <p>Ачивки: {{ userStore.user.achievements }}</p>
     <p class="mt-4 mb-2 text-center">Ваш персонаж:</p>
     <div class="relative mr-auto ml-auto w-fit rounded-3xl bg-neutral-300 px-16 py-4">

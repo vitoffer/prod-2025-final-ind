@@ -4,6 +4,7 @@ import ProfilePage from '@/views/ProfilePage.vue'
 import WorkoutsListPage from '@/views/WorkoutsListPage.vue'
 import RunWorkoutPage from '@/views/RunWorkoutPage.vue'
 import { useUserStore } from '@/stores/userStore'
+import ShopPage from '@/views/ShopPage.vue'
 
 const routes = [
   {
@@ -29,6 +30,11 @@ const routes = [
     path: '/run-workout/:id',
     component: RunWorkoutPage,
     name: 'RunWorkoutPage',
+  },
+  {
+    path: '/shop',
+    component: ShopPage,
+    name: 'ShopPage',
   },
 ]
 
