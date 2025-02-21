@@ -29,3 +29,17 @@ export function XPForCompletedWorkout(completedWorkout: FilledExercisesWorkout) 
     return prev + computedXP
   }, 0)
 }
+
+export function getNewLevel(currentLevel: number, currentXp: number) {
+  let level = currentLevel
+  let remainingXP = currentXp
+
+  while (remainingXP >= XPForLevel(level + 1)) {
+    remainingXP -= XPForLevel(level + 1)
+    level++
+  }
+
+  return { newLevel: level, newXP: remainingXP }
+}
+
+export function checkLevelRewards(oldLevel: number, newLevel: number) {}

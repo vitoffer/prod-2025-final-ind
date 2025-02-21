@@ -6,7 +6,7 @@ import {
   requiredLevelToFitBody,
   requiredLevelToNormalBody,
 } from '@/gamification/constants'
-import { XPForLevel } from '@/gamification/xp'
+import { checkLevelRewards, getNewLevel, XPForLevel } from '@/gamification/xp'
 import type { CustomItem, User, Workout } from '@/types'
 import { defineStore } from 'pinia'
 import { type ToastMessageOptions } from 'primevue'
@@ -108,41 +108,17 @@ export const useUserStore = defineStore('user', () => {
     // updateUserInLS()
   }
 
-  function checkLevelUp() {
-    let newLevel = user.value.level
-    let remainingXP = user.value.xp
-
-    while (remainingXP >= XPForLevel(newLevel + 1)) {
-      remainingXP -= XPForLevel(newLevel + 1)
-      newLevel++
-    }
-
-    if (newLevel > user.value.level) {
-      levelUp(newLevel, remainingXP)
-    }
-  }
-
-  function levelUp(newLevel: number, remainingXP: number) {
-    const startLevel = toValue(user.value.level)
-    user.value.level = newLevel
-    user.value.xp = remainingXP
-
-    showToast!({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
-
-    if (startLevel < requiredLevelToFitBody && user.value.level >= requiredLevelToFitBody) {
-      user.value.character.body = 'fit'
-    } else if (
-      startLevel < requiredLevelToNormalBody &&
-      user.value.level >= requiredLevelToNormalBody
-    ) {
-      user.value.character.body = 'normal'
-    }
-  }
-
   function addXP(xpGained: number) {
     user.value.xp += xpGained
 
-    checkLevelUp()
+    const { newLevel, newXP } = getNewLevel(user.value.level, user.value.xp)
+
+    if (newLevel > user.value.level) {
+      const newRewards = checkLevelRewards(user.value.level, newLevel)
+      user.value.level = newLevel
+      user.value.xp = newXP
+      showToast!({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
+    }
 
     // updateUserInLS()
   }
@@ -159,7 +135,6 @@ export const useUserStore = defineStore('user', () => {
     user,
     updateUser,
     pushWorkoutToHistory,
-    checkLevelUp,
     addXP,
     addPoints,
     wearItem,
