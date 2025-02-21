@@ -1,4 +1,4 @@
-import { ref, toRaw } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type {
   Exercise,
