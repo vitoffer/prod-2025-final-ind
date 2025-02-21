@@ -22,7 +22,7 @@ if (exercise.value?.goal.time) {
   timeInput.value = stringifyTime(exercise.value!.goal.time!)
 }
 
-const setsOptions = [...Array(5).keys()].map((value) => value + 2)
+const setsOptions = [...Array(4).keys()].map((value) => value + 3)
 
 const timeInvalid = ref<boolean>(false)
 
