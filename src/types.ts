@@ -22,11 +22,18 @@ export type ExerciseUnit = 'время' | 'подходы' | 'повторени
 export interface Workout {
   id: number
   name: string
-  exercises: ExerciseWithGoal[]
+  exercises: WorkoutExercise[]
 }
 
-export interface ExerciseWithGoal {
-  id: number
+export type FilledExercisesWorkout = Pick<Workout, 'id' | 'name'> & {
+  exercises: FilledExerciseWithGoal[]
+}
+
+export type WorkoutExercise = Pick<Exercise, 'id'> & {
+  goal: WorkoutExerciseGoal
+}
+
+export type FilledExerciseWithGoal = Exercise & {
   goal: WorkoutExerciseGoal
 }
 
@@ -85,4 +92,4 @@ export interface Character {
   boots: string | null
 }
 
-type BodyType = 'skinny' | 'normal' | 'fit'
+export type BodyType = 'skinny' | 'normal' | 'fit'

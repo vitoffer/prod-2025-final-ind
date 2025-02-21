@@ -11,25 +11,14 @@ import {
 } from '@/utils/validation'
 import type { ToastMessageOptions } from 'primevue'
 import { ref } from 'vue'
+import { nullExercise } from '@/constants'
+import { useWorkoutsStore } from '@/stores/workoutsStore'
 
 export function useEditingExercise(showToast: (options: ToastMessageOptions) => void) {
   const exercisesStore = useExercisesStore()
+  const workoutsStore = useWorkoutsStore()
   const { nameInvalid, difficultyInvalid, unitsListInvalid, photoUrlListInvalid, videoUrlInvalid } =
     useExerciseValidation()
-
-  const nullExercise: Omit<Exercise, 'id'> = {
-    name: '',
-    video: {
-      type: 'video',
-      url: '',
-    },
-    photoUrlList: [''],
-    description: '',
-    difficulty: 'простое',
-    sportsItems: [],
-    tags: [],
-    unitsList: [],
-  }
 
   const getNextId = () => exercisesStore.list[exercisesStore.list.length - 1].id + 1
   const findExercise = (id: number) =>
@@ -157,6 +146,8 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
     } else {
       exercisesStore.createExercise(formattedExercise)
     }
+
+    workoutsStore.clearWorkoutsByExercise(formattedExercise)
 
     editExerciseDialogVisible.value = false
   }

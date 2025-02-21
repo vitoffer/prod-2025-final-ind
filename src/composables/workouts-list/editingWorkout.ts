@@ -1,41 +1,37 @@
 import { useWorkoutsStore } from '@/stores/workoutsStore'
-import type { ExerciseWithGoal, Workout } from '@/types'
+import type { FilledExercisesWorkout, FilledExerciseWithGoal, Workout } from '@/types'
 import type { Router } from 'vue-router'
 import { getInvalidExercisesList, isNameValid } from '@/utils/validation'
 import { useWorkoutValidation } from './workoutValidation'
 import type { ToastMessageOptions } from 'primevue'
 import { ref } from 'vue'
-import { useExercisesStore } from '@/stores/exercisesStore'
 
 export const useEditingWorkout = (
   router: Router,
   showToast: (options: ToastMessageOptions) => void,
 ) => {
   const workoutsStore = useWorkoutsStore()
-  const exercisesStore = useExercisesStore()
 
   const { nameInvalid } = useWorkoutValidation()
 
-  const nullWorkout: Omit<Workout, 'id'> = {
+  const nullWorkout: Omit<FilledExercisesWorkout, 'id'> = {
     name: '',
     exercises: [],
   }
 
-  const getNextId = () => workoutsStore.list[workoutsStore.list.length - 1].id + 1
+  const getNextId: () => number = () => workoutsStore.list[workoutsStore.list.length - 1].id + 1
   const findWorkout = (id: number): Workout =>
-    JSON.parse(JSON.stringify(workoutsStore.list.find((workout) => workout.id === id)))
+    JSON.parse(JSON.stringify(workoutsStore.list.find((workout: Workout) => workout.id === id)))
 
-  const editWorkoutDialogVisible = ref<boolean>(false)
-
-  const editingWorkout = ref<Workout>({
+  const editingWorkout = ref<FilledExercisesWorkout>({
     ...nullWorkout,
     id: getNextId(),
   })
 
-  const editDialogVisible = ref<boolean>(false)
+  const editWorkoutDialogVisible = ref<boolean>(false)
 
   const createWorkout = () => {
-    editDialogVisible.value = true
+    editWorkoutDialogVisible.value = true
     editingWorkout.value = {
       ...nullWorkout,
       id: getNextId(),
@@ -45,15 +41,16 @@ export const useEditingWorkout = (
   }
 
   const changeWorkout = (id: number) => {
-    editDialogVisible.value = true
     const foundWorkout = findWorkout(id)
     if (foundWorkout) {
-      const exercises = foundWorkout.exercises.map((workoutExercise: ExerciseWithGoal) => ({
-        ...workoutExercise,
-        ...exercisesStore.list.find((fullExercise) => fullExercise.id === workoutExercise.id),
-      }))
-      foundWorkout.exercises = exercises
-      editingWorkout.value = foundWorkout
+      const clearedWorkoutExercises = workoutsStore.getClearedWorkoutExercises(foundWorkout)
+
+      const filledExercisesWorkout: FilledExercisesWorkout = {
+        ...foundWorkout,
+        exercises: clearedWorkoutExercises,
+      }
+
+      editingWorkout.value = filledExercisesWorkout
     } else {
       editingWorkout.value = {
         ...nullWorkout,
@@ -62,6 +59,7 @@ export const useEditingWorkout = (
     }
 
     setAllFieldsValid()
+    editWorkoutDialogVisible.value = true
   }
 
   function setAllFieldsValid() {
@@ -96,14 +94,26 @@ export const useEditingWorkout = (
   const saveEditingWorkout = async () => {
     if (!isWorkoutValid()) return
 
+    const formattedExercises = editingWorkout.value.exercises.map(
+      (exercise: FilledExerciseWithGoal) => {
+        const { id, goal } = exercise
+        return { id, goal }
+      },
+    )
+
+    const formattedWorkout = {
+      ...editingWorkout.value,
+      exercises: formattedExercises,
+    }
+
     const existingWorkout = workoutsStore.list.find(
-      (workout) => workout.id === editingWorkout.value.id,
+      (workout: Workout) => workout.id === formattedWorkout.id,
     )
 
     if (existingWorkout) {
-      workoutsStore.updateWorkout(existingWorkout.id, editingWorkout.value)
+      workoutsStore.updateWorkout(existingWorkout.id, formattedWorkout)
     } else {
-      workoutsStore.createWorkout(editingWorkout.value)
+      workoutsStore.createWorkout(formattedWorkout)
     }
 
     editWorkoutDialogVisible.value = false
