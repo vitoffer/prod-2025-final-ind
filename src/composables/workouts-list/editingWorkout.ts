@@ -4,7 +4,7 @@ import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useUserStore } from '@/stores/userStore'
 import { useWorkoutValidation } from './workoutValidation'
 import { getInvalidExercisesList, isNameValid } from '@/utils/validation'
-import { getMaxGoal } from '@/utils/recommendations'
+import { getMaxGoal, getRecommendedGoal } from '@/utils/recommendations'
 import type {
   FilledExercisesWorkout,
   FilledExercisesWorkoutValidation,
@@ -59,24 +59,36 @@ export const useEditingWorkout = (
     const user = userStore.user
     return workout.exercises.flatMap((exercise) => {
       const maxGoal = getMaxGoal(user, exercise)
+      const recommendedGoal = getRecommendedGoal(user, exercise)
       const exceededMessages: string[] = []
 
-      const isExceeded = (value: number, max: number, type: string) =>
-        value > max
-          ? exceededMessages.push(`${type} для "${exercise.name}" превышает максимальное (${max})`)
-          : null
+      const isExceeded = (value: number, max: number, recommended: number, type: string) => {
+        if (value > max && value > recommended) {
+          exceededMessages.push(
+            `${type} для "${exercise.name}" превышает максимальное (${max}) и рекомендованное (${recommended})`,
+          )
+          return true
+        }
+        return false
+      }
 
-      if (exercise.goal.time && maxGoal.time) {
+      if (exercise.goal.time && maxGoal.time && recommendedGoal.time) {
         const time = exercise.goal.time.minutes * 60 + exercise.goal.time.seconds
         const maxTime = maxGoal.time.minutes * 60 + maxGoal.time.seconds
-        isExceeded(time, maxTime, 'Время')
+        const recommendedTime = recommendedGoal.time.minutes * 60 + recommendedGoal.time.seconds
+        isExceeded(time, maxTime, recommendedTime, 'Время')
       }
-      if (exercise.goal.weightKg && maxGoal.weightKg)
-        isExceeded(exercise.goal.weightKg, maxGoal.weightKg, 'Вес')
-      if (exercise.goal.repetitions && maxGoal.repetitions)
-        isExceeded(exercise.goal.repetitions, maxGoal.repetitions, 'Повторения')
-      if (exercise.goal.sets && maxGoal.sets)
-        isExceeded(exercise.goal.sets, maxGoal.sets, 'Подходы')
+      if (exercise.goal.weightKg && maxGoal.weightKg && recommendedGoal.weightKg)
+        isExceeded(exercise.goal.weightKg, maxGoal.weightKg, recommendedGoal.weightKg, 'Вес')
+      if (exercise.goal.repetitions && maxGoal.repetitions && recommendedGoal.repetitions)
+        isExceeded(
+          exercise.goal.repetitions,
+          maxGoal.repetitions,
+          recommendedGoal.repetitions,
+          'Повторения',
+        )
+      if (exercise.goal.sets && maxGoal.sets && recommendedGoal.sets)
+        isExceeded(exercise.goal.sets, maxGoal.sets, recommendedGoal.sets, 'Подходы')
 
       if (exceededMessages.length > 0) {
         exceededMessages.push(`Все равно продолжить? Нажмите еще раз`)

@@ -54,8 +54,8 @@ const saveEditingWorkout = () => {
   const exceededMessages = getExceededMaxGoals(editingWorkout.value)
 
   if (
-    (isFirstSave.value && exceededMessages.length > 0) ||
-    (!isFirstSave.value && hasSavedWorkoutChanged(editingWorkout.value))
+    exceededMessages.length > 0 &&
+    (isFirstSave.value || (!isFirstSave.value && hasSavedWorkoutChanged(editingWorkout.value)))
   ) {
     showToast({
       severity: 'warn',
@@ -85,8 +85,8 @@ const validateAndRunWorkout = (workout: FilledExercisesWorkout) => {
   const exceededMessages = getExceededMaxGoals(workout)
 
   if (
-    (isFirstRun.value && exceededMessages.length > 0) ||
-    (!isFirstRun.value && hasRunWorkoutChanged(workout))
+    exceededMessages.length > 0 &&
+    (isFirstRun.value || (!isFirstRun.value && hasRunWorkoutChanged(workout)))
   ) {
     showToast({
       severity: 'warn',
