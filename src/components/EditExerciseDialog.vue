@@ -4,7 +4,6 @@ import { difficultyOptions, unitsOptions } from '@/constants'
 import type { Exercise } from '@/types'
 import {
   getInvalidPhotoUrlsList,
-  isDifficultyValid,
   isNameValid,
   isUnitsListValid,
   isVideoUrlValid,
@@ -20,7 +19,6 @@ defineEmits<{ removeExercisePhotoUrl: []; addExercisePhotoUrl: [] }>()
 const editExerciseDialogVisible = defineModel<boolean>('editExerciseDialogVisible')
 const editingExercise = defineModel<Exercise>('editingExercise')
 const nameInvalid = defineModel<boolean>('nameInvalid')
-const difficultyInvalid = defineModel<boolean>('difficultyInvalid')
 const unitsListInvalid = defineModel<boolean>('unitsListInvalid')
 const photoUrlListInvalid = defineModel<boolean[]>('photoUrlListInvalid')
 const videoUrlInvalid = defineModel<boolean>('videoUrlInvalid')
@@ -57,12 +55,7 @@ function handleBlur(event: Event, type: 'sportsItems' | 'tags') {
       </FloatLabel>
       <div class="mr-auto ml-auto md:mr-0 md:ml-0">
         <p class="mb-1 text-center md:text-start">Сложность</p>
-        <SelectButton
-          v-model="editingExercise!.difficulty"
-          :options="difficultyOptions"
-          :invalid="difficultyInvalid"
-          @change="() => (difficultyInvalid = !isDifficultyValid(editingExercise!))"
-        />
+        <SelectButton v-model="editingExercise!.difficulty" :options="difficultyOptions" />
       </div>
       <FloatLabel variant="in">
         <Textarea v-model="editingExercise!.description" id="edExDesc" rows="5" class="w-full" />

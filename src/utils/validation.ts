@@ -10,9 +10,10 @@ export function isDifficultyValid(editingExercise: Exercise) {
 }
 
 export function isUnitsListValid(editingExercise: Exercise) {
-  if (editingExercise.unitsList.length === 0) {
+  if (editingExercise.unitsList.length === 0) return false
+
+  if (editingExercise.unitsList.includes('время') && editingExercise.unitsList.length > 1)
     return false
-  }
   return true
 }
 
