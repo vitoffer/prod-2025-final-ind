@@ -33,5 +33,6 @@ declare module 'vue' {
     ShopItemTypedList: typeof import('./src/components/ShopItemTypedList.vue')['default']
     Textarea: typeof import('primevue/textarea')['default']
     Toast: typeof import('primevue/toast')['default']
+    UserCustomItemBlock: typeof import('./src/components/UserCustomItemBlock.vue')['default']
   }
 }

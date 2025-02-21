@@ -88,7 +88,7 @@ export interface User {
   xp: number
   points: number
   character: Character
-  customizationItems: string[]
+  customizationItems: CustomItem[]
   achievements: string[]
   history: UserHistory
 }

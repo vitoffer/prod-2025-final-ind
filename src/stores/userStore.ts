@@ -7,7 +7,7 @@ import {
   requiredLevelToNormalBody,
 } from '@/gamification/constants'
 import { XPForLevel } from '@/gamification/xp'
-import type { User, Workout } from '@/types'
+import type { CustomItem, User, Workout } from '@/types'
 import { defineStore } from 'pinia'
 import { type ToastMessageOptions } from 'primevue'
 import { ref, toValue } from 'vue'
@@ -35,7 +35,9 @@ export const useUserStore = defineStore('user', () => {
       pants: null,
       boots: null,
     },
-    customizationItems: [],
+    customizationItems: [
+      { id: 1, type: 'hat', imageUrl: '/accessories/hat/1.svg', name: 'Синяя шапка', price: 10 },
+    ],
     achievements: [],
     history: {
       lastCompletedWorkouts: [],
@@ -80,6 +82,14 @@ export const useUserStore = defineStore('user', () => {
 
   function updateUserInLS() {
     localStorage.setItem('user', JSON.stringify(user.value))
+  }
+
+  function wearItem(item: CustomItem) {
+    user.value.character[item.type] = item.imageUrl
+  }
+
+  function unWearItem(item: CustomItem) {
+    user.value.character[item.type] = null
   }
 
   function pushWorkoutToHistory(workout: Workout) {
@@ -150,5 +160,7 @@ export const useUserStore = defineStore('user', () => {
     checkLevelUp,
     addXP,
     addPoints,
+    wearItem,
+    unWearItem,
   }
 })

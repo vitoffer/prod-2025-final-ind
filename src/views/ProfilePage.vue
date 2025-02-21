@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import UserCustomItemBlock from '@/components/UserCustomItemBlock.vue'
 import { useUserStore } from '@/stores/userStore'
 import { computed, ref } from 'vue'
 
@@ -69,51 +70,58 @@ function saveUserData() {
       class="mx-auto my-2 !block"
       >Изменить данные</Button
     >
-
     <div class="flex justify-between">
       <p>Уровень: {{ userStore.user.level }};</p>
       <p>XP: {{ userStore.user.xp }};</p>
       <p>Очки: {{ userStore.user.points }};</p>
     </div>
-    <p>Доступные предметы кастомизации: {{ userStore.user.customizationItems }}</p>
-    <RouterLink :to="{ name: 'ShopPage' }" class="p-button mx-auto my-2 !block w-fit"
-      >В магазин</RouterLink
-    >
-    <p>Ачивки: {{ userStore.user.achievements }}</p>
     <p class="mt-4 mb-2 text-center">Ваш персонаж:</p>
     <div class="relative mr-auto ml-auto w-fit rounded-3xl bg-neutral-300 px-16 py-4">
       <img
         v-if="userStore.user.character.hat"
-        :src="`/accessories/hat/${userStore.user.character.hat}.svg` || ''"
+        :src="userStore.user.character.hat || ''"
         alt="Шапка"
         class="absolute top-[16px] left-[50%] -translate-x-[50%]"
       />
       <img :src="`/character/body/${userStore.user.character.body}.svg`" alt="Тело" class="mt-4" />
       <img
         v-if="userStore.user.character.necklace"
-        :src="`/accessories/necklace/${userStore.user.character.necklace}.svg` || ''"
+        :src="userStore.user.character.necklace || ''"
         alt="Цепочка"
         class="absolute top-[108px] left-[50%] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.bracelet"
-        :src="`/accessories/bracelet/${userStore.user.character.bracelet}.svg` || ''"
+        :src="userStore.user.character.bracelet || ''"
         alt="Браслет"
         class="absolute top-[186px] left-[78px] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.pants"
-        :src="`/accessories/pants/${userStore.user.character.pants}.svg` || ''"
+        :src="userStore.user.character.pants || ''"
         alt="Штаны"
         class="absolute top-[208px] left-[50%] -translate-x-[50%]"
       />
       <img
         v-if="userStore.user.character.boots"
-        :src="`/accessories/boots/${userStore.user.character.boots}.svg` || ''"
+        :src="userStore.user.character.boots || ''"
         alt="Ботинки"
         class="absolute top-[277px] left-[50%] -translate-x-[50%]"
       />
     </div>
+    <p>Доступные предметы кастомизации:</p>
+    <UserCustomItemBlock
+      v-for="(item, index) in userStore.user.customizationItems"
+      :key="index"
+      :item="item"
+    />
+    <RouterLink :to="{ name: 'ShopPage' }" class="p-button mx-auto my-2 !block w-fit"
+      >В магазин</RouterLink
+    >
+    <p>Ачивки:</p>
+    <p v-for="(achievement, index) in userStore.user.achievements" :key="index">
+      {{ achievement }}
+    </p>
   </div>
 </template>
 
