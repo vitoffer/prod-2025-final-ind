@@ -1,6 +1,12 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { Exercise, FilledExerciseWithGoal, Workout, WorkoutExercise } from '@/types'
+import type {
+  Exercise,
+  FilledExercisesWorkout,
+  FilledExerciseWithGoal,
+  Workout,
+  WorkoutExercise,
+} from '@/types'
 import baseWorkoutsList from '@/base-data/workouts'
 import { useExercisesStore } from './exercisesStore'
 import { nullExercise } from '@/constants'
@@ -100,6 +106,17 @@ export const useWorkoutsStore = defineStore('workouts', () => {
     return exercises
   }
 
+  function getFilledExercisesWorkout(workoutId: number) {
+    const foundWorkout = findWorkout(workoutId)
+    const clearedWorkoutExercises = getClearedWorkoutExercises(foundWorkout)
+    const filledExercisesWorkout: FilledExercisesWorkout = {
+      ...foundWorkout,
+      exercises: clearedWorkoutExercises,
+    }
+
+    return filledExercisesWorkout
+  }
+
   return {
     list,
     removeWorkout,
@@ -108,5 +125,6 @@ export const useWorkoutsStore = defineStore('workouts', () => {
     findWorkout,
     clearWorkoutsByExercise,
     getClearedWorkoutExercises,
+    getFilledExercisesWorkout,
   }
 })

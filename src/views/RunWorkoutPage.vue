@@ -28,6 +28,9 @@ const currentExercise = ref<FilledExerciseWithGoal | null>(
     currentExerciseIndex.value
   ],
 )
+const filledExercisesWorkout = ref<FilledExercisesWorkout>(
+  workoutsStore.getFilledExercisesWorkout(runWorkoutStore.selectedRunWorkout!.id),
+)
 
 const restTime = ref<boolean>(false)
 
@@ -51,16 +54,9 @@ const completeExercise = (type?: string) => {
     elapsedWorkoutTime.value = new Date().getTime() - startWorkoutTime
     workoutCompleted.value = true
 
-    const foundWorkout = workoutsStore.findWorkout(runWorkoutStore.selectedRunWorkout!.id)
-    const clearedWorkoutExercises = workoutsStore.getClearedWorkoutExercises(foundWorkout)
-    const filledExercisesWorkout: FilledExercisesWorkout = {
-      ...foundWorkout,
-      exercises: clearedWorkoutExercises,
-    }
-
     const completedWorkout: FilledExercisesWorkout = {
-      ...filledExercisesWorkout,
-      exercises: getCompletedExercises(filledExercisesWorkout, skippedExercisesIndexes.value),
+      ...filledExercisesWorkout.value,
+      exercises: getCompletedExercises(filledExercisesWorkout.value, skippedExercisesIndexes.value),
     }
 
     userStore.pushWorkoutToHistory(completedWorkout)
@@ -164,15 +160,8 @@ const formattedUnitsToComplete = computed<string>(() => {
 const formattedWorkoutInfo = computed<string>(() => {
   if (!workoutCompleted.value) return ''
 
-  const foundWorkout = workoutsStore.findWorkout(runWorkoutStore.selectedRunWorkout!.id)
-  const clearedWorkoutExercises = workoutsStore.getClearedWorkoutExercises(foundWorkout)
-  const filledExercisesWorkout: FilledExercisesWorkout = {
-    ...foundWorkout,
-    exercises: clearedWorkoutExercises,
-  }
-
   const { completedReps, completedTimeExercises, completedWeightKgExercises } =
-    getCompletedExercisesUnits(filledExercisesWorkout, skippedExercisesIndexes.value)
+    getCompletedExercisesUnits(filledExercisesWorkout.value, skippedExercisesIndexes.value)
 
   let maxWeightKg = 0
   if (completedWeightKgExercises.length) {

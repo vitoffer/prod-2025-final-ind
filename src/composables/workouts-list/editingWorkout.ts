@@ -43,12 +43,7 @@ export const useEditingWorkout = (
   const changeWorkout = (id: number) => {
     const foundWorkout = findWorkout(id)
     if (foundWorkout) {
-      const clearedWorkoutExercises = workoutsStore.getClearedWorkoutExercises(foundWorkout)
-
-      const filledExercisesWorkout: FilledExercisesWorkout = {
-        ...foundWorkout,
-        exercises: clearedWorkoutExercises,
-      }
+      const filledExercisesWorkout = workoutsStore.getFilledExercisesWorkout(id)
 
       editingWorkout.value = filledExercisesWorkout
     } else {
