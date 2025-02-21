@@ -6,7 +6,9 @@ export const useExerciseTimer = (currentExercise: Ref<FilledExerciseWithGoal | n
   const elapsedExerciseTime = ref<number>(0)
   const totalExerciseTime = computed<number | null>(() => {
     if (!currentExercise.value!.unitsList.includes('время')) return null
-    return currentExercise.value!.goal.time!.seconds
+    return (
+      currentExercise.value!.goal.time!.seconds + currentExercise.value!.goal.time!.minutes * 60
+    )
   })
   const remainingExerciseTime = computed<number>(() => {
     if (totalExerciseTime.value === null) return 0
