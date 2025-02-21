@@ -136,6 +136,7 @@ function handleTimeInput() {
           size="small"
           class="goal-number-input time not-last:mb-1"
         />
+        (мин:сек)
       </template>
     </div>
   </div>
