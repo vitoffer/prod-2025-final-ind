@@ -1,28 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import AppNav from './components/AppNav.vue'
+</script>
 
 <template>
   <div class="relative flex flex-col">
-    <nav
-      class="fixed bottom-0 z-10 order-1 w-full justify-self-end border-t border-t-gray-600 bg-[#121212] p-2 sm:static sm:border-none"
-    >
-      <ul class="flex justify-center gap-4">
-        <li>
-          <Button severity="info" class="!pt-1 !pb-1">
-            <RouterLink :to="{ name: 'ExercisesListPage' }" class="">Упражнения</RouterLink>
-          </Button>
-        </li>
-        <li>
-          <Button severity="info" class="!pt-1 !pb-1">
-            <RouterLink :to="{ name: 'WorkoutsListPage' }" class="">Тренировки</RouterLink>
-          </Button>
-        </li>
-        <li>
-          <Button severity="info" class="!pt-1 !pb-1">
-            <RouterLink :to="{ name: 'ProfilePage' }" class="">Профиль</RouterLink>
-          </Button>
-        </li>
-      </ul>
-    </nav>
+    <AppNav />
+
     <div class="mb-[50px] sm:order-1 sm:mb-0">
       <RouterView></RouterView>
     </div>
