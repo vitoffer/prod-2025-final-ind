@@ -34,7 +34,8 @@ export const useEditingWorkout = (
   const createWorkout = () => {
     editWorkoutDialogVisible.value = true
     editingWorkout.value = {
-      ...nullWorkout,
+      name: nullWorkout.name,
+      exercises: nullWorkout.exercises,
       id: getNextId(),
     }
 
@@ -119,8 +120,6 @@ export const useEditingWorkout = (
     if (!isWorkoutValid()) return
 
     editWorkoutDialogVisible.value = false
-
-    // const runWorkoutStore = useRunWorkoutStore()
 
     runWorkout(editingWorkout.value)
   }
