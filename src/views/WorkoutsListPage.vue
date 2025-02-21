@@ -4,7 +4,7 @@ import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { FilledExercisesWorkout } from '@/types'
 import { useConfirm, useToast, type ToastMessageOptions } from 'primevue'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const confirm = useConfirm()
@@ -12,6 +12,21 @@ const confirm = useConfirm()
 const workoutsStore = useWorkoutsStore()
 const router = useRouter()
 const toast = useToast()
+
+const isFirstSave = ref(true)
+const isFirstRun = ref(true)
+
+const lastSavedWorkout = ref<string | null>(null)
+const lastRunWorkout = ref<string | null>(null)
+
+function hasSavedWorkoutChanged(workout: FilledExercisesWorkout): boolean {
+  if (!lastSavedWorkout.value) return true
+  return JSON.stringify(workout) !== lastSavedWorkout.value
+}
+function hasRunWorkoutChanged(workout: FilledExercisesWorkout): boolean {
+  if (!lastRunWorkout.value) return true
+  return JSON.stringify(workout) !== lastRunWorkout.value
+}
 
 function showToast(options: ToastMessageOptions) {
   toast.add(options)
@@ -22,10 +37,75 @@ const {
   editWorkoutDialogVisible,
   createWorkout,
   changeWorkout,
-  saveEditingWorkout,
-  validateAndRunWorkout,
+  saveEditingWorkout: originalSaveEditingWorkout,
+  validateAndRunWorkout: originalValidateAndRunWorkout,
   nameInvalid,
+  getExceededMaxGoals,
 } = useEditingWorkout(router, showToast)
+
+watch(
+  () => editWorkoutDialogVisible.value,
+  () => {
+    lastSavedWorkout.value = null
+  },
+)
+
+const saveEditingWorkout = () => {
+  const exceededMessages = getExceededMaxGoals(editingWorkout.value)
+
+  if (
+    (isFirstSave.value && exceededMessages.length > 0) ||
+    (!isFirstSave.value && hasSavedWorkoutChanged(editingWorkout.value))
+  ) {
+    showToast({
+      severity: 'warn',
+      summary: 'Превышены максимальные значения:',
+      detail: exceededMessages.join('\n'),
+      life: 5000,
+    })
+
+    isFirstSave.value = false
+
+    lastSavedWorkout.value = JSON.stringify(editingWorkout.value)
+
+    return
+  }
+
+  originalSaveEditingWorkout()
+  isFirstSave.value = true
+  showToast({
+    severity: 'success',
+    summary: 'Тренировка успешно сохранена',
+    life: 3000,
+  })
+  lastSavedWorkout.value = null
+}
+
+const validateAndRunWorkout = (workout: FilledExercisesWorkout) => {
+  const exceededMessages = getExceededMaxGoals(workout)
+
+  if (
+    (isFirstRun.value && exceededMessages.length > 0) ||
+    (!isFirstRun.value && hasRunWorkoutChanged(workout))
+  ) {
+    showToast({
+      severity: 'warn',
+      summary: 'Превышены максимальные значения:',
+      detail: exceededMessages.join('\n'),
+      life: 5000,
+    })
+
+    isFirstRun.value = false
+
+    lastRunWorkout.value = JSON.stringify(workout)
+
+    return
+  }
+
+  originalValidateAndRunWorkout(workout)
+  isFirstRun.value = true
+  lastRunWorkout.value = null
+}
 
 const confirmRemove = (id: number) => {
   confirm.require({

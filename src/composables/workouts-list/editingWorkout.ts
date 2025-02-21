@@ -78,6 +78,10 @@ export const useEditingWorkout = (
       if (exercise.goal.sets && maxGoal.sets)
         isExceeded(exercise.goal.sets, maxGoal.sets, 'Подходы')
 
+      if (exceededMessages.length > 0) {
+        exceededMessages.push(`Все равно продолжить? Нажмите еще раз`)
+      }
+
       return exceededMessages
     })
   }
@@ -103,18 +107,6 @@ export const useEditingWorkout = (
   }
 
   function isWorkoutValid(workout: FilledExercisesWorkout, isEditing: boolean): boolean {
-    const exceededMessages = getExceededMaxGoals(workout)
-
-    if (exceededMessages.length > 0) {
-      showToast({
-        severity: 'warn',
-        summary: 'Превышены максимальные значения:',
-        detail: exceededMessages.join('\n'),
-        life: 5000,
-      })
-      return false
-    }
-
     const invalidatedWorkout = getInvalidatedWorkout(workout)
     const invalidWorkoutField = getInvalidWorkoutField(invalidatedWorkout)
 
