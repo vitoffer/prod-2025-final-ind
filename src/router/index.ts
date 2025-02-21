@@ -4,8 +4,6 @@ import ProfilePage from '@/views/ProfilePage.vue'
 import WorkoutsListPage from '@/views/WorkoutsListPage.vue'
 import RunWorkoutPage from '@/views/RunWorkoutPage.vue'
 import { useUserStore } from '@/stores/userStore'
-import { useWorkoutsStore } from '@/stores/workoutsStore'
-import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 
 const routes = [
   {
@@ -46,19 +44,6 @@ router.beforeEach((to) => {
     if (to.name !== 'ProfilePage') {
       return { name: 'ProfilePage' }
     }
-  }
-
-  if (to.name === 'RunWorkoutPage') {
-    const runWorkoutStore = useRunWorkoutStore()
-    const workoutsStore = useWorkoutsStore()
-    const workoutId = +to.params.id
-    const foundWorkout = workoutsStore.list.find((workout) => workout.id === workoutId)
-
-    if (foundWorkout === undefined) {
-      return { name: 'WorkoutsListPage' }
-    }
-
-    runWorkoutStore.updateWorkout(foundWorkout)
   }
 })
 

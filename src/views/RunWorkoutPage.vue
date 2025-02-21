@@ -2,6 +2,7 @@
 import ExerciseCardInfo from '@/components/ExerciseCardInfo.vue'
 import { useExerciseTimer } from '@/composables/run-workout/exerciseTimer'
 import { useRestTimer } from '@/composables/run-workout/restTimer'
+import { XPForCompletedWorkout } from '@/gamification/xp'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useUserStore } from '@/stores/userStore'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
@@ -14,7 +15,6 @@ import {
   stringifyTime,
 } from '@/utils/formatters'
 import { getCompletedExercises, getCompletedExercisesUnits } from '@/utils/functions'
-import { XPForCompletedWorkout } from '@/utils/gamification'
 import { useToast, type ToastMessageOptions } from 'primevue'
 import { computed, ref } from 'vue'
 
@@ -23,13 +23,9 @@ const userStore = useUserStore()
 const workoutsStore = useWorkoutsStore()
 
 const currentExerciseIndex = ref<number>(0)
+
 const currentExercise = ref<FilledExerciseWithGoal | null>(
-  workoutsStore.getClearedWorkoutExercises(runWorkoutStore.selectedRunWorkout!)[
-    currentExerciseIndex.value
-  ],
-)
-const filledExercisesWorkout = ref<FilledExercisesWorkout>(
-  workoutsStore.getFilledExercisesWorkout(runWorkoutStore.selectedRunWorkout!.id),
+  runWorkoutStore.selectedRunWorkout!.exercises[currentExerciseIndex.value],
 )
 
 const restTime = ref<boolean>(false)
@@ -55,8 +51,11 @@ const completeExercise = (type?: string) => {
     workoutCompleted.value = true
 
     const completedWorkout: FilledExercisesWorkout = {
-      ...filledExercisesWorkout.value,
-      exercises: getCompletedExercises(filledExercisesWorkout.value, skippedExercisesIndexes.value),
+      ...runWorkoutStore.selectedRunWorkout!,
+      exercises: getCompletedExercises(
+        runWorkoutStore.selectedRunWorkout!,
+        skippedExercisesIndexes.value,
+      ),
     }
 
     userStore.pushWorkoutToHistory(completedWorkout)
@@ -161,7 +160,7 @@ const formattedWorkoutInfo = computed<string>(() => {
   if (!workoutCompleted.value) return ''
 
   const { completedReps, completedTimeExercises, completedWeightKgExercises } =
-    getCompletedExercisesUnits(filledExercisesWorkout.value, skippedExercisesIndexes.value)
+    getCompletedExercisesUnits(runWorkoutStore.selectedRunWorkout!, skippedExercisesIndexes.value)
 
   let maxWeightKg = 0
   if (completedWeightKgExercises.length) {

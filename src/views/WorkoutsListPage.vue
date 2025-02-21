@@ -2,7 +2,7 @@
 import EditWorkoutDialog from '@/components/EditWorkoutDialog.vue'
 import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
-import type { Workout } from '@/types'
+import type { FilledExercisesWorkout } from '@/types'
 import { useConfirm, useToast, type ToastMessageOptions } from 'primevue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -50,12 +50,15 @@ const confirmRemove = (id: number) => {
 
 const filterName = ref<string>('')
 
-const filteredWorkoutsList = computed<Workout[]>(() => {
-  return workoutsStore.list.filter((workout) => {
-    const matchesName =
-      filterName.value === '' || workout.name.toLowerCase().includes(filterName.value.toLowerCase())
-    return matchesName
-  })
+const filteredWorkoutsList = computed<FilledExercisesWorkout[]>(() => {
+  return workoutsStore.list
+    .map((workout) => workoutsStore.getFilledExercisesWorkout(workout.id))
+    .filter((workout) => {
+      const matchesName =
+        filterName.value === '' ||
+        workout.name.toLowerCase().includes(filterName.value.toLowerCase())
+      return matchesName
+    })
 })
 
 const dialogHeader = computed<string>(() => {

@@ -5,6 +5,7 @@ import { getInvalidExercisesList, isNameValid } from '@/utils/validation'
 import { useWorkoutValidation } from './workoutValidation'
 import type { ToastMessageOptions } from 'primevue'
 import { ref } from 'vue'
+import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 
 export const useEditingWorkout = (
   router: Router,
@@ -114,15 +115,20 @@ export const useEditingWorkout = (
     editWorkoutDialogVisible.value = false
   }
 
-  const validateAndRunWorkout = async () => {
+  const validateAndRunWorkout = () => {
     if (!isWorkoutValid()) return
 
     editWorkoutDialogVisible.value = false
 
+    // const runWorkoutStore = useRunWorkoutStore()
+
     runWorkout(editingWorkout.value)
   }
 
-  const runWorkout = (workout: Workout) => {
+  const runWorkout = (workout: FilledExercisesWorkout) => {
+    const runWorkoutStore = useRunWorkoutStore()
+
+    runWorkoutStore.updateWorkout(workout)
     router.push({
       name: 'RunWorkoutPage',
       params: {

@@ -25,7 +25,7 @@ function getImageUrl(folder: string, type: string, title: string): string {
   return new URL(`../assets/${folder}/${type}/${title}.svg`, import.meta.url).href
 }
 
-async function loadImages() {
+function loadImages() {
   if (userStore.user.character.hat) {
     hatImage.value = getImageUrl('accessories', 'hat', userStore.user.character.hat)
   }
