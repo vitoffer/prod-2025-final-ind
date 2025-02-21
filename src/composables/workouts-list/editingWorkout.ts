@@ -160,8 +160,6 @@ export const useEditingWorkout = (
     const invalidWorkoutField = getInvalidWorkoutField(invalidatedWorkout)
 
     if (invalidWorkoutField && editWorkoutDialogVisible.value) {
-      console.log(invalidatedWorkout)
-      console.log(invalidWorkoutField)
       validateWorkout(invalidWorkoutField)
       return
     }

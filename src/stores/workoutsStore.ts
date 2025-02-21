@@ -92,8 +92,6 @@ export const useWorkoutsStore = defineStore('workouts', () => {
 
       const recommendedGoal = getRecommendedGoal(userStore.user, updatedExercise)
 
-      console.log(toRaw(updatedExercise.goal))
-
       if (
         'time' in updatedExercise.goal &&
         updatedExercise.goal.time!.minutes === 0 &&
@@ -110,8 +108,6 @@ export const useWorkoutsStore = defineStore('workouts', () => {
       if ('weightKg' in updatedExercise.goal && updatedExercise.goal.weightKg === 0) {
         updatedExercise.goal.weightKg = recommendedGoal.weightKg
       }
-
-      console.log(toRaw(updatedExercise.goal))
 
       if (!fullExercise.unitsList.includes('время')) {
         delete updatedExercise.goal.time
