@@ -1,5 +1,5 @@
-import { baseXP, XPGrowthRate } from '@/constants'
 import type { FilledExercisesWorkout, FilledExerciseWithGoal } from '@/types'
+import { baseXP, XPGrowthRate } from './constants'
 
 export function XPForLevel(currentLevel: number) {
   return Math.ceil(baseXP * XPGrowthRate ** (currentLevel - 1))

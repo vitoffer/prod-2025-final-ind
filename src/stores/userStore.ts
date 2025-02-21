@@ -5,9 +5,9 @@ import {
   baseXP,
   requiredLevelToFitBody,
   requiredLevelToNormalBody,
-} from '@/constants'
+} from '@/gamification/constants'
+import { XPForLevel } from '@/gamification/xp'
 import type { User, Workout } from '@/types'
-import { XPForLevel } from '@/utils/gamification'
 import { defineStore } from 'pinia'
 import { type ToastMessageOptions } from 'primevue'
 import { ref, toValue } from 'vue'
