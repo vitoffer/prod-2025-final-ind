@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/userStore'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const userStore = useUserStore()
 const showDialog = ref(false)
@@ -44,38 +44,64 @@ function loadImages() {
   }
 }
 
+const ageInvalid = computed<boolean>(() => {
+  return age.value === null || age.value < 1 || age.value > 100
+})
+
+const heightInvalid = computed<boolean>(() => {
+  return height.value === null || height.value < 50 || height.value > 250
+})
+
+const weightInvalid = computed<boolean>(() => {
+  return weight.value === null || weight.value < 30 || weight.value > 250
+})
+
 function saveUserData() {
-  if (age.value === null || height.value === null || weight.value === null) return
-  userStore.updateUser({ age: age.value, heightCm: height.value, weightKg: weight.value })
+  if (ageInvalid.value || heightInvalid.value || weightInvalid.value) return
+
+  userStore.updateUser({ age: age.value!, heightCm: height.value!, weightKg: weight.value! })
+
+  if (userStore.isNewUser) {
+    userStore.toggleIsNewUser()
+  }
+
   showDialog.value = false
-  userStore.toggleIsNewUser()
 }
 </script>
 
 <template>
-  <div v-if="userStore.isNewUser">
-    <Dialog v-model:visible="showDialog" header="User Information" :modal="true">
-      <template #default>
-        <div>
-          <label for="height">Возраст (лет):</label>
-          <InputNumber v-model="age" id="age" type="number" :invalid="age === null" />
-          <label for="height">Рост (см):</label>
-          <InputNumber v-model="height" id="height" type="number" :invalid="height === null" />
-          <label for="weight">Вес (кг):</label>
-          <InputNumber v-model="weight" id="weight" type="number" :invalid="weight === null" />
-        </div>
-      </template>
-      <template #footer>
-        <Button @click="saveUserData" aria-label="Save user info">Сохранить</Button>
-      </template>
-    </Dialog>
-  </div>
+  <Dialog v-model:visible="showDialog" header="User Information" :modal="true">
+    <template #default>
+      <div>
+        <label for="height">Возраст (лет):</label>
+        <InputNumber v-model="age" id="age" type="number" :invalid="ageInvalid" />
+        <label for="height">Рост (см):</label>
+        <InputNumber v-model="height" id="height" type="number" :invalid="heightInvalid" />
+        <label for="weight">Вес (кг):</label>
+        <InputNumber v-model="weight" id="weight" type="number" :invalid="weightInvalid" />
+      </div>
+    </template>
+    <template #footer>
+      <Button @click="saveUserData" aria-label="Save user info">Сохранить</Button>
+    </template>
+  </Dialog>
+  <div v-if="userStore.isNewUser"></div>
   <div v-else class="mt-4 mr-auto ml-auto w-fit text-lg font-semibold">
     <div class="flex justify-between">
       <p>Возраст: {{ userStore.user.age }} лет;</p>
       <p>Рост: {{ userStore.user.heightCm }} см;</p>
       <p>Вес: {{ userStore.user.weightKg }} кг;</p>
     </div>
+    <Button
+      @click="
+        () => {
+          showDialog = true
+        }
+      "
+      class="mx-auto my-2 !block"
+      >Изменить данные</Button
+    >
+
     <div class="flex justify-between">
       <p>Уровень: {{ userStore.user.level }};</p>
       <p>XP: {{ userStore.user.xp }};</p>
