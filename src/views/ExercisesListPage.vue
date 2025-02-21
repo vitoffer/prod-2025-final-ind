@@ -28,6 +28,7 @@ const {
   removeExercisePhotoUrl,
   saveEditingExercise,
   nameInvalid,
+  difficultyInvalid,
   unitsListInvalid,
   photoUrlListInvalid,
   videoUrlInvalid,
@@ -91,6 +92,7 @@ const dialogHeader = computed<string>(() => {
       v-model:edit-exercise-dialog-visible="editExerciseDialogVisible"
       v-model:editing-exercise="editingExercise"
       v-model:name-invalid="nameInvalid"
+      v-model:difficulty-invalid="difficultyInvalid"
       v-model:units-list-invalid="unitsListInvalid"
       v-model:photo-url-list-invalid="photoUrlListInvalid"
       v-model:video-url-invalid="videoUrlInvalid"

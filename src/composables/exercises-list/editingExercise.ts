@@ -4,6 +4,7 @@ import { useExerciseValidation } from './exerciseValidation'
 import { correctVideoUrl } from '@/utils/media'
 import {
   getInvalidPhotoUrlsList,
+  isDifficultyValid,
   isNameValid,
   isUnitsListValid,
   isVideoUrlValid,
@@ -16,7 +17,7 @@ import { useWorkoutsStore } from '@/stores/workoutsStore'
 export function useEditingExercise(showToast: (options: ToastMessageOptions) => void) {
   const exercisesStore = useExercisesStore()
   const workoutsStore = useWorkoutsStore()
-  const { nameInvalid, unitsListInvalid, photoUrlListInvalid, videoUrlInvalid } =
+  const { nameInvalid, difficultyInvalid, unitsListInvalid, photoUrlListInvalid, videoUrlInvalid } =
     useExerciseValidation()
 
   const getNextId = () => exercisesStore.list[exercisesStore.list.length - 1].id + 1
@@ -64,6 +65,7 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
 
   function setAllFieldsValid() {
     nameInvalid.value = false
+    difficultyInvalid.value = false
     unitsListInvalid.value = false
     photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
     videoUrlInvalid.value = false
@@ -100,45 +102,21 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
 
   const saveEditingExercise = async () => {
     nameInvalid.value = !isNameValid(editingExercise.value)
+    difficultyInvalid.value = !isDifficultyValid(editingExercise.value)
     unitsListInvalid.value = !isUnitsListValid(editingExercise.value)
     photoUrlListInvalid.value = await getInvalidPhotoUrlsList(editingExercise.value)
     videoUrlInvalid.value = !(await isVideoUrlValid(editingExercise.value))
 
-    if (nameInvalid.value) {
+    if (
+      nameInvalid.value ||
+      difficultyInvalid.value ||
+      unitsListInvalid.value ||
+      photoUrlListInvalid.value.includes(true) ||
+      videoUrlInvalid.value
+    ) {
       showToast({
-        summary: 'Некорректное название',
+        summary: 'Введены некорректные данные',
         severity: 'error',
-        detail: 'Введите название',
-        life: 3000,
-      })
-      return
-    }
-
-    if (unitsListInvalid.value) {
-      showToast({
-        summary: 'Некорректный список единиц измерения',
-        severity: 'error',
-        detail: 'Введите хотя бы одну, причем при выборе времени, остальные выбрать нельзя',
-        life: 5000,
-      })
-      return
-    }
-
-    if (photoUrlListInvalid.value.includes(true)) {
-      showToast({
-        summary: 'Некорректный список ссылок на картинки',
-        severity: 'error',
-        detail: 'Проверьте введенные ссылки и не оставляйте поля пустыми',
-        life: 3000,
-      })
-      return
-    }
-
-    if (videoUrlInvalid.value) {
-      showToast({
-        summary: 'Некорректная ссылка на видео',
-        severity: 'error',
-        detail: 'Проверьте введенную ссылку',
         life: 3000,
       })
       return
@@ -183,6 +161,7 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
     removeExercisePhotoUrl,
     saveEditingExercise,
     nameInvalid,
+    difficultyInvalid,
     unitsListInvalid,
     photoUrlListInvalid,
     videoUrlInvalid,
