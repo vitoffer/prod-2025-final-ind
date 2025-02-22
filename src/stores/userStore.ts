@@ -1,6 +1,7 @@
+import { checkAchievements } from '@/gamification/achievements'
 import { baseBody, baseLevel, basePoints, baseXP } from '@/gamification/constants'
-import { checkLevelRewards, getNewLevel, XPForCompletedWorkout } from '@/gamification/xp'
-import type { CustomItem, FilledExercisesWorkout, User } from '@/types'
+import { addXP, XPForCompletedWorkout } from '@/gamification/xp'
+import type { Achievement, BodyType, CustomItem, FilledExercisesWorkout, User } from '@/types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useGlobalStore } from './globalStore'
@@ -33,7 +34,13 @@ export const useUserStore = defineStore('user', () => {
       { id: 1, type: 'hat', imageUrl: '/accessories/hat/1.svg', name: 'Синяя шапка', price: 10 },
     ],
     achievements: [],
-    history: {
+    stats: {
+      totalSeconds: 0,
+      totalReps: 0,
+      totalWeight: 0,
+      totalWorkouts: 0,
+      completedExercises: 0,
+      skippedExercises: 0,
       lastCompletedWorkouts: [],
     },
   }
@@ -74,9 +81,9 @@ export const useUserStore = defineStore('user', () => {
     // updateUserInLS()
   }
 
-  function updateUserInLS() {
-    localStorage.setItem('user', JSON.stringify(user.value))
-  }
+  // function updateUserInLS() {
+  //   localStorage.setItem('user', JSON.stringify(user.value))
+  // }
 
   function wearItem(item: CustomItem) {
     user.value.character[item.type] = item.imageUrl
@@ -86,42 +93,39 @@ export const useUserStore = defineStore('user', () => {
     user.value.character[item.type] = null
   }
 
+  function changeBodyType(type: BodyType) {
+    user.value.character.body = type
+  }
+
   function buyItem(item: CustomItem) {
     user.value.points -= item.price
     user.value.customizationItems.push(item)
   }
 
   function pushWorkoutToHistory(workout: FilledExercisesWorkout) {
-    if (user.value.history.lastCompletedWorkouts.length === 5) {
-      user.value.history.lastCompletedWorkouts.shift()
+    // Добавляем статистику пропущенных и выполненных упражнений
+
+    if (user.value.stats.lastCompletedWorkouts.length === 5) {
+      user.value.stats.lastCompletedWorkouts.shift()
+    }
+    user.value.stats.lastCompletedWorkouts.push(workout)
+
+    const newAchievements = checkAchievements(user.value, workout)
+
+    if (newAchievements.length > 0) {
+      globalStore.addToast({
+        severity: 'success',
+        summary: 'Новые достижения!',
+        detail: newAchievements.map((a) => a.name).join(', '),
+        life: 5000,
+      })
     }
 
-    user.value.history.lastCompletedWorkouts.push(workout)
-
-    addXP(XPForCompletedWorkout(workout))
-
-    // updateUserInLS()
+    addXP(user.value, XPForCompletedWorkout(workout))
   }
 
-  function addXP(xpGained: number) {
-    user.value.xp += xpGained
-
-    const { newLevel, newXP } = getNewLevel(user.value.level, user.value.xp)
-
-    if (newLevel > user.value.level) {
-      const newRewards = checkLevelRewards(user.value.level, newLevel)
-      user.value.level = newLevel
-      user.value.xp = newXP
-      globalStore.addToast({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
-    }
-
-    // updateUserInLS()
-  }
-
-  function addPoints(pointsCount: number) {
-    user.value.points += pointsCount
-
-    // updateUserInLS()
+  function addAchievement(achievement: Achievement) {
+    user.value.achievements.push(achievement)
   }
 
   return {
@@ -131,9 +135,10 @@ export const useUserStore = defineStore('user', () => {
     updateUser,
     pushWorkoutToHistory,
     addXP,
-    addPoints,
     wearItem,
     unWearItem,
     buyItem,
+    addAchievement,
+    changeBodyType,
   }
 })

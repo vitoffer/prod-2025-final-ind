@@ -1,8 +1,13 @@
-import type { FilledExercisesWorkout, FilledExerciseWithGoal } from '@/types'
-import { baseXP, XPGrowthRate } from './constants'
+import type { BodyType, FilledExercisesWorkout, FilledExerciseWithGoal, User } from '@/types'
+import { useGlobalStore } from '@/stores/globalStore'
+import { useUserStore } from '@/stores/userStore'
 
-export function XPForLevel(currentLevel: number) {
-  return Math.ceil(baseXP * XPGrowthRate ** (currentLevel - 1))
+export const baseLevel = 1
+export const baseXP = 0
+export const basePoints = 0
+
+export const XPForLevel = (level: number) => {
+  return Math.floor(100 * Math.pow(1.1, level - 1))
 }
 
 export function XPForCompletedWorkout(completedWorkout: FilledExercisesWorkout) {
@@ -57,4 +62,39 @@ export function getNewLevel(currentLevel: number, currentXp: number) {
   return { newLevel: level, newXP: remainingXP }
 }
 
-export function checkLevelRewards(oldLevel: number, newLevel: number) {}
+export function checkLevelUp(user: User) {
+  const globalStore = useGlobalStore()
+  const userStore = useUserStore()
+
+  const requiredXP = XPForLevel(user.level)
+
+  while (user.xp >= requiredXP) {
+    user.xp -= requiredXP
+    user.level += 1
+
+    globalStore.addToast({
+      severity: 'success',
+      summary: `Новый уровень!`,
+      detail: `Вы достигли ${user.level} уровня`,
+      life: 5000,
+    })
+  }
+
+  userStore.changeBodyType(checkBodyType(user.level))
+}
+
+function checkBodyType(newLevel: number): BodyType {
+  if (newLevel >= 20) {
+    return 'fit'
+  }
+  if (newLevel >= 5) {
+    return 'normal'
+  }
+  return 'skinny'
+}
+
+export function addXP(user: User, xp: number) {
+  user.xp += xp
+  user.points += xp // Добавляем points в том же количестве
+  checkLevelUp(user)
+}

@@ -1,5 +1,14 @@
 import type { FilledExercisesWorkout } from '@/types'
 
+// export function markCompletedExercises(
+// 	runningWorkout: FilledExercisesWorkout,
+//   skippedIndexes: number[],
+// ) {
+// 	return runningWorkout.exercises.map((exercise, index) => {
+// 		return skippedIndexes.includes(index) ?
+// 	})
+// }
+
 export function getCompletedExercises(
   runningWorkout: FilledExercisesWorkout,
   skippedIndexes: number[],

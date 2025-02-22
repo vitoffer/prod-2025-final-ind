@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import achievements from '@/base-data/achievements'
 import UserCustomItemBlock from '@/components/UserCustomItemBlock.vue'
+import { XPForLevel } from '@/gamification/xp'
 import { useUserStore } from '@/stores/userStore'
 import { computed, ref } from 'vue'
 
@@ -36,6 +38,11 @@ function saveUserData() {
 
   showDialog.value = false
 }
+
+const level = computed(() => userStore.user.level)
+const xp = computed(() => userStore.user.xp)
+const xpForNextLevel = computed(() => XPForLevel(level.value + 1))
+const progress = computed(() => (xp.value / xpForNextLevel.value) * 100)
 </script>
 
 <template>
@@ -72,9 +79,10 @@ function saveUserData() {
     >
     <div class="flex justify-between">
       <p>Уровень: {{ userStore.user.level }};</p>
-      <p>XP: {{ userStore.user.xp }};</p>
       <p>Очки: {{ userStore.user.points }};</p>
     </div>
+    <p>{{ xp }} / {{ xpForNextLevel }} XP</p>
+    <ProgressBar :value="progress" :showValue="false" />
     <p class="mt-4 mb-2 text-center">Ваш персонаж:</p>
     <div class="relative mr-auto ml-auto w-fit rounded-3xl bg-neutral-300 px-16 py-4">
       <img
@@ -123,9 +131,20 @@ function saveUserData() {
       >В магазин</RouterLink
     >
     <p class="text-center">Ачивки:</p>
-    <p v-for="(achievement, index) in userStore.user.achievements" :key="index">
-      <b>{{ achievement.name }}</b> - {{ achievement.description }}
-    </p>
+    <p>Получены:</p>
+    <div v-for="ach in achievements" :key="ach.id" class="achievement-item">
+      <div class="achievement-icon">
+        <i class="pi pi-trophy"></i>
+      </div>
+      <div class="achievement-info">
+        <h3>{{ ach.name }}</h3>
+        <p>{{ ach.description }}</p>
+        <small v-if="userStore.user.achievements.find((userAch) => userAch.id === ach.id)"
+          >Получено</small
+        >
+        <small v-else>Не получено</small>
+      </div>
+    </div>
   </div>
 </template>
 

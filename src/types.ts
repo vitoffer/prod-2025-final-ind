@@ -25,8 +25,9 @@ export interface Workout {
   exercises: WorkoutExercise[]
 }
 
-export type FilledExercisesWorkout = Pick<Workout, 'id' | 'name'> & {
+export interface FilledExercisesWorkout extends Workout {
   exercises: FilledExerciseWithGoal[]
+  skippedExercisesIndexes?: number[]
 }
 
 export type WorkoutExercise = Pick<Exercise, 'id'> & {
@@ -90,7 +91,22 @@ export interface User {
   character: Character
   customizationItems: CustomItem[]
   achievements: Achievement[]
-  history: UserHistory
+  stats: {
+    totalSeconds: number
+    totalReps: number
+    totalWeight: number
+    totalWorkouts: number
+    completedExercises: number
+    skippedExercises: number
+    lastCompletedWorkouts: FilledExercisesWorkout[]
+  }
+}
+
+export interface UserStats {
+  totalReps: number
+  totalWeight: number
+  totalTime: number
+  completedWorkouts: number
 }
 
 export interface UserHistory {
@@ -109,9 +125,10 @@ export interface Character {
 export type BodyType = 'skinny' | 'normal' | 'fit'
 
 export interface Achievement {
+  id: number
   name: string
   description: string
-  requirements: AchievementRequirements
+  xpReward: number
 }
 
 export interface AchievementRequirements {

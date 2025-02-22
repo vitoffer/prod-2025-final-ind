@@ -5,7 +5,7 @@ import { useRestTimer } from '@/composables/run-workout/restTimer'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useUserStore } from '@/stores/userStore'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
-import type { FilledExercisesWorkout, FilledExerciseWithGoal } from '@/types'
+import type { FilledExerciseWithGoal } from '@/types'
 import {
   formattedReps,
   formattedSets,
@@ -13,7 +13,7 @@ import {
   formattedWorkoutData,
   stringifyTime,
 } from '@/utils/formatters'
-import { getCompletedExercises, getCompletedExercisesUnits } from '@/utils/functions'
+import { getCompletedExercisesUnits } from '@/utils/functions'
 import { computed, ref } from 'vue'
 
 const runWorkoutStore = useRunWorkoutStore()
@@ -42,15 +42,10 @@ const completeExercise = (type?: string) => {
     elapsedWorkoutTime.value = new Date().getTime() - startWorkoutTime
     workoutCompleted.value = true
 
-    const completedWorkout: FilledExercisesWorkout = {
+    userStore.pushWorkoutToHistory({
       ...runWorkoutStore.selectedRunWorkout!,
-      exercises: getCompletedExercises(
-        runWorkoutStore.selectedRunWorkout!,
-        skippedExercisesIndexes.value,
-      ),
-    }
-
-    userStore.pushWorkoutToHistory(completedWorkout)
+      skippedExercisesIndexes: skippedExercisesIndexes.value,
+    })
 
     return
   }
@@ -174,6 +169,14 @@ const formattedWorkoutInfo = computed<string>(() => {
 
   return formattedWorkoutData(elapsedTime, completedReps, maxWeightKg)
 })
+
+const skippedExercisesCount = computed<number>(
+  () => userStore.user.stats.lastCompletedWorkouts[0].skippedExercisesIndexes!.length,
+)
+const completedExercisesCount = computed<number>(
+  () =>
+    userStore.user.stats.lastCompletedWorkouts[0].exercises.length - skippedExercisesCount.value,
+)
 </script>
 
 <template>
@@ -188,6 +191,12 @@ const formattedWorkoutInfo = computed<string>(() => {
       </p>
       <p class="mb-2 text-lg font-semibold">Информация о тренировке:</p>
       <p class="text-center whitespace-pre">{{ formattedWorkoutInfo }}</p>
+      <p class="mt-2">
+        Выполнено упражнений:
+        {{ completedExercisesCount }}<br />
+        Пропущено упражнений:
+        {{ skippedExercisesCount }}
+      </p>
     </div>
     <div v-else-if="currentExercise" class="exercise-container flex flex-col items-center">
       <h2 class="mt-2 mb-2 text-center text-xl font-semibold sm:mt-0">
