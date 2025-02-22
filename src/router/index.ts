@@ -55,7 +55,7 @@ router.beforeEach((to) => {
 
   if (to.name === 'RunWorkoutPage') {
     const runWorkoutStore = useRunWorkoutStore()
-    if (!runWorkoutStore.selectedRunWorkout) {
+    if (!runWorkoutStore.selectedRunWorkout && localStorage.getItem('runWorkout') === null) {
       return { name: 'WorkoutsListPage' }
     }
   }

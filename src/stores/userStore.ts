@@ -3,13 +3,12 @@ import { baseBody, baseLevel, basePoints, baseXP } from '@/gamification/constant
 import { addXP, XPForCompletedWorkout } from '@/gamification/xp'
 import type { Achievement, BodyType, CustomItem, FilledExercisesWorkout, User } from '@/types'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useGlobalStore } from './globalStore'
 
 export const useUserStore = defineStore('user', () => {
   const globalStore = useGlobalStore()
-  // const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
-  const isNewUser = ref<boolean>(false)
+  const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
 
   function toggleIsNewUser() {
     isNewUser.value = !isNewUser.value
@@ -23,7 +22,7 @@ export const useUserStore = defineStore('user', () => {
     xp: baseXP,
     points: basePoints,
     character: {
-      hat: null,
+      hat: '/accessories/hat/1.svg',
       body: baseBody,
       necklace: null,
       bracelet: null,
@@ -46,44 +45,25 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const user = ref<User>(baseUser)
-  // const user = ref<User>({
-  //   age: 20,
-  //   heightCm: 180,
-  //   weightKg: 75,
-  //   level: baseLevel,
-  //   xp: baseXP,
-  //   points: basePoints,
-  //   character: {
-  //     hat: '1',
-  //     body: baseBody,
-  //     necklace: '1',
-  //     bracelet: '1',
-  //     pants: '3',
-  //     boots: '1',
-  //   },
-  //   customizationItems: [],
-  //   achievements: [],
-  //   history: {
-  //     lastCompletedWorkouts: [],
-  //   },
-  // })
 
-  // if (localStorage.getItem('user')) {
-  //   user.value = JSON.parse(localStorage.getItem('user')!)
-  // }
+  if (localStorage.getItem('user')) {
+    user.value = JSON.parse(localStorage.getItem('user')!)
+  }
+
+  watch(
+    user,
+    (newUser) => {
+      localStorage.setItem('user', JSON.stringify(newUser))
+    },
+    { deep: true }, // Глубокое наблюдение за всеми изменениями в объекте
+  )
 
   function updateUser(params: Partial<User>) {
     user.value = {
       ...user.value,
       ...params,
     }
-
-    // updateUserInLS()
   }
-
-  // function updateUserInLS() {
-  //   localStorage.setItem('user', JSON.stringify(user.value))
-  // }
 
   function wearItem(item: CustomItem) {
     user.value.character[item.type] = item.imageUrl

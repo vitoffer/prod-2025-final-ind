@@ -5,6 +5,7 @@ import type { Exercise } from '@/types'
 
 export const useExercisesStore = defineStore('exercises', () => {
   const list = ref<Exercise[]>([])
+
   if (localStorage.getItem('exercisesList') === null) {
     list.value = baseExercisesList
     localStorage.setItem('exercisesList', JSON.stringify(list.value))
