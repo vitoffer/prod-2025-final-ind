@@ -131,18 +131,21 @@ const progress = computed(() => (xp.value / xpForNextLevel.value) * 100)
       >В магазин</RouterLink
     >
     <p class="text-center">Ачивки:</p>
-    <p>Получены:</p>
-    <div v-for="ach in achievements" :key="ach.id" class="achievement-item">
-      <div class="achievement-icon">
-        <i class="pi pi-trophy"></i>
-      </div>
+    <div
+      v-for="ach in achievements"
+      :key="ach.id"
+      class="achievement-item my-3 flex items-center gap-4 not-last:border-b not-last:pb-2"
+    >
+      <i class="pi pi-trophy h-fit !text-2xl text-amber-300"></i>
       <div class="achievement-info">
-        <h3>{{ ach.name }}</h3>
-        <p>{{ ach.description }}</p>
-        <small v-if="userStore.user.achievements.find((userAch) => userAch.id === ach.id)"
+        <h3 class="text-semibold">{{ ach.name }}</h3>
+        <p class="text-md text-base">{{ ach.description }}</p>
+        <small
+          v-if="userStore.user.achievements.find((userAch) => userAch.id === ach.id)"
+          class="text-green-400"
           >Получено</small
         >
-        <small v-else>Не получено</small>
+        <small v-else class="text-red-600">Не получено</small>
       </div>
     </div>
   </div>

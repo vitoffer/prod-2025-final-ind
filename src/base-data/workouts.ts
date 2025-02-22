@@ -3,62 +3,103 @@ import type { Workout } from '@/types'
 export default <Workout[]>[
   {
     id: 1,
-    name: 'Тренировка 1',
+    name: 'Тренировка на ноги',
     exercises: [
       {
-        id: 1,
+        id: 13,
         goal: {
-          sets: 2,
-          repetitions: 20,
+          time: {
+            minutes: 1,
+            seconds: 20,
+          },
+        },
+      },
+      {
+        id: 8,
+        goal: {
+          repetitions: 8,
+          weightKg: 120,
+        },
+      },
+      {
+        id: 6,
+        goal: {
+          repetitions: 10,
+          weightKg: 20,
+          sets: 3,
         },
       },
     ],
   },
   {
     id: 2,
-    name: 'Тренировка 2',
+    name: 'Тренировка на выносливость',
     exercises: [
       {
-        id: 2,
-        goal: {
-          repetitions: 20,
-          weightKg: 20,
-        },
-      },
-      {
-        id: 3,
-        goal: {
-          repetitions: 2,
-          weightKg: 10,
-        },
-      },
-      {
-        id: 4,
+        id: 13,
         goal: {
           time: {
-            seconds: 3,
+            minutes: 2,
+            seconds: 0,
           },
+        },
+      },
+      {
+        id: 15,
+        goal: {
+          time: {
+            minutes: 0,
+            seconds: 20,
+          },
+          sets: 3,
         },
       },
     ],
   },
   {
     id: 3,
-    name: 'Тренировка 3',
+    name: 'Пустая тренировка',
+    exercises: [],
+  },
+  {
+    id: 4,
+    name: 'Тренировка с гантелями',
     exercises: [
       {
         id: 2,
         goal: {
-          repetitions: 20,
-          weightKg: 100,
+          repetitions: 10,
+          weightKg: 40,
         },
       },
       {
         id: 4,
         goal: {
-          time: {
-            seconds: 5,
-          },
+          repetitions: 15,
+          weightKg: 60,
+          sets: 3,
+        },
+      },
+      {
+        id: 6,
+        goal: {
+          repetitions: 15,
+          weightKg: 60,
+          sets: 3,
+        },
+      },
+      {
+        id: 10,
+        goal: {
+          repetitions: 12,
+          weightKg: 20,
+        },
+      },
+      {
+        id: 12,
+        goal: {
+          repetitions: 14,
+          weightKg: 40,
         },
       },
     ],

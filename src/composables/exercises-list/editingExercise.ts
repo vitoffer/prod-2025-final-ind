@@ -108,6 +108,51 @@ export function useEditingExercise() {
     photoUrlListInvalid.value = await getInvalidPhotoUrlsList(editingExercise.value)
     videoUrlInvalid.value = !(await isVideoUrlValid(editingExercise.value))
 
+    if (nameInvalid.value) {
+      globalStore.addToast({
+        summary: 'Некорректное название упражнения',
+        detail: 'Введите название упражнения',
+        severity: 'error',
+        life: 3000,
+      })
+    }
+
+    if (difficultyInvalid.value) {
+      globalStore.addToast({
+        summary: 'Некорректная сложность',
+        detail: 'Выберите сложность упражнения',
+        severity: 'error',
+        life: 3000,
+      })
+    }
+
+    if (unitsListInvalid.value) {
+      globalStore.addToast({
+        summary: 'Некорректные единицы измерения',
+        detail: 'Выберите единицы измерения',
+        severity: 'error',
+        life: 3000,
+      })
+    }
+
+    if (photoUrlListInvalid.value.includes(true)) {
+      globalStore.addToast({
+        summary: 'Некорректные ссылки на фото',
+        detail: 'Проверьте введенные ссылки на изображения',
+        severity: 'error',
+        life: 3000,
+      })
+    }
+
+    if (videoUrlInvalid.value) {
+      globalStore.addToast({
+        summary: 'Некорректная ссылка на видео',
+        detail: 'Проверьте введенную ссылку на видео',
+        severity: 'error',
+        life: 3000,
+      })
+    }
+
     if (
       nameInvalid.value ||
       difficultyInvalid.value ||
@@ -115,11 +160,6 @@ export function useEditingExercise() {
       photoUrlListInvalid.value.includes(true) ||
       videoUrlInvalid.value
     ) {
-      globalStore.addToast({
-        summary: 'Введены некорректные данные',
-        severity: 'error',
-        life: 3000,
-      })
       return
     }
 

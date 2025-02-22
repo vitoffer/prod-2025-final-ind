@@ -10,9 +10,12 @@ export function isDifficultyValid(editingExercise: Exercise) {
 }
 
 export function isUnitsListValid(editingExercise: Exercise) {
-  if (editingExercise.unitsList.length === 0) {
+  const { unitsList } = editingExercise
+
+  if (unitsList.length === 0) {
     return false
   }
+
   return true
 }
 

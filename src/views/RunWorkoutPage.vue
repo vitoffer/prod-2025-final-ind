@@ -8,7 +8,6 @@ import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { FilledExerciseWithGoal } from '@/types'
 import {
   formattedReps,
-  formattedSets,
   formattedStringTime,
   formattedWorkoutData,
   stringifyTime,
@@ -37,6 +36,17 @@ const completeExercise = (type?: string) => {
   if (restTimerId.value) {
     stopRestTimer()
   }
+
+  if (currentSet.value < totalSets.value) {
+    currentSet.value++
+
+    if (currentExercise.value?.unitsList.includes('время')) {
+      startExerciseTimer()
+    }
+    return
+  }
+
+  currentSet.value = 1
 
   if (currentExerciseIndex.value === runWorkoutStore.selectedRunWorkout!.exercises.length - 1) {
     elapsedWorkoutTime.value = new Date().getTime() - startWorkoutTime
@@ -125,11 +135,6 @@ const formattedUnitsToComplete = computed<string>(() => {
     numUnits++
   }
 
-  if ('sets' in currentExercise.value.goal) {
-    formattedString += `${numUnits ? ', ' : ''}`
-    formattedString += `${currentExercise.value.goal.sets} ${formattedSets(currentExercise.value.goal.sets)}`
-    numUnits++
-  }
   if ('repetitions' in currentExercise.value.goal) {
     formattedString += `${numUnits ? ', ' : ''}`
     formattedString += `${currentExercise.value.goal.repetitions} ${formattedReps(currentExercise.value.goal.repetitions)}`
@@ -177,6 +182,9 @@ const completedExercisesCount = computed<number>(
   () =>
     userStore.user.stats.lastCompletedWorkouts[0].exercises.length - skippedExercisesCount.value,
 )
+
+const currentSet = ref<number>(1)
+const totalSets = computed(() => currentExercise.value?.goal.sets || 1)
 </script>
 
 <template>
@@ -227,7 +235,7 @@ const completedExercisesCount = computed<number>(
         class="mt-1"
       >
         {{ exerciseTimerId ? 'из' : '' }}
-        {{ formattedUnitsToComplete }}
+        {{ formattedUnitsToComplete }} (Подход {{ currentSet }} из {{ totalSets }})
       </p>
       <div class="mt-2 flex gap-4">
         <Button
