@@ -129,7 +129,7 @@ export function useEditingExercise() {
     if (unitsListInvalid.value) {
       globalStore.addToast({
         summary: 'Некорректные единицы измерения',
-        detail: 'Выберите только время или только другие величины',
+        detail: 'Выберите единицы измерения',
         severity: 'error',
         life: 3000,
       })

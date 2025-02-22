@@ -16,13 +16,6 @@ export function isUnitsListValid(editingExercise: Exercise) {
     return false
   }
 
-  const hasTime = unitsList.includes('время')
-  const hasOtherUnits = unitsList.some((unit) => unit !== 'время')
-
-  if (hasTime && hasOtherUnits) {
-    return false
-  }
-
   return true
 }
 
