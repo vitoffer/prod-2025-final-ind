@@ -16,7 +16,7 @@ defineProps<{ exercise: Exercise }>()
     <div class="mt-3">
       <div class="tags-container">
         <ul class="tags-list mb-4 flex flex-nowrap gap-1 overflow-x-auto pb-1">
-          <li class="tag tag-difficulty rounded-md border-2 pr-2 pl-2">
+          <li class="tag tag-difficulty rounded-md border-2 border-sky-400 pr-2 pl-2 text-sky-400">
             {{ exercise.difficulty }}
           </li>
           <li
