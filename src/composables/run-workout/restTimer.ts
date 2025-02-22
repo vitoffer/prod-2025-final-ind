@@ -7,7 +7,7 @@ export const useRestTimer = (
 ) => {
   const restTimerId = ref<ReturnType<typeof setTimeout> | null>(null)
   const elapsedRestTime = ref<number>(0)
-  const totalRestTime = 10
+  const totalRestTime = 20
   const remainingRestTime = ref<number>(0)
   const formattedRemainingRestTime = computed<string>(() => {
     return `${remainingRestTime.value} сек`
