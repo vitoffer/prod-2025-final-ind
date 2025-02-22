@@ -124,7 +124,7 @@ function saveUserData() {
     >
     <p class="text-center">Ачивки:</p>
     <p v-for="(achievement, index) in userStore.user.achievements" :key="index">
-      {{ achievement }}
+      <b>{{ achievement.name }}</b> - {{ achievement.description }}
     </p>
   </div>
 </template>

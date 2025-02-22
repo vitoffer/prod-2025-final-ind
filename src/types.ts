@@ -89,7 +89,7 @@ export interface User {
   points: number
   character: Character
   customizationItems: CustomItem[]
-  achievements: string[]
+  achievements: Achievement[]
   history: UserHistory
 }
 
@@ -115,19 +115,24 @@ export interface Achievement {
 }
 
 export interface AchievementRequirements {
-  xp?: number
-  level?: number
-  workouts?: WorkoutRequirement[]
-  repetitions?: number
-  timeInSeconds?: number
-  weightKg?: number
+  workoutsCount?: number
+  exercises?: ExerciseRequirement
+  units?: UnitsRequirement
 }
 
-export interface WorkoutRequirement {
+export interface ExerciseRequirement {
   count: number
+  type: 'skipped' | 'completed'
   difficulty?: ExerciseDifficulty
-  sportsItem?: string
-  tag?: string
+  sportsItems?: string[]
+  tags?: string[]
+}
+
+export interface UnitsRequirement {
+  timeInSeconds?: number
+  sets?: number
+  repetitions?: number
+  weightKg?: number
 }
 
 export interface CustomItem {
