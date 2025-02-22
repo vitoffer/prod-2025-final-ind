@@ -8,7 +8,6 @@ import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { FilledExerciseWithGoal } from '@/types'
 import {
   formattedReps,
-  formattedSets,
   formattedStringTime,
   formattedWorkoutData,
   stringifyTime,

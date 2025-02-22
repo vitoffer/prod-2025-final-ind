@@ -2,7 +2,7 @@ import type { FilledExerciseWithGoal } from '@/types'
 import { computed, onUnmounted, ref, type Ref } from 'vue'
 
 export const useExerciseTimer = (currentExercise: Ref<FilledExerciseWithGoal | null>) => {
-  const exerciseTimerId = ref<number | null>(null)
+  const exerciseTimerId = ref<ReturnType<typeof setTimeout> | null>(null)
   const elapsedExerciseTime = ref<number>(0)
   const totalExerciseTime = computed<number | null>(() => {
     if (!currentExercise.value!.unitsList.includes('время')) return null

@@ -5,7 +5,7 @@ export const useRestTimer = (
   currentExercise: Ref<FilledExerciseWithGoal | null>,
   completeRest: () => void,
 ) => {
-  const restTimerId = ref<number | null>(null)
+  const restTimerId = ref<ReturnType<typeof setTimeout> | null>(null)
   const elapsedRestTime = ref<number>(0)
   const totalRestTime = 10
   const remainingRestTime = ref<number>(0)
