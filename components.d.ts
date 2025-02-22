@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AppNav: typeof import('./src/components/AppNav.vue')['default']
     AutoComplete: typeof import('primevue/autocomplete')['default']
     Button: typeof import('primevue/button')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
@@ -24,14 +25,16 @@ declare module 'vue' {
     InputMask: typeof import('primevue/inputmask')['default']
     InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
+    ProgressBar: typeof import('primevue/progressbar')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScrollPanel: typeof import('primevue/scrollpanel')['default']
     Select: typeof import('primevue/select')['default']
     SelectButton: typeof import('primevue/selectbutton')['default']
-    Skeleton: typeof import('primevue/skeleton')['default']
+    ShopItem: typeof import('./src/components/ShopItem.vue')['default']
+    ShopItemTypedList: typeof import('./src/components/ShopItemTypedList.vue')['default']
     Textarea: typeof import('primevue/textarea')['default']
     Toast: typeof import('primevue/toast')['default']
-    VirtualScroller: typeof import('primevue/virtualscroller')['default']
+    UserCustomItemBlock: typeof import('./src/components/UserCustomItemBlock.vue')['default']
   }
 }

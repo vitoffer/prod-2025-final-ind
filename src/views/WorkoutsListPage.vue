@@ -1,20 +1,32 @@
 <script setup lang="ts">
 import EditWorkoutDialog from '@/components/EditWorkoutDialog.vue'
 import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
+import { useGlobalStore } from '@/stores/globalStore'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
-import type { Workout } from '@/types'
-import { useConfirm, useToast, type ToastMessageOptions } from 'primevue'
-import { computed, ref } from 'vue'
+import type { FilledExercisesWorkout } from '@/types'
+import { useConfirm } from 'primevue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const confirm = useConfirm()
 
 const workoutsStore = useWorkoutsStore()
+const globalStore = useGlobalStore()
 const router = useRouter()
-const toast = useToast()
 
-function showToast(options: ToastMessageOptions) {
-  toast.add(options)
+const isFirstSave = ref(true)
+const isFirstRun = ref(true)
+
+const lastSavedWorkout = ref<string | null>(null)
+const lastRunWorkout = ref<string | null>(null)
+
+function hasSavedWorkoutChanged(workout: FilledExercisesWorkout): boolean {
+  if (!lastSavedWorkout.value) return true
+  return JSON.stringify(workout) !== lastSavedWorkout.value
+}
+function hasRunWorkoutChanged(workout: FilledExercisesWorkout): boolean {
+  if (!lastRunWorkout.value) return true
+  return JSON.stringify(workout) !== lastRunWorkout.value
 }
 
 const {
@@ -22,12 +34,75 @@ const {
   editWorkoutDialogVisible,
   createWorkout,
   changeWorkout,
-  findWorkout,
-  saveEditingWorkout,
-  validateAndRunWorkout,
-  runWorkout,
+  saveEditingWorkout: originalSaveEditingWorkout,
+  validateAndRunWorkout: originalValidateAndRunWorkout,
   nameInvalid,
-} = useEditingWorkout(router, showToast)
+  getExceededMaxGoals,
+} = useEditingWorkout(router)
+
+watch(
+  () => editWorkoutDialogVisible.value,
+  () => {
+    lastSavedWorkout.value = null
+  },
+)
+
+const saveEditingWorkout = () => {
+  const exceededMessages = getExceededMaxGoals(editingWorkout.value)
+
+  if (
+    exceededMessages.length > 0 &&
+    (isFirstSave.value || (!isFirstSave.value && hasSavedWorkoutChanged(editingWorkout.value)))
+  ) {
+    globalStore.addToast({
+      severity: 'warn',
+      summary: 'Превышены максимальные значения:',
+      detail: exceededMessages.join('\n'),
+      life: 5000,
+    })
+
+    isFirstSave.value = false
+
+    lastSavedWorkout.value = JSON.stringify(editingWorkout.value)
+
+    return
+  }
+
+  originalSaveEditingWorkout()
+  isFirstSave.value = true
+  globalStore.addToast({
+    severity: 'success',
+    summary: 'Тренировка успешно сохранена',
+    life: 3000,
+  })
+  lastSavedWorkout.value = null
+}
+
+const validateAndRunWorkout = (workout: FilledExercisesWorkout) => {
+  const exceededMessages = getExceededMaxGoals(workout)
+
+  if (
+    exceededMessages.length > 0 &&
+    (isFirstRun.value || (!isFirstRun.value && hasRunWorkoutChanged(workout)))
+  ) {
+    globalStore.addToast({
+      severity: 'warn',
+      summary: 'Превышены максимальные значения:',
+      detail: exceededMessages.join('\n'),
+      life: 5000,
+    })
+
+    isFirstRun.value = false
+
+    lastRunWorkout.value = JSON.stringify(workout)
+
+    return
+  }
+
+  originalValidateAndRunWorkout(workout)
+  isFirstRun.value = true
+  lastRunWorkout.value = null
+}
 
 const confirmRemove = (id: number) => {
   confirm.require({
@@ -51,12 +126,15 @@ const confirmRemove = (id: number) => {
 
 const filterName = ref<string>('')
 
-const filteredWorkoutsList = computed<Workout[]>(() => {
-  return workoutsStore.list.filter((workout) => {
-    const matchesName =
-      filterName.value === '' || workout.name.toLowerCase().includes(filterName.value.toLowerCase())
-    return matchesName
-  })
+const filteredWorkoutsList = computed<FilledExercisesWorkout[]>(() => {
+  return workoutsStore.list
+    .map((workout) => workoutsStore.getFilledExercisesWorkout(workout.id))
+    .filter((workout) => {
+      const matchesName =
+        filterName.value === '' ||
+        workout.name.toLowerCase().includes(filterName.value.toLowerCase())
+      return matchesName
+    })
 })
 
 const dialogHeader = computed<string>(() => {
@@ -72,7 +150,6 @@ const isNewWorkout = computed<boolean>(() => {
 </script>
 
 <template>
-  <Toast class="!right-0 !max-w-[100vw] sm:!right-[20px] sm:!max-w-none" />
   <header class="flex flex-col items-center">
     <FloatLabel variant="in" class="mt-4 mb-3 w-[80vw] sm:mt-2 sm:w-[400px]">
       <InputText v-model="filterName" id="filterName" class="w-full" />
@@ -90,7 +167,7 @@ const isNewWorkout = computed<boolean>(() => {
       v-model:name-invalid="nameInvalid"
       :dialog-header="dialogHeader"
       :save-editing-workout="saveEditingWorkout"
-      :run-workout="validateAndRunWorkout"
+      :validate-and-run-workout="validateAndRunWorkout"
       :new-workout="isNewWorkout"
       class="!max-h-[95%] max-w-full"
     />
@@ -104,12 +181,16 @@ const isNewWorkout = computed<boolean>(() => {
           {{ workout.name }}
         </span>
         <div class="flex gap-2">
-          <Button @click="() => runWorkout(workout)" aria-label="Run workout" class="!p-[10px]">
+          <Button
+            @click="() => validateAndRunWorkout(workout)"
+            aria-label="Run workout"
+            class="!p-[10px]"
+          >
             <i class="pi pi-play !text-[1.25rem]"></i>
           </Button>
           <Button
             severity="warn"
-            @click="() => changeWorkout(workout.id, findWorkout)"
+            @click="() => changeWorkout(workout.id)"
             aria-label="Change workout"
             class="!p-[10px]"
           >

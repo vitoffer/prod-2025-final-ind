@@ -6,7 +6,7 @@ defineProps<{ src: string }>()
 const isLoaded = ref(false)
 const hasError = ref(false)
 
-const handleIframeLoad = async () => {
+const handleIframeLoad = () => {
   if (!firstLoad.value) return
 
   clearTimeout(timeoutId.value)

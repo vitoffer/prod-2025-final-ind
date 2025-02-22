@@ -1,6 +1,5 @@
 import { useExercisesStore } from '@/stores/exercisesStore'
 import type { Exercise, ExerciseVideo } from '@/types'
-import { useEditingEntity } from '../editingEntity'
 import { useExerciseValidation } from './exerciseValidation'
 import { correctVideoUrl } from '@/utils/media'
 import {
@@ -10,56 +9,47 @@ import {
   isUnitsListValid,
   isVideoUrlValid,
 } from '@/utils/validation'
-import type { ToastMessageOptions } from 'primevue'
+import { ref } from 'vue'
+import { nullExercise } from '@/constants'
+import { useWorkoutsStore } from '@/stores/workoutsStore'
+import { useGlobalStore } from '@/stores/globalStore'
 
-export function useEditingExercise(showToast: (options: ToastMessageOptions) => void) {
+export function useEditingExercise() {
+  const globalStore = useGlobalStore()
   const exercisesStore = useExercisesStore()
+  const workoutsStore = useWorkoutsStore()
   const { nameInvalid, difficultyInvalid, unitsListInvalid, photoUrlListInvalid, videoUrlInvalid } =
     useExerciseValidation()
-
-  const nullExercise: Omit<Exercise, 'id'> = {
-    name: '',
-    video: {
-      type: 'video',
-      url: '',
-    },
-    photoUrlList: [''],
-    description: '',
-    difficulty: 'простое',
-    sportsItems: [],
-    tags: [],
-    unitsList: [],
-  }
 
   const getNextId = () => exercisesStore.list[exercisesStore.list.length - 1].id + 1
   const findExercise = (id: number) =>
     JSON.parse(JSON.stringify(exercisesStore.list.find((exercise) => exercise.id === id)))
 
-  const {
-    changeEntity,
-    createEntity,
-    editDialogVisible: editExerciseDialogVisible,
-    editingEntity: editingExercise,
-  } = useEditingEntity<Exercise>(nullExercise, getNextId)
+  const editingExercise = ref<Exercise>({
+    ...nullExercise,
+    id: getNextId(),
+  })
 
-  function setAllFieldsValid() {
-    nameInvalid.value = false
-    difficultyInvalid.value = false
-    unitsListInvalid.value = false
-    photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
-    videoUrlInvalid.value = false
+  const editExerciseDialogVisible = ref<boolean>(false)
+
+  const createExercise = () => {
+    editExerciseDialogVisible.value = true
+    editingExercise.value = {
+      ...nullExercise,
+      id: getNextId(),
+    }
+
+    setAllFieldsValid()
   }
 
-  function createExercise(...args: Parameters<typeof createEntity>) {
-    setAllFieldsValid()
+  const changeExercise = (id: number) => {
+    editExerciseDialogVisible.value = true
 
-    createEntity(...args)
-  }
-
-  function changeExercise(...args: Parameters<typeof changeEntity>) {
-    setAllFieldsValid()
-
-    changeEntity(...args)
+    const foundExercise = findExercise(id)
+    editingExercise.value = foundExercise || {
+      ...nullExercise,
+      id: getNextId(),
+    }
 
     editingExercise.value = {
       ...editingExercise.value,
@@ -70,6 +60,16 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
       description:
         editingExercise.value.description === null ? '' : editingExercise.value.description,
     }
+
+    setAllFieldsValid()
+  }
+
+  function setAllFieldsValid() {
+    nameInvalid.value = false
+    difficultyInvalid.value = false
+    unitsListInvalid.value = false
+    photoUrlListInvalid.value = new Array(editingExercise.value.photoUrlList.length).fill(false)
+    videoUrlInvalid.value = false
   }
 
   const addExercisePhotoUrl = () => {
@@ -115,7 +115,7 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
       photoUrlListInvalid.value.includes(true) ||
       videoUrlInvalid.value
     ) {
-      showToast({
+      globalStore.addToast({
         summary: 'Введены некорректные данные',
         severity: 'error',
         life: 3000,
@@ -128,7 +128,7 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
       editingExercise.value.photoUrlList.length === 0 &&
       (!editingExercise.value.video || !editingExercise.value.video.url)
     ) {
-      showToast({
+      globalStore.addToast!({
         summary: 'Введите хотя бы одно из элементов: описание, изображение(-я), видео',
         severity: 'error',
         life: 3000,
@@ -148,13 +148,14 @@ export function useEditingExercise(showToast: (options: ToastMessageOptions) => 
       exercisesStore.createExercise(formattedExercise)
     }
 
+    workoutsStore.clearWorkoutsByExercise(formattedExercise)
+
     editExerciseDialogVisible.value = false
   }
 
   return {
     editingExercise,
     editExerciseDialogVisible,
-    findExercise,
     changeExercise,
     createExercise,
     addExercisePhotoUrl,

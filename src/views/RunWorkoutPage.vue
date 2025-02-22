@@ -4,7 +4,8 @@ import { useExerciseTimer } from '@/composables/run-workout/exerciseTimer'
 import { useRestTimer } from '@/composables/run-workout/restTimer'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useUserStore } from '@/stores/userStore'
-import type { ExerciseWithGoal, Workout } from '@/types'
+import { useWorkoutsStore } from '@/stores/workoutsStore'
+import type { FilledExerciseWithGoal } from '@/types'
 import {
   formattedReps,
   formattedSets,
@@ -12,28 +13,22 @@ import {
   formattedWorkoutData,
   stringifyTime,
 } from '@/utils/formatters'
-import { getCompletedExercises, getCompletedExercisesUnits } from '@/utils/functions'
-import { XPForCompletedWorkout } from '@/utils/gamification'
-import { useToast, type ToastMessageOptions } from 'primevue'
+import { getCompletedExercisesUnits } from '@/utils/functions'
 import { computed, ref } from 'vue'
 
 const runWorkoutStore = useRunWorkoutStore()
 const userStore = useUserStore()
+const workoutsStore = useWorkoutsStore()
 
 const currentExerciseIndex = ref<number>(0)
-const currentExercise = ref<ExerciseWithGoal | null>(
+
+const currentExercise = ref<FilledExerciseWithGoal | null>(
   runWorkoutStore.selectedRunWorkout!.exercises[currentExerciseIndex.value],
 )
 
 const restTime = ref<boolean>(false)
 
 const workoutCompleted = ref<boolean>(false)
-
-const toast = useToast()
-
-function showToast(options: ToastMessageOptions) {
-  toast.add(options)
-}
 
 const completeExercise = (type?: string) => {
   if (exerciseTimerId.value) {
@@ -47,17 +42,10 @@ const completeExercise = (type?: string) => {
     elapsedWorkoutTime.value = new Date().getTime() - startWorkoutTime
     workoutCompleted.value = true
 
-    const completedWorkout: Workout = {
+    userStore.pushWorkoutToHistory({
       ...runWorkoutStore.selectedRunWorkout!,
-      exercises: getCompletedExercises(
-        runWorkoutStore.selectedRunWorkout!,
-        skippedExercisesIndexes.value,
-      ),
-    }
-
-    userStore.pushWorkoutToHistory(completedWorkout)
-
-    userStore.addXP(XPForCompletedWorkout(completedWorkout), showToast)
+      skippedExercisesIndexes: skippedExercisesIndexes.value,
+    })
 
     return
   }
@@ -83,7 +71,9 @@ function nextExercise() {
   elapsedExerciseTime.value = 0
   elapsedRestTime.value = 0
   currentExerciseIndex.value++
-  currentExercise.value = runWorkoutStore.selectedRunWorkout!.exercises[currentExerciseIndex.value]
+  currentExercise.value = workoutsStore.getClearedWorkoutExercises(
+    runWorkoutStore.selectedRunWorkout!,
+  )[currentExerciseIndex.value]
 }
 
 const startWorkoutTime = new Date().getTime()
@@ -129,23 +119,26 @@ const formattedUnitsToComplete = computed<string>(() => {
   let formattedString = ''
   let numUnits = 0
 
-  if (currentExercise.value.unitsList.includes('подходы')) {
+  if ('time' in currentExercise.value.goal) {
+    formattedString += `${numUnits ? ' по ' : ''}`
+    formattedString += stringifyTime(currentExercise.value.goal.time)
+    numUnits++
+  }
+
+  if ('sets' in currentExercise.value.goal) {
+    formattedString += `${numUnits ? ', ' : ''}`
     formattedString += `${currentExercise.value.goal.sets} ${formattedSets(currentExercise.value.goal.sets)}`
     numUnits++
   }
-  if (currentExercise.value.unitsList.includes('повторения')) {
-    formattedString += `${numUnits ? ' по ' : ''}`
+  if ('repetitions' in currentExercise.value.goal) {
+    formattedString += `${numUnits ? ', ' : ''}`
     formattedString += `${currentExercise.value.goal.repetitions} ${formattedReps(currentExercise.value.goal.repetitions)}`
     numUnits++
   }
-  if (currentExercise.value.unitsList.includes('вес')) {
-    formattedString += `${numUnits ? ' по ' : ''}`
+  if ('weightKg' in currentExercise.value.goal) {
+    formattedString += `${numUnits ? ', ' : ''}`
     formattedString += `${currentExercise.value.goal.weightKg} кг`
     numUnits++
-  }
-  if (currentExercise.value.unitsList.includes('время')) {
-    formattedString += `${numUnits ? ' по ' : ''}`
-    formattedString += stringifyTime(currentExercise.value.goal.time)
   }
 
   return formattedString
@@ -176,10 +169,17 @@ const formattedWorkoutInfo = computed<string>(() => {
 
   return formattedWorkoutData(elapsedTime, completedReps, maxWeightKg)
 })
+
+const skippedExercisesCount = computed<number>(
+  () => userStore.user.stats.lastCompletedWorkouts[0].skippedExercisesIndexes!.length,
+)
+const completedExercisesCount = computed<number>(
+  () =>
+    userStore.user.stats.lastCompletedWorkouts[0].exercises.length - skippedExercisesCount.value,
+)
 </script>
 
 <template>
-  <Toast />
   <div class="mr-auto mb-4 ml-auto w-fit">
     <h1 class="mb-3 text-center text-3xl font-bold">
       {{ runWorkoutStore.selectedRunWorkout?.name }}
@@ -191,13 +191,19 @@ const formattedWorkoutInfo = computed<string>(() => {
       </p>
       <p class="mb-2 text-lg font-semibold">Информация о тренировке:</p>
       <p class="text-center whitespace-pre">{{ formattedWorkoutInfo }}</p>
+      <p class="mt-2">
+        Выполнено упражнений:
+        {{ completedExercisesCount }}<br />
+        Пропущено упражнений:
+        {{ skippedExercisesCount }}
+      </p>
     </div>
     <div v-else-if="currentExercise" class="exercise-container flex flex-col items-center">
       <h2 class="mt-2 mb-2 text-center text-xl font-semibold sm:mt-0">
         {{ currentExercise.name }}
       </h2>
       <div
-        class="wrapper mb-3 flex h-auto w-[95vw] justify-stretch sm:w-[80vw] md:w-[70vw] lg:w-[60vw] xl:w-[50vw]"
+        class="wrapper mb-3 flex h-auto w-[95vw] justify-stretch sm:w-[80vw] md:w-[70vw] lg:w-[60vw] xl:w-[1000px]"
       >
         <ExerciseCardInfo :exercise="currentExercise"></ExerciseCardInfo>
       </div>
@@ -244,7 +250,7 @@ const formattedWorkoutInfo = computed<string>(() => {
     </div>
     <div v-else class="rest-container flex flex-col items-center">
       <p
-        class="mt-[calc(95vw/16*9)] mb-2 sm:mt-[calc(80vw/16*9)] md:mt-[calc(70vw/16*9)] lg:mt-[calc(60vw/16*9)] xl:mt-[calc(50vw/16*9)]"
+        class="mt-[calc(95vw/16*9)] mb-2 sm:mt-[calc(80vw/16*9)] md:mt-[calc(70vw/16*9)] lg:mt-[calc(60vw/16*9)] xl:mt-[calc(1000px/16*9)]"
       >
         Отдых {{ formattedRemainingRestTime }}
       </p>

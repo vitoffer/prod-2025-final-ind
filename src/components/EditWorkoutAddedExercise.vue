@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { ExerciseUnit, ExerciseWithGoal, ExerciseWithGoalValidation, Workout } from '@/types'
+import type {
+  ExerciseUnit,
+  ExerciseWithGoalValidation,
+  FilledExerciseWithGoal,
+  Workout,
+} from '@/types'
 import { formattedReps, formattedSets, parseTime, stringifyTime } from '@/utils/formatters'
 import { getInvalidExercisesList } from '@/utils/validation'
 import { ref } from 'vue'
@@ -8,7 +13,7 @@ const props = defineProps<{ index: number; editingWorkout: Workout }>()
 
 defineEmits<{ (e: 'removeAddedExercise'): void }>()
 
-const exercise = defineModel<ExerciseWithGoal>('exercise')
+const exercise = defineModel<FilledExerciseWithGoal>('exercise')
 const exercisesListInvalid = defineModel<ExerciseWithGoalValidation[]>('exercisesListInvalid')
 
 const timeInput = ref('00:00')
@@ -17,7 +22,7 @@ if (exercise.value?.goal.time) {
   timeInput.value = stringifyTime(exercise.value!.goal.time!)
 }
 
-const setsOptions = [...Array(4).keys()].map((value) => value + 2)
+const setsOptions = [...Array(4).keys()].map((value) => value + 3)
 
 const timeInvalid = ref<boolean>(false)
 
@@ -86,7 +91,7 @@ function handleTimeInput() {
           v-model="exercise!.goal.repetitions"
           size="small"
           :min="1"
-          :max="999"
+          :max="100"
           input-class="goal-number-input repetitions"
           class="not-last:mb-1"
           @input="handleRepetitionsInput"
@@ -105,7 +110,8 @@ function handleTimeInput() {
           v-model="exercise!.goal.weightKg"
           size="small"
           :min="0.1"
-          :max="999"
+          :max="400"
+          :max-fraction-digits="2"
           input-class="goal-number-input weight"
           class="not-last:mb-1"
           @input="handleWeightKgInput"
@@ -130,6 +136,7 @@ function handleTimeInput() {
           size="small"
           class="goal-number-input time not-last:mb-1"
         />
+        (мин:сек)
       </template>
     </div>
   </div>

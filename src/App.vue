@@ -1,28 +1,31 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useToast } from 'primevue'
+import AppNav from './components/AppNav.vue'
+import { watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useGlobalStore } from './stores/globalStore'
+
+const globalStore = useGlobalStore()
+const { toasts } = storeToRefs(globalStore)
+const toast = useToast()
+
+watch(
+  toasts,
+  (newToasts) => {
+    newToasts.forEach((toastMessage) => {
+      toast.add(toastMessage)
+      globalStore.deleteToast(toastMessage.id)
+    })
+  },
+  { deep: true },
+)
+</script>
 
 <template>
+  <Toast class="!right-0 !max-w-[100vw] sm:!right-[20px] sm:!max-w-none" />
   <div class="relative flex flex-col">
-    <nav
-      class="fixed bottom-0 z-10 order-1 w-full justify-self-end border-t border-t-gray-600 bg-[#121212] p-2 sm:static sm:border-none"
-    >
-      <ul class="flex justify-center gap-4">
-        <li>
-          <Button severity="info" class="!pt-1 !pb-1">
-            <RouterLink :to="{ name: 'ExercisesListPage' }" class="">Упражнения</RouterLink>
-          </Button>
-        </li>
-        <li>
-          <Button severity="info" class="!pt-1 !pb-1">
-            <RouterLink :to="{ name: 'WorkoutsListPage' }" class="">Тренировки</RouterLink>
-          </Button>
-        </li>
-        <li>
-          <Button severity="info" class="!pt-1 !pb-1">
-            <RouterLink :to="{ name: 'ProfilePage' }" class="">Профиль</RouterLink>
-          </Button>
-        </li>
-      </ul>
-    </nav>
+    <AppNav />
+
     <div class="mb-[50px] sm:order-1 sm:mb-0">
       <RouterView></RouterView>
     </div>

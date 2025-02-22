@@ -22,10 +22,19 @@ export type ExerciseUnit = 'время' | 'подходы' | 'повторени
 export interface Workout {
   id: number
   name: string
-  exercises: ExerciseWithGoal[]
+  exercises: WorkoutExercise[]
 }
 
-export type ExerciseWithGoal = Exercise & {
+export interface FilledExercisesWorkout extends Workout {
+  exercises: FilledExerciseWithGoal[]
+  skippedExercisesIndexes?: number[]
+}
+
+export type WorkoutExercise = Pick<Exercise, 'id'> & {
+  goal: WorkoutExerciseGoal
+}
+
+export type FilledExerciseWithGoal = Exercise & {
   goal: WorkoutExerciseGoal
 }
 
@@ -41,7 +50,21 @@ export interface GoalTime {
   seconds: number
 }
 
+export interface FilledExercisesWorkoutValidation {
+  name: boolean
+  exercises: ExerciseWithGoalValidation[]
+}
+
 export interface ExerciseWithGoalValidation {
+  goal: ExerciseGoalValidation
+}
+
+export interface InvalidWorkoutField {
+  field: 'name' | 'exercises'
+  detail: 'пустое значение' | 'некорректное значение'
+}
+
+export interface ExerciseGoalValidation {
   time: boolean
   sets: boolean
   repetitions: boolean
@@ -66,9 +89,24 @@ export interface User {
   xp: number
   points: number
   character: Character
-  customizationItems: string[]
-  achievements: string[]
-  history: UserHistory
+  customizationItems: CustomItem[]
+  achievements: Achievement[]
+  stats: {
+    totalSeconds: number
+    totalReps: number
+    totalWeight: number
+    totalWorkouts: number
+    completedExercises: number
+    skippedExercises: number
+    lastCompletedWorkouts: FilledExercisesWorkout[]
+  }
+}
+
+export interface UserStats {
+  totalReps: number
+  totalWeight: number
+  totalTime: number
+  completedWorkouts: number
 }
 
 export interface UserHistory {
@@ -84,4 +122,42 @@ export interface Character {
   boots: string | null
 }
 
-type BodyType = 'skinny' | 'normal' | 'fit'
+export type BodyType = 'skinny' | 'normal' | 'fit'
+
+export interface Achievement {
+  id: number
+  name: string
+  description: string
+  xpReward: number
+}
+
+export interface AchievementRequirements {
+  workoutsCount?: number
+  exercises?: ExerciseRequirement
+  units?: UnitsRequirement
+}
+
+export interface ExerciseRequirement {
+  count: number
+  type: 'skipped' | 'completed'
+  difficulty?: ExerciseDifficulty
+  sportsItems?: string[]
+  tags?: string[]
+}
+
+export interface UnitsRequirement {
+  timeInSeconds?: number
+  sets?: number
+  repetitions?: number
+  weightKg?: number
+}
+
+export interface CustomItem {
+  id: number
+  name: string
+  type: CustomItemType
+  imageUrl: string
+  price: number
+}
+
+export type CustomItemType = 'hat' | 'necklace' | 'bracelet' | 'pants' | 'boots'

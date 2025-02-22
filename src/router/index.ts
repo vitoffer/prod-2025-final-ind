@@ -4,7 +4,7 @@ import ProfilePage from '@/views/ProfilePage.vue'
 import WorkoutsListPage from '@/views/WorkoutsListPage.vue'
 import RunWorkoutPage from '@/views/RunWorkoutPage.vue'
 import { useUserStore } from '@/stores/userStore'
-import { useWorkoutsStore } from '@/stores/workoutsStore'
+import ShopPage from '@/views/ShopPage.vue'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 
 const routes = [
@@ -32,6 +32,11 @@ const routes = [
     component: RunWorkoutPage,
     name: 'RunWorkoutPage',
   },
+  {
+    path: '/shop',
+    component: ShopPage,
+    name: 'ShopPage',
+  },
 ]
 
 const router = createRouter({
@@ -50,15 +55,9 @@ router.beforeEach((to) => {
 
   if (to.name === 'RunWorkoutPage') {
     const runWorkoutStore = useRunWorkoutStore()
-    const workoutsStore = useWorkoutsStore()
-    const workoutId = +to.params.id
-    const foundWorkout = workoutsStore.list.find((workout) => workout.id === workoutId)
-
-    if (foundWorkout === undefined) {
+    if (!runWorkoutStore.selectedRunWorkout && localStorage.getItem('runWorkout') === null) {
       return { name: 'WorkoutsListPage' }
     }
-
-    runWorkoutStore.updateWorkout(foundWorkout)
   }
 })
 

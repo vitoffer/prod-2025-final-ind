@@ -1,14 +1,31 @@
-import type { Workout } from '@/types'
+import type { FilledExercisesWorkout } from '@/types'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 export const useRunWorkoutStore = defineStore('runWorkout', () => {
-  const selectedRunWorkout = ref<Workout | null>(null)
-  // const selectedRunWorkout = ref<Workout | null>(workoutsStore.list[1])
+  const selectedRunWorkout = ref<FilledExercisesWorkout | null>(null)
 
-  function updateWorkout(workout: Workout) {
+  const runWorkoutInLS = localStorage.getItem('runWorkout')
+
+  if (runWorkoutInLS) {
+    selectedRunWorkout.value = JSON.parse(runWorkoutInLS)
+  }
+
+  function updateWorkout(workout: FilledExercisesWorkout) {
     selectedRunWorkout.value = workout
   }
 
-  return { selectedRunWorkout, updateWorkout }
+  function removeRunWorkoutFromLS() {
+    localStorage.removeItem('runWorkout')
+  }
+
+  watch(
+    selectedRunWorkout,
+    (newSelectedRunWorkout: FilledExercisesWorkout | null) => {
+      localStorage.setItem('runWorkout', JSON.stringify(newSelectedRunWorkout))
+    },
+    { deep: true },
+  )
+
+  return { selectedRunWorkout, updateWorkout, removeRunWorkoutFromLS }
 })

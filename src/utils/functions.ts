@@ -1,6 +1,18 @@
-import type { Workout } from '@/types'
+import type { FilledExercisesWorkout } from '@/types'
 
-export function getCompletedExercises(runningWorkout: Workout, skippedIndexes: number[]) {
+// export function markCompletedExercises(
+// 	runningWorkout: FilledExercisesWorkout,
+//   skippedIndexes: number[],
+// ) {
+// 	return runningWorkout.exercises.map((exercise, index) => {
+// 		return skippedIndexes.includes(index) ?
+// 	})
+// }
+
+export function getCompletedExercises(
+  runningWorkout: FilledExercisesWorkout,
+  skippedIndexes: number[],
+) {
   return (
     runningWorkout.exercises.filter((_, index) => {
       return !skippedIndexes.includes(index)
@@ -8,24 +20,23 @@ export function getCompletedExercises(runningWorkout: Workout, skippedIndexes: n
   )
 }
 
-export function getCompletedExercisesUnits(runningWorkout: Workout, skippedIndexes: number[]) {
+export function getCompletedExercisesUnits(
+  runningWorkout: FilledExercisesWorkout,
+  skippedIndexes: number[],
+) {
   const completedExercises = getCompletedExercises(runningWorkout, skippedIndexes)
 
-  const completedSetsExercises = completedExercises.filter((exercise) =>
-    exercise.unitsList.includes('подходы'),
+  const completedSetsExercises = completedExercises.filter((exercise) => 'sets' in exercise.goal)
+
+  const completedRepsExercises = completedExercises.filter(
+    (exercise) => 'repetitions' in exercise.goal,
   )
 
-  const completedRepsExercises = completedExercises.filter((exercise) =>
-    exercise.unitsList.includes('повторения'),
+  const completedWeightKgExercises = completedExercises.filter(
+    (exercise) => 'weightKg' in exercise.goal,
   )
 
-  const completedWeightKgExercises = completedExercises.filter((exercise) =>
-    exercise.unitsList.includes('вес'),
-  )
-
-  const completedTimeExercises = completedExercises.filter((exercise) =>
-    exercise.unitsList.includes('время'),
-  )
+  const completedTimeExercises = completedExercises.filter((exercise) => 'time' in exercise.goal)
 
   let completedReps = 0
 

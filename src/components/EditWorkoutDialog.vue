@@ -1,24 +1,32 @@
 <script setup lang="ts">
 import { useExercisesStore } from '@/stores/exercisesStore'
-import type { Exercise, ExerciseWithGoal, Workout, WorkoutExerciseGoal } from '@/types'
+import type {
+  Exercise,
+  FilledExercisesWorkout,
+  FilledExerciseWithGoal,
+  WorkoutExerciseGoal,
+} from '@/types'
 import type { AutoCompleteCompleteEvent } from 'primevue'
 import { ref } from 'vue'
 import EditWorkoutAddedExercise from './EditWorkoutAddedExercise.vue'
 import { isNameValid } from '@/utils/validation'
 import { useExercisesListSuggestions } from '@/composables/exercises-list/suggestions'
+import { useUserStore } from '@/stores/userStore'
+import { getRecommendedGoal } from '@/utils/recommendations'
 
 defineProps<{
   dialogHeader: string
   saveEditingWorkout: () => void
-  runWorkout: () => void
+  validateAndRunWorkout: (workout: FilledExercisesWorkout) => void
   newWorkout: boolean
 }>()
 
 const editWorkoutDialogVisible = defineModel<boolean>('editWorkoutDialogVisible')
-const editingWorkout = defineModel<Workout>('editingWorkout')
+const editingWorkout = defineModel<FilledExercisesWorkout>('editingWorkout')
 const nameInvalid = defineModel<boolean>('nameInvalid')
 
 const exercisesStore = useExercisesStore()
+const userStore = useUserStore()
 
 const exerciseSearch = ref<Exercise | null>(null)
 const searchExercisesList = ref<Exercise[]>([])
@@ -46,7 +54,10 @@ function addExerciseToList(exercise: Exercise) {
   editingWorkout.value!.exercises.push({
     ...exercise,
     goal: newGoal,
-  } as ExerciseWithGoal)
+  } as FilledExerciseWithGoal)
+
+  const lastExercise = editingWorkout.value!.exercises[editingWorkout.value!.exercises.length - 1]
+  lastExercise.goal = getRecommendedGoal(userStore.user, lastExercise)
 }
 
 function addNamedExerciseToList() {
@@ -144,7 +155,10 @@ function suggestExercises() {
         <Button @click="saveEditingWorkout" severity="success" aria-label="Save workout"
           >Сохранить</Button
         >
-        <Button v-if="newWorkout" @click="() => runWorkout()" aria-label="Run workout"
+        <Button
+          v-if="newWorkout"
+          @click="() => validateAndRunWorkout(editingWorkout!)"
+          aria-label="Run workout"
           >Запустить</Button
         >
       </div>
