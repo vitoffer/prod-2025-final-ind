@@ -1,22 +1,21 @@
 <script setup lang="ts">
+import { useGlobalStore } from '@/stores/globalStore'
 import { useUserStore } from '@/stores/userStore'
 import type { CustomItem } from '@/types'
-import type { ToastMessageOptions } from 'primevue'
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps<{
   item: CustomItem
 }>()
 
 const userStore = useUserStore()
-
-const showToast = inject<(options: ToastMessageOptions) => void>('showToast')
+const globalStore = useGlobalStore()
 
 function buyItem() {
   if (props.item.price <= userStore.user.points) {
     userStore.buyItem(props.item)
   } else {
-    showToast!({ summary: 'Не хватает очков', severity: 'error', life: 3000 })
+    globalStore.addToast({ summary: 'Не хватает очков', severity: 'error', life: 3000 })
   }
 }
 

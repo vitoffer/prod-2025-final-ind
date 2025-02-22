@@ -1,15 +1,24 @@
 <script setup lang="ts">
-import { useToast, type ToastMessageOptions } from 'primevue'
+import { useToast } from 'primevue'
 import AppNav from './components/AppNav.vue'
-import { provide } from 'vue'
+import { watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useGlobalStore } from './stores/globalStore'
 
+const globalStore = useGlobalStore()
+const { toasts } = storeToRefs(globalStore)
 const toast = useToast()
 
-function showToast(options: ToastMessageOptions) {
-  toast.add(options)
-}
-
-provide('showToast', showToast)
+watch(
+  toasts,
+  (newToasts) => {
+    newToasts.forEach((toastMessage) => {
+      toast.add(toastMessage)
+      globalStore.deleteToast(toastMessage.id)
+    })
+  },
+  { deep: true },
+)
 </script>
 
 <template>

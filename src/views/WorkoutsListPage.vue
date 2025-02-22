@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import EditWorkoutDialog from '@/components/EditWorkoutDialog.vue'
 import { useEditingWorkout } from '@/composables/workouts-list/editingWorkout'
+import { useGlobalStore } from '@/stores/globalStore'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
 import type { FilledExercisesWorkout } from '@/types'
-import { useConfirm, type ToastMessageOptions } from 'primevue'
-import { computed, inject, ref, watch } from 'vue'
+import { useConfirm } from 'primevue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const confirm = useConfirm()
 
 const workoutsStore = useWorkoutsStore()
+const globalStore = useGlobalStore()
 const router = useRouter()
 
 const isFirstSave = ref(true)
@@ -26,8 +28,6 @@ function hasRunWorkoutChanged(workout: FilledExercisesWorkout): boolean {
   if (!lastRunWorkout.value) return true
   return JSON.stringify(workout) !== lastRunWorkout.value
 }
-
-const showToast = inject<(options: ToastMessageOptions) => void>('showToast')
 
 const {
   editingWorkout,
@@ -54,7 +54,7 @@ const saveEditingWorkout = () => {
     exceededMessages.length > 0 &&
     (isFirstSave.value || (!isFirstSave.value && hasSavedWorkoutChanged(editingWorkout.value)))
   ) {
-    showToast!({
+    globalStore.addToast({
       severity: 'warn',
       summary: 'Превышены максимальные значения:',
       detail: exceededMessages.join('\n'),
@@ -70,7 +70,7 @@ const saveEditingWorkout = () => {
 
   originalSaveEditingWorkout()
   isFirstSave.value = true
-  showToast!({
+  globalStore.addToast({
     severity: 'success',
     summary: 'Тренировка успешно сохранена',
     life: 3000,
@@ -85,7 +85,7 @@ const validateAndRunWorkout = (workout: FilledExercisesWorkout) => {
     exceededMessages.length > 0 &&
     (isFirstRun.value || (!isFirstRun.value && hasRunWorkoutChanged(workout)))
   ) {
-    showToast!({
+    globalStore.addToast({
       severity: 'warn',
       summary: 'Превышены максимальные значения:',
       detail: exceededMessages.join('\n'),

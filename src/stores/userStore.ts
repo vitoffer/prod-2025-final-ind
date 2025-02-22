@@ -1,21 +1,14 @@
-import {
-  baseBody,
-  baseLevel,
-  basePoints,
-  baseXP,
-  requiredLevelToFitBody,
-  requiredLevelToNormalBody,
-} from '@/gamification/constants'
-import { checkLevelRewards, getNewLevel, XPForLevel } from '@/gamification/xp'
-import type { CustomItem, User, Workout } from '@/types'
+import { baseBody, baseLevel, basePoints, baseXP } from '@/gamification/constants'
+import { checkLevelRewards, getNewLevel, XPForCompletedWorkout } from '@/gamification/xp'
+import type { CustomItem, FilledExercisesWorkout, User } from '@/types'
 import { defineStore } from 'pinia'
-import { type ToastMessageOptions } from 'primevue'
-import { inject, ref, toValue } from 'vue'
+import { ref } from 'vue'
+import { useGlobalStore } from './globalStore'
 
 export const useUserStore = defineStore('user', () => {
+  const globalStore = useGlobalStore()
   // const isNewUser = ref<boolean>(localStorage.getItem('user') === null)
   const isNewUser = ref<boolean>(false)
-  const showToast = inject<(options: ToastMessageOptions) => void>('showToast')
 
   function toggleIsNewUser() {
     isNewUser.value = !isNewUser.value
@@ -98,12 +91,14 @@ export const useUserStore = defineStore('user', () => {
     user.value.customizationItems.push(item)
   }
 
-  function pushWorkoutToHistory(workout: Workout) {
+  function pushWorkoutToHistory(workout: FilledExercisesWorkout) {
     if (user.value.history.lastCompletedWorkouts.length === 5) {
       user.value.history.lastCompletedWorkouts.shift()
     }
 
     user.value.history.lastCompletedWorkouts.push(workout)
+
+    addXP(XPForCompletedWorkout(workout))
 
     // updateUserInLS()
   }
@@ -117,7 +112,7 @@ export const useUserStore = defineStore('user', () => {
       const newRewards = checkLevelRewards(user.value.level, newLevel)
       user.value.level = newLevel
       user.value.xp = newXP
-      showToast!({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
+      globalStore.addToast({ summary: 'Уровень повысился', life: 3000, severity: 'success' })
     }
 
     // updateUserInLS()

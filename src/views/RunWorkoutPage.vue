@@ -2,7 +2,6 @@
 import ExerciseCardInfo from '@/components/ExerciseCardInfo.vue'
 import { useExerciseTimer } from '@/composables/run-workout/exerciseTimer'
 import { useRestTimer } from '@/composables/run-workout/restTimer'
-import { XPForCompletedWorkout } from '@/gamification/xp'
 import { useRunWorkoutStore } from '@/stores/runWorkoutStore'
 import { useUserStore } from '@/stores/userStore'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
@@ -52,8 +51,6 @@ const completeExercise = (type?: string) => {
     }
 
     userStore.pushWorkoutToHistory(completedWorkout)
-
-    userStore.addXP(XPForCompletedWorkout(completedWorkout))
 
     return
   }

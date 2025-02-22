@@ -9,15 +9,15 @@ import {
   isUnitsListValid,
   isVideoUrlValid,
 } from '@/utils/validation'
-import type { ToastMessageOptions } from 'primevue'
-import { inject, ref } from 'vue'
+import { ref } from 'vue'
 import { nullExercise } from '@/constants'
 import { useWorkoutsStore } from '@/stores/workoutsStore'
+import { useGlobalStore } from '@/stores/globalStore'
 
 export function useEditingExercise() {
+  const globalStore = useGlobalStore()
   const exercisesStore = useExercisesStore()
   const workoutsStore = useWorkoutsStore()
-  const showToast = inject<(options: ToastMessageOptions) => void>('showToast')
   const { nameInvalid, difficultyInvalid, unitsListInvalid, photoUrlListInvalid, videoUrlInvalid } =
     useExerciseValidation()
 
@@ -115,7 +115,7 @@ export function useEditingExercise() {
       photoUrlListInvalid.value.includes(true) ||
       videoUrlInvalid.value
     ) {
-      showToast!({
+      globalStore.addToast({
         summary: 'Введены некорректные данные',
         severity: 'error',
         life: 3000,
@@ -128,7 +128,7 @@ export function useEditingExercise() {
       editingExercise.value.photoUrlList.length === 0 &&
       (!editingExercise.value.video || !editingExercise.value.video.url)
     ) {
-      showToast!({
+      globalStore.addToast!({
         summary: 'Введите хотя бы одно из элементов: описание, изображение(-я), видео',
         severity: 'error',
         life: 3000,
