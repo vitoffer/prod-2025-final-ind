@@ -10,9 +10,19 @@ export function isDifficultyValid(editingExercise: Exercise) {
 }
 
 export function isUnitsListValid(editingExercise: Exercise) {
-  if (editingExercise.unitsList.length === 0) {
+  const { unitsList } = editingExercise
+
+  if (unitsList.length === 0) {
     return false
   }
+
+  const hasTime = unitsList.includes('время')
+  const hasOtherUnits = unitsList.some((unit) => unit !== 'время')
+
+  if (hasTime && hasOtherUnits) {
+    return false
+  }
+
   return true
 }
 
